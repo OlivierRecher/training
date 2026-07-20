@@ -1,0 +1,21 @@
+# Fichiers de configuration et dossiers à ignorer
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Mac OS
+.DS_Store
+
+# Fichiers de données (facultatif, à adapter si besoin)
+data/
+*.csv
+*.pptx
+
+# Fichiers générés
+*.log
+.ipynb_checkpoints/
+
+REPORT.md
