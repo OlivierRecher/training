@@ -9,3 +9,7 @@ protobuf
 jupyter
 ipykernel
 matplotlib
+pandas
+scikit-learn
+scipy
+pytest>=7.0
