@@ -1,5 +1,9 @@
-"""Time-aware event encoding shared by the data-prep scripts and the training
-notebook.
+"""Time-aware event encoding used by the data-prep scripts (split_sample_for_training.py,
+format_for_train.py) and covered by tests/test_cellid_encoding.py.
+
+train_cellid_llm.ipynb does NOT import this module: it keeps its own copy of this
+logic inline (Colab-only usage, must stay a single self-contained file with no
+external module to upload). Keep the two copies in sync by hand if this file changes.
 
 An "event" is one (cell_id, hour) pair from a user's daily trajectory. Hour is
 the hour-of-day (0-23) derived from the raw timestamp (seconds since local
