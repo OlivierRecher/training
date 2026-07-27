@@ -35,13 +35,13 @@ $(VENV_PYTHON):
 #   make data-train                          -> 400 train + 100 test (default)
 #   make data-train N_TRAIN=1000 N_TEST=200  -> 1000 train + 200 test
 #   make data-train SRC=path/to/other.csv    -> split a different day-file
-#   -> data/dataset_for_training/{N_TRAIN}_{N_TEST}_sample_users_train.jsonl
-#   -> data/dataset_for_training/{N_TRAIN}_{N_TEST}_sample_users_test.jsonl
+#   -> data/dataset_for_training/{N_TRAIN}_users_train.jsonl
+#   -> data/dataset_for_training/{N_TRAIN}_users_test.jsonl
 .PHONY: data-train
 data-train: $(VENV_PYTHON)  ## Build the train/test sample dataset + format; N_TRAIN=400/N_TEST=100 by default
 	@echo ">> Splitting $(N_TRAIN) train + $(N_TEST) test users (no filters) from $(SRC)"
 	$(VENV_PYTHON) $(PYTHON_DIR)/split_sample_for_training.py $(SRC) --n-train $(N_TRAIN) --n-test $(N_TEST)
-	$(VENV_PYTHON) $(PYTHON_DIR)/format_for_train.py $(DATA_DIR)/$(N_TRAIN)_$(N_TEST)_sample_users.csv --n-train $(N_TRAIN) --n-test $(N_TEST)
+	$(VENV_PYTHON) $(PYTHON_DIR)/format_for_train.py $(DATA_DIR)/$(N_TRAIN)_users.csv --n-train $(N_TRAIN) --n-test $(N_TEST)
 
 .PHONY: clean
 clean:              ## Remove generated dataset files and Python caches

@@ -101,7 +101,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("source", type=Path,
-                        help="cleaned CSV to convert (e.g. 400_100_sample_users.csv)")
+                        help="cleaned CSV to convert (e.g. 400_users.csv)")
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT,
                         help="output directory (default: data/dataset_for_training)")
     parser.add_argument("--n-train", type=int, required=True,

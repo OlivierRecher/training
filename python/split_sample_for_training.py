@@ -16,7 +16,7 @@ different sequence-length distributions if row order in the source file
 correlates with `nRecord`.
 
 The sampled file gets a header row and is written to
-`data/dataset_for_training/` as `{n_train}_{n_test}_sample_users.csv`, with
+`data/dataset_for_training/` as `{n_train}_users.csv`, with
 all train rows first followed by all test rows -- `format_for_train.py`
 relies on this ordering to recover the two splits by position.
 
@@ -118,7 +118,7 @@ def log_length_balance(train_rows, test_rows):
 
 def split_sample(src, out_dir, n_train, n_test, rng, seed):
     out_dir.mkdir(parents=True, exist_ok=True)
-    dest = out_dir / f"{n_train}_{n_test}_sample_users.csv"
+    dest = out_dir / f"{n_train}_users.csv"
 
     pool = sample_rows(src, n_train + n_test, rng)
     train_rows, test_rows = stratified_train_test_split(pool, n_train, n_test, seed)
