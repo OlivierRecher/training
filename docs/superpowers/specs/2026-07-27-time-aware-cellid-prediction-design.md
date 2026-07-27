@@ -28,8 +28,9 @@ drop timestamps entirely — the key difference here is that timestamps are
 ## Decisions already settled
 
 - **Scope**: adapt the Stage_2A `Makefile` + its two data scripts to this
-  repo's layout (`data/` instead of `Database/`, flat top-level scripts instead
-  of `Python/`, `.venv` instead of `venv`), keeping timestamps this time.
+  repo's layout (`data/` instead of `Database/`, scripts under a `python/`
+  folder — same idea as Stage_2A's `Python/`, just lowercase to match this
+  repo's naming — `.venv` instead of `venv`), keeping timestamps this time.
 - **Time granularity: hour-of-day (0–23), not minute/second.** Reasons (agreed
   with the user):
   1. Feasible as **dedicated tokens** (`<H00>`…`<H23>`, 24 of them, same
@@ -61,7 +62,7 @@ drop timestamps entirely — the key difference here is that timestamps are
 
 ## 1. Data pipeline (new files, adapted from Stage_2A)
 
-### `split_sample_for_training.py` (top-level)
+### `python/split_sample_for_training.py`
 
 Adapted from Stage_2A's script of the same name. Differences from the
 original:
@@ -77,7 +78,7 @@ original:
   check printed, written as one `;`-separated CSV
   (`{n_train}_{n_test}_sample_users.csv`) with train rows first.
 
-### `format_for_train.py` (top-level)
+### `python/format_for_train.py`
 
 Adapted from Stage_2A's script of the same name. Differences:
 - Input rows now carry `cellId, ts, cellId, ts, ...` (see above). For each
@@ -105,7 +106,7 @@ Adapted from Stage_2A's `Makefile`:
   require them to have been run through `make` specifically (works with the
   existing `.venv`).
 - `data-train` target: same `N_TRAIN=400 N_TEST=100 SRC=...` override
-  convention, calling the two scripts above (no `cd Python`, flat layout):
+  convention, calling the two scripts under `python/`:
   ```
   make data-train
   make data-train N_TRAIN=1000 N_TEST=200
