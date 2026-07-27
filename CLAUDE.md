@@ -12,7 +12,7 @@ A `cell_id` (e.g. `UKVCHE102`, `BKVPAN1`) is not an opaque location token — it
    - This is the actual physical location. The same physical site can appear under multiple `cell_id` values if it has several technology generations and/or sectors.
 
 3. **Trailing digits — zone/sector of that base station**
-   - 2G: `1`, `2`, `3`, or `4`
-   - 3G: `101`, `102`, `103`, `104`, `201`, `202`, `203`, or `204`
+   - 2G: usually `1`, `2`, `3`, or `4` — but sites with more sectors can go as low as `0` or up to `5`-`9` (e.g. `BKVHRO0`, `BKVPUP9`, `BKVTES5`). Treat any single digit `0`-`9` as valid, not just `1`-`4`.
+   - 3G: `<zone digit><sector 2 digits>`, zone is `1` or `2`, sector is usually `01`-`04` — but sites with more sectors per zone extend up to `09` (e.g. `UKVPUP109`, `UKVPUP209`). Treat any `<1|2><01-09>` as valid, not just `101`-`104`/`201`-`204`.
 
 So `cell_id = <tech letter><site root><zone digits>`. Two `cell_id` strings can share the same site root while differing only in technology letter and/or zone digits — that represents the same physical location, observed through a different radio cell.
