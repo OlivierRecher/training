@@ -31,6 +31,10 @@ pip install -r requirements.txt
 
 python -m ipykernel install --user --name cellid-llm --display-name "Python (cellid-llm)"
 
+# Enregistrer le dossier python/ dans site-packages pour que cellid_encoding soit toujours importable
+SITE_PKGS=$(python -c "import site; print(site.getsitepackages()[0])")
+echo "$(pwd)/python" > "$SITE_PKGS/cellid_python.pth"
+
 python - <<'EOF'
 import torch
 print(f"torch {torch.__version__}")
