@@ -43,6 +43,33 @@ data-train: $(VENV_PYTHON)  ## Build the train/test sample dataset + format; N_T
 	$(VENV_PYTHON) $(PYTHON_DIR)/split_sample_for_training.py $(SRC) --n-train $(N_TRAIN) --n-test $(N_TEST)
 	$(VENV_PYTHON) $(PYTHON_DIR)/format_for_train.py $(DATA_DIR)/$(N_TRAIN)_users.csv --n-train $(N_TRAIN) --n-test $(N_TEST)
 
+# --- Groupes de comportement (cross-training) -------------------------------
+# Rapport sur les groupes utilisés par le cross-training du notebook : profil de
+# chaque groupe, créneaux de transition dérivés, R² de prédictibilité expliquée,
+# détectabilité depuis un préfixe, et placement des créneaux vs créneau global.
+#   make groups                       -> rapport sur le jeu 400/100 par défaut
+#   make groups N_TRAIN=1000          -> rapport sur {N_TRAIN}_users_{train,test}.jsonl
+#   make groups GROUPS=6              -> essayer un autre nombre de groupes
+GROUPS := 4
+.PHONY: groups
+groups: $(VENV_PYTHON)  ## Analyse des groupes de comportement (GROUPS=4 par défaut)
+	$(VENV_PYTHON) $(PYTHON_DIR)/analyze_user_groups.py \
+		--train $(DATA_DIR)/$(N_TRAIN)_users_train.jsonl \
+		--test $(DATA_DIR)/$(N_TRAIN)_users_test.jsonl \
+		--n-groups $(GROUPS)
+
+# --- Autonomie du notebook ---------------------------------------------------
+# Le notebook embarque une copie de python/*.py pour tourner sur une machine
+# vierge sans fichier annexe. À relancer après toute modification de ces modules
+# (`make test` échoue sinon, pour éviter une copie embarquée obsolète).
+.PHONY: sync-notebook
+sync-notebook: $(VENV_PYTHON)  ## Réembarque python/*.py dans le notebook (autonomie)
+	$(VENV_PYTHON) $(PYTHON_DIR)/sync_notebook_fallbacks.py
+
+.PHONY: test
+test: $(VENV_PYTHON)  ## Run the test suite
+	$(VENV_PYTHON) -m pytest -q
+
 .PHONY: clean
 clean:              ## Remove generated dataset files and Python caches
 	@echo ">> Removing generated datasets and caches"
