@@ -58,6 +58,25 @@ groups: $(VENV_PYTHON)  ## Analyse des groupes de comportement (GROUPS=4 par dé
 		--test $(DATA_DIR)/$(N_TRAIN)_users_test.jsonl \
 		--n-groups $(GROUPS)
 
+# --- Fusion multi-jours (train unique + tests emboîtés) ----------------------
+# Fusionne tous les jours de MERGE_SRC en UN seul train.jsonl, plus trois
+# fichiers de test EMBOÎTÉS (test_100 ⊂ test_500 ⊂ test_1000) tirés une seule
+# fois, stratifiés par nRecord et exclus du train. Les utilisateurs ne se
+# recoupent pas d'un jour à l'autre : la fusion est une concaténation.
+#   make data-merge                                  -> data_nino_without_wk
+#   make data-merge MERGE_SRC='data/autre/*.csv'     -> autre jeu de jours
+#   make data-merge MERGE_SIZES='200 1000'           -> autres tailles de test
+#   -> data/dataset_for_training/merged/train.jsonl
+#   -> data/dataset_for_training/merged/test_{100,500,1000}_users.jsonl
+MERGE_SRC   := data/data_nino_without_wk/*.csv
+MERGE_SIZES := 100 500 1000
+MERGE_OUT   := $(DATA_DIR)/merged
+.PHONY: data-merge
+data-merge: $(VENV_PYTHON)  ## Fusionne tous les jours en un train.jsonl + tests emboîtés 100/500/1000
+	@echo ">> Fusion de $(MERGE_SRC) -> $(MERGE_OUT)"
+	$(VENV_PYTHON) $(PYTHON_DIR)/merge_days_for_training.py $(MERGE_SRC) \
+		--out $(MERGE_OUT) --test-sizes $(MERGE_SIZES)
+
 # --- Autonomie du notebook ---------------------------------------------------
 # Le notebook embarque une copie de python/*.py pour tourner sur une machine
 # vierge sans fichier annexe. À relancer après toute modification de ces modules
