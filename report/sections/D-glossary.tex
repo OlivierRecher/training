@@ -1,0 +1,91 @@
+\chapter{Glossary}
+\label{app:glossary}
+
+\begin{description}[leftmargin=!,labelwidth=3.6cm,style=nextline]
+
+\item[Activity cell] The cell where a user spends a long continuous period
+  during the working part of the day, as defined by the operator's own
+  classification rules. Paired with the home cell, it is what a
+  \emph{transition window} is supposed to sit between.
+
+\item[Baseline (persistence)] The rule ``predict that the next \cid{cell\_id} is
+  the last one seen''. No model, no parameters, no training. Its value is a
+  property of the population, not a constant.
+
+\item[Behavioural group / profile] One of four clusters of users, cut on the rate
+  at which their \emph{physical site} changes, measured separately over four
+  bands of the day. Named G0 (homebody) to G3 (morning mover) in order of
+  increasing mobility.
+
+\item[\cid{cell\_id}] The identifier of one radio cell, e.g.\ \cid{BSOCHO1}. It
+  decomposes into a technology letter, a site root and a zone/sector index.
+
+\item[ChatML] A convention for storing a training example as a short
+  conversation with roles (system, user, assistant). Used here purely as a file
+  format.
+
+\item[Cold start] Predicting for a user about whom little history is available.
+  Measured here as accuracy at 30\,\% context fraction.
+
+\item[Context fraction] The share of a user's day given to the model before it
+  must predict the rest. Part of the measurement, not of the model: moving it
+  moves the baseline too.
+
+\item[Copy (levelled corpus)] A scored position whose target is a record
+  duplicated from the one before, produced by stretching a sequence to a fixed
+  length. Any rule that repeats is correct on it by construction.
+
+\item[Gap] Model accuracy minus persistence-baseline accuracy, in points, both
+  measured on the same users and the same scored positions. The only quantity in
+  this report that is comparable across datasets.
+
+\item[Home cell] The cell where a user is found both late at night and early in
+  the morning, as defined by the operator's own classification rules.
+
+\item[Hour token] A dedicated vocabulary symbol \cid{<H00>}\dots\cid{<H23>}
+  placed before each event, giving the hour of day of that event. Always given,
+  never predicted.
+
+\item[LoRA] \emph{Low-Rank Adaptation.} A fine-tuning method that freezes the
+  original weights and trains small matrices alongside them, reducing the memory
+  needed for training by orders of magnitude.
+
+\item[Paired bootstrap] A significance test in which the same test users are
+  resampled for both models being compared, so that the difficulty of the draw
+  cancels and only the difference between the models remains.
+
+\item[QLoRA] LoRA applied on top of a base model stored in 4-bit precision,
+  which reduces the memory the frozen weights occupy.
+
+\item[Record / event] One (\cid{cell\_id}, timestamp) pair. Not a movement: an
+  idle handset still produces records, because a base station re-signals to the
+  handsets attached to it roughly every four hours on 2G and every two hours on
+  3G.
+
+\item[Site root] The part of a \cid{cell\_id} identifying the physical antenna,
+  e.g.\ \cid{KVCHE} in \cid{UKVCHE102}. All mobility in this report is measured
+  on the site root, because 12.4\,\% of consecutive-event pairs change
+  \cid{cell\_id} without changing place.
+
+\item[Teacher forcing] Scoring position $i$ from the \emph{real} history
+  $0 \ldots i-1$ rather than from the model's own earlier predictions, so that a
+  single mistake cannot cascade.
+
+\item[Top-$k$] The correct cell is among the model's $k$ highest-ranked
+  candidates. Top-1, top-3 and top-5 are the same predictions read at three
+  depths.
+
+\item[Top-1 within repertoire] Top-1 restricted to targets that are cells present
+  in the user's own history, which is the set the model can in principle choose
+  from.
+
+\item[Transition window] A range of hours at which a user is more likely to move
+  between their home area and their activity area, and where the training loss is
+  therefore multiplied. Guessed globally at first (04--06h, 18--20h) and later
+  derived per behavioural group from the data.
+
+\item[Zone / sector] The trailing digits of a \cid{cell\_id}, identifying which
+  angular sector of the antenna served the handset. A change of sector alone is
+  not a movement.
+
+\end{description}

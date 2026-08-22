@@ -1,0 +1,35 @@
+% F13 -- Where the gain lands once the group physically routes the sequence.
+\begin{figure}[t]
+\centering
+\replegend{\swatch{clbase}~persistence baseline \qquad
+           \swatch{clmodel}~model, group routed to its own adapter}
+\fitwidth{%
+\begin{tikzpicture}
+\begin{axis}[repbar, width=\linewidth, height=5.8cm,
+  symbolic x coords={G0,G1,G2,G3,MEAN}, xtick=data,
+  xticklabels={G0 homebody,G1 steady,G2 evening,G3 morning,mean of the four},
+  /pgf/bar width=15pt,
+  ymin=0, ymax=80, ytick={0,10,...,60},
+  ylabel={top-1 accuracy (\%)},
+  x tick label style={font=\small},
+]
+\addplot[fill=clbase,draw=none]  coordinates {(G0,56.0)(G1,42.0)(G2,19.7)(G3,17.8)(MEAN,33.9)};
+\addplot[fill=clmodel,draw=none] coordinates {(G0,56.8)(G1,44.3)(G2,25.1)(G3,24.2)(MEAN,37.6)};
+\node[font=\small,text=clgain,anchor=south] at (axis cs:G0,68) {$+0.8$};
+\node[font=\small,text=clgain,anchor=south] at (axis cs:G1,56) {$+2.3$};
+\node[font=\small,text=clgain,anchor=south] at (axis cs:G2,37) {$+5.4$};
+\node[font=\small,text=clgain,anchor=south] at (axis cs:G3,36) {$+6.4$};
+\node[font=\small,text=clgain,anchor=south] at (axis cs:MEAN,49.5) {$+3.7$};
+\end{axis}
+\end{tikzpicture}}
+\caption[Per-group gain after routing the group to its own adapter]{The gain
+ranks in exactly the reverse order of the baseline: G0 is already solved by
+repetition and has almost nothing left to win, while G3 --- where repetition is
+right less than one time in five --- gains $+6.4\pt$. The correlation between
+how easy a group is and how much the model adds to it is $-0.99$ across the
+four groups. Weighted by how many users each group actually holds, the overall
+gain is $+3.3\pt$ rather than the $+3.7\pt$ of the unweighted mean, because
+28\,\% of the population sits in the group that needs no model. \smob,
+100 held-out users, full sequence.}
+\label{fig:group-gain}
+\end{figure}

@@ -1,0 +1,31 @@
+% T9 -- Paired bootstrap over the test users (slide 75).
+\begin{table}[t]
+\centering\small
+\caption[Paired bootstrap between consecutive tiers]{Is any step up the ladder
+real? Bootstrap over the 1{,}000 test users, 2{,}000 resamples, \emph{paired} ---
+the same users are resampled for both tiers, so the luck of the test draw
+cancels and only the difference between the two models is left. Every interval
+contains zero, including the one spanning the whole ladder. \seleven, top-1
+within repertoire.}
+\label{tab:bootstrap}
+\begin{tabular}{@{}lrlc@{}}
+\toprule
+\textbf{Step} & \textbf{Difference} & \textbf{95\,\% interval} & \textbf{Real gain?} \\
+\midrule
+5{,}000 $\rightarrow$ 10{,}000  & $+0.20\pt$ & $-0.21 \ \ldots \ +0.64$ & no \\
+10{,}000 $\rightarrow$ 15{,}000 & $+0.09\pt$ & $-0.32 \ \ldots \ +0.52$ & no \\
+15{,}000 $\rightarrow$ 21{,}000 & $-0.25\pt$ & $-0.72 \ \ldots \ +0.20$ & no \\
+\midrule
+5{,}000 $\rightarrow$ 21{,}000 \textit{(total)} & $+0.04\pt$ & $-0.43 \ \ldots \ +0.51$ & no \\
+\bottomrule
+\end{tabular}
+
+\vspace{3pt}
+\begin{minipage}{\textwidth}\footnotesize
+The fitted scaling law says the same thing: a slope of $+0.18\pt$ per ten-fold
+increase in users, with $R^2 = 0.12$. At that slope one extra point would
+require about 1.5 billion users --- the reductio that shows the curve is flat
+rather than merely slow. The correct statement is not ``the gain is small'' but
+``no gain was measured''.
+\end{minipage}
+\end{table}

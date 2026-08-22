@@ -1,0 +1,193 @@
+\chapter{Adding the clock}
+\label{ch:time}
+
+\section{The question}
+
+Up to this point the model was given a bare list of cells. Nothing in its input
+said whether an event happened at four in the morning or at seven in the
+evening. That is a strange omission for a mobility problem: the reason a person
+changes cell at all is usually that they are going somewhere, and going
+somewhere happens at particular times of day. The question of this chapter is
+therefore whether \emph{time of day} is the missing signal --- and, more
+precisely, whether a model can be pushed to \emph{reason} about a change of cell
+at the hours where a change is likely, instead of defaulting to the one strategy
+that is otherwise always available to it: repeat the last cell.
+
+\section{The evidence that a temporal signal was missing}
+
+The pointer came from the per-user diagnosis. Scoring the same trained model
+with progressively more context, most users behave as
+Chapter~\ref{ch:user} predicts --- their accuracy is a trait, roughly constant
+whatever the context ($r = 0.77$ between accuracy at 30\,\% and at 80\,\%
+context). But one group does something else entirely, shown in the lower rows of
+Table~\ref{tab:context-collapse}: given \emph{more} history, their accuracy
+falls off a cliff, from thirty or forty per cent down to zero.
+
+\input{tables/tab-context-collapse}
+
+That is a diagnostic, not a curiosity. Accuracy at 80--90\,\% context is measured
+on the positions at the \emph{end} of the user's day. A model that predicts
+someone correctly through the morning and then scores zero on their evening is
+not short of capacity --- it is confidently repeating the last cell it saw at
+exactly the moment when that user stops staying put. In several of those cases
+the model assigned up to 78\,\% probability to the cell it had just seen. The
+missing ingredient is not more history; it is knowing that the end of the day is
+not the middle of it.
+
+\section{How the clock enters, and the two hypotheses it carries}
+
+Time was added in the cheapest form that a language model can actually learn.
+Each event became a pair of tokens --- a dedicated hour token followed by its
+\cid{cell\_id} --- so that a timestamp of 44{,}408 seconds becomes \cid{<H12>}
+and costs exactly one token, leaving the rest of the context window for the
+trajectory itself. The hour is always given and never predicted, which is
+legitimate offline and in production alike: the current time is known whenever a
+prediction is requested. Panel~(a) of Figure~\ref{fig:hour-ablation} shows the
+resulting weight map.
+
+Two distinct hypotheses were encoded at once, and it is worth separating them
+because only one of them survived the chapter.
+
+\begin{description}
+  \item[H1 --- the model can use the hour.] Given the hour of each past event
+        and of the event to predict, the model can learn that some cells are
+        morning cells and others evening cells.
+  \item[H2 --- some hours deserve more weight.] There are
+        \emph{transition windows}: hours at which a user has a higher chance of
+        moving between their home area and their activity area. If the loss at
+        those positions is multiplied, the optimiser is forced to get them right
+        rather than to accept them as the price of a good average.
+\end{description}
+
+H2 requires knowing which hours those are, and at this stage I did not measure
+them --- I guessed them, from the time boundaries the team's home-cell and
+activity-cell classification already used: \textbf{04--06h} and
+\textbf{18--20h}. That guess is the subject of the end of this chapter.
+
+\section{H1 holds: the hour is genuinely read}
+
+Whether a model uses an input is not something to assume; it is something to
+test by breaking the input. Three corruptions were applied to the same trained
+checkpoint and the same test users, changing \emph{only} the hour tokens and
+leaving the cell sequence untouched. Panel~(b) of
+Figure~\ref{fig:hour-ablation} gives the result.
+
+\input{figures/fig-hour-ablation}
+
+Replacing every hour by the same constant costs $0.7\pt$. Shuffling the hours
+--- so that the values are still real hours but in the wrong order --- costs
+$3.0\pt$, four times as much. The difference between those two numbers is the
+whole argument: if the token were merely occupying a slot, destroying its
+\emph{ordering} would cost no more than removing it. It costs four times more,
+so the model has learned something about which hour goes with which cell.
+
+The third corruption is the informative one. Shifting every hour by twelve moves
+the aggregate by only $+0.5\pt$ --- and that near-zero hides a swap. Accuracy
+\emph{inside} the transition windows falls from 42.7\,\% to 39.7\,\%, while
+accuracy \emph{outside} them rises from 45.3\,\% to 47.1\,\%
+(Figure~\ref{fig:hour-ablation}(c)). The two halves of the day exchanged their
+difficulty along with their labels, which means the model was not merely reading
+the hour: it had learned behaviour attached to the windows specifically. H1 is
+established.
+
+\section{H2 half-holds: the windows can be won, at a price}
+
+If the mechanism works, the obvious move is to push harder on it. Three changes
+were made together:
+
+\begin{itemize}
+  \item \textbf{An asymmetric weight.} The two windows are not comparable in
+        size: $18$--$20$h carries four times as many records as $04$--$06$h and
+        touches 58\,\% of users against 39\,\%. Weighting them equally spends the
+        same gradient on a well-populated window and on a sparse, noisy one, so
+        $18$--$20$h was raised to $\times4$ while $04$--$06$h stayed at
+        $\times2$.
+  \item \textbf{A weighted sampler.} Training windows containing at least one
+        in-window transition were drawn three times more often than the rest ---
+        which raised the share of training batches containing such a transition
+        from 45.1\,\% to 71.2\,\%, without duplicating a single record.
+  \item \textbf{Full-sequence evaluation.} Until then only the last 20\,\% of
+        each test sequence was scored. From this point every position is scored,
+        one at a time. This is a strictly harder measurement --- early positions
+        have almost no history behind them --- and it is why the persistence
+        baseline on this corpus is quoted as 43.1\,\% on the full sequence
+        against 45.5\,\% on the last fifth. Both numbers describe the same users;
+        they answer different questions, and from here on the full-sequence
+        figure is the one used.
+\end{itemize}
+
+The result, in Figure~\ref{fig:targeted-sampling}, is the first positive result
+of the project that is not an artefact of a single context split.
+
+\input{figures/fig-targeted-sampling}
+
+Inside $18$--$20$h --- 604 predictions --- the model reaches 40.6\,\% against a
+baseline of 37.9\,\%: $+2.6\pt$. Over both windows combined, 732 predictions,
+$+2.3\pt$. For the first time, a trained model beat ``repeat the last cell'' on
+a segment defined in advance rather than discovered afterwards. The $04$--$06$h
+figure rests on 128 predictions and should be read as ``not worse'' rather than
+as a win.
+
+And then the price, in Table~\ref{tab:after-sampling}. Outside the windows ---
+7{,}893 predictions, more than ten times the in-window volume --- the model lost
+$2.6\pt$. The gap to the baseline widened at \emph{every one} of the seven
+context fractions, and top-3 and top-5 fell by between $2.6$ and $4.8\pt$
+everywhere. One degraded row would be noise; seven consistent rows are a model
+that has been narrowed.
+
+\input{tables/tab-after-sampling}
+
+\section{What the numbers said: the mechanism was right, the target was wrong}
+
+The two results above are not contradictory, and read together they are quite
+precise. Weighting a chosen set of positions does exactly what it is supposed to
+do: it buys accuracy there and spends it elsewhere. The mechanism was never in
+question after the ablation. What was in question --- and what I had never
+checked --- was whether the positions I had chosen were the hard ones.
+
+They were not. Measured on the full test sequences, the persistence baseline
+scores 43.6\,\% \emph{inside} the guessed windows and 43.4\,\% \emph{outside}
+them: a difference of $0.2$ percentage points. In other words the global window
+$04$--$06$h / $18$--$20$h does not separate easy positions from hard positions at
+all. Worse, broken down by behavioural profile, $04$--$06$h turns out to be
+\emph{easier} than average for every single profile --- persistence between 49
+and 64\,\% inside it, against 20 to 57\,\% on average. Doubling the loss there
+pushed gradient at positions where the baseline is already right, which is the
+most expensive thing one can do on a task like this.
+
+The honest summary of the iteration is therefore: the machinery worked, and I
+pointed it at the wrong hours. The $+2.6\pt$ at $18$--$20$h was real because
+$18$--$20$h happens to be genuinely difficult for one of the four profiles; the
+loss on everything else was the cost of upweighting hours that were difficult
+for nobody.
+
+\section{What I did next, and why}
+
+That failure is specific enough to be actionable, and it contains its own
+remedy. If a window is supposed to mark the hours where repetition stops
+working, then it must be \emph{derived from the data} rather than guessed --- and
+it cannot be a single window for everybody, because the hours at which a person
+is likely to move are obviously not the same for a commuter and for someone who
+stays home. The next question was therefore not ``which hours?'' but ``whose
+hours?''. Answering it requires grouping users by \emph{when} they move, which
+is the subject of Chapter~\ref{ch:groups}.
+
+\section{Retrospective}
+\label{sec:retro-time}
+
+The change I would flag from this iteration is the one that looks purely
+technical. Moving from scoring only the last fifth of each test sequence to
+scoring every position was the right methodological choice: the early positions
+have almost no history behind them, and leaving them out was quietly making the
+task easier than the question deserved. But it also moved the persistence
+baseline on the very same users from 45.5\,\% to 43.1\,\%, and that has a
+consequence I did not state plainly at the time --- the runs before the change
+and the runs after it cannot be compared on absolute accuracy at all, only on
+their respective gaps.
+
+It is stated plainly here instead, and it is why every figure and table in this
+report carries the protocol it was measured under. A change of measurement is a
+change of baseline, and a change of baseline invalidates every absolute
+comparison made across it. If I were running the project again I would freeze
+the evaluation protocol before the first training and treat any later change to
+it as opening a new series of results rather than continuing the old one.

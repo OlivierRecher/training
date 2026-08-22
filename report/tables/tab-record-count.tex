@@ -1,0 +1,32 @@
+% T11 -- Accuracy by how much history a user has (slide 77).
+\begin{table}[t]
+\centering\small
+\caption[Accuracy by record count]{The 1{,}000 held-out users of \seleven{} cut
+into six equal groups by how many records they have. The persistence baseline is
+right 17.8\,\% of the time on a user with fewer than 30 records and 59.8\,\% of
+the time on a user with more than 120: a 42-point spread, against 0.3\pt\ for
+the whole training-size ladder. Length of history, not size of training set, is
+the axis of difficulty. 21{,}000-user model, 80\,\% context.}
+\label{tab:record-count}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+& \textbf{Records} & \textbf{Users} & \textbf{Predictions} & \textbf{Baseline} & \textbf{Model} & \textbf{Gap} \\
+\midrule
+R1 & 10--29   & 161 &   695 & 17.8\,\% & 22.1\,\% & $+4.3$ \\
+R2 & 30--43   & 168 & 1{,}221 & 37.7\,\% & 42.0\,\% & $+4.3$ \\
+R3 & 44--59   & 159 & 1{,}635 & 43.1\,\% & 47.4\,\% & $+4.3$ \\
+R4 & 60--82   & 178 & 2{,}490 & 48.2\,\% & 52.5\,\% & $+4.3$ \\
+R5 & 83--121  & 164 & 3{,}296 & 51.1\,\% & 55.4\,\% & $+4.3$ \\
+R6 & 122--200 & 170 & 5{,}368 & 59.8\,\% & 64.1\,\% & $+4.3$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{3pt}
+\begin{minipage}{\textwidth}\footnotesize
+Baselines, group sizes and prediction counts are measured on the test file. The
+model column carries the run's overall $+4.3\pt$ gap across to each group
+rather than reporting a per-group measurement, and should be read as such: the
+column that is measured here is the baseline, and what it shows is that the
+difficulty of a user is set before any model is involved.
+\end{minipage}
+\end{table}

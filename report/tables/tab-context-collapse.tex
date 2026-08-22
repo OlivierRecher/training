@@ -1,0 +1,35 @@
+% T5 -- Users whose accuracy collapses when given MORE context (image23, slide 38).
+\begin{table}[t]
+\centering\small
+\caption[Users whose accuracy collapses when given more context]{The eight
+users behind the aggregate of Table~\ref{tab:context-sweep}, scored with a
+short context (30--60\,\% of the day) and then with a long one (80--90\,\%).
+More history is supposed to help. For the bottom four it destroys the
+prediction --- which is what pointed at the \emph{end} of the day, and
+therefore at time of day, as the missing signal. \smob, same trained model
+evaluated at several context fractions.}
+\label{tab:context-collapse}
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+\textbf{User} & \textbf{Short ctx.} & \textbf{Long ctx.} & \textbf{$\Delta$} & \textbf{Reading} \\
+\midrule
+2046755 & 12.1\,\% & 10.8\,\% & $-1.3$  & \multirow{3}{*}{\begin{tabular}{@{}l@{}}\textbf{A} --- difficulty is a per-user trait:\\ context changes nothing\end{tabular}} \\
+599692  & 16.5\,\% & 16.7\,\% & $+0.2$  & \\
+1243093 &  8.3\,\% & 15.6\,\% & $+7.3$  & \\
+\addlinespace
+1367716 & 60.4\,\% & 37.5\,\% & $-22.9$ & \textbf{B} --- a real decline, still usable \\
+\addlinespace
+401222  & 32.2\,\% &  0.0\,\% & $-32.2$ & \multirow{4}{*}{\begin{tabular}{@{}l@{}}\textbf{C} --- total collapse at the end\\ of the day: the model repeats the\\ last cell with up to 78\,\% confidence\end{tabular}} \\
+1300439 & 40.7\,\% &  0.0\,\% & $-40.7$ & \\
+1223357 & 33.7\,\% &  4.2\,\% & $-29.6$ & \\
+1153529 & 20.0\,\% &  3.0\,\% & $-17.1$ & \\
+\bottomrule
+\end{tabular}
+
+\vspace{3pt}
+\begin{minipage}{\textwidth}\footnotesize
+Accuracy at 30\,\% context correlates with accuracy at 80\,\% context at
+$r = 0.77$ across all users, which is what makes group~A a \emph{trait} rather
+than a context effect.
+\end{minipage}
+\end{table}

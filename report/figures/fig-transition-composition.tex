@@ -1,0 +1,33 @@
+% F4 -- What a consecutive-event pair actually is, on two datasets.
+\begin{figure}[t]
+\centering
+\fitwidth{%
+\begin{tikzpicture}
+\begin{axis}[rep,
+  xbar stacked, width=\linewidth, height=3.4cm,
+  /pgf/bar width=17pt,
+  xmin=0, xmax=100,
+  xlabel={share of all consecutive-event pairs (\%)},
+  ytick={0,1}, yticklabels={\smob, \sraw},
+  y tick label style={align=right},
+  grid=none, xmajorgrids,
+  nodes near coords, point meta=explicit symbolic,
+  every node near coord/.append style={font=\scriptsize,text=white,anchor=center},
+  legend style={at={(0.5,-0.70)},anchor=north,legend columns=3,draw=clrule},
+  legend cell align=left, legend image code/.code={\draw[#1,draw=none] (0cm,-0.08cm) rectangle (0.28cm,0.14cm);},
+]
+\addplot[fill=clmodel,draw=none] coordinates {(37,0) [37.0\,\%] (43.6,1) [43.6\,\%]};
+\addplot[fill=clink,draw=none]   coordinates {(12,0) [12.0\,\%] (12.4,1) [12.4\,\%]};
+\addplot[fill=clmove,draw=none]  coordinates {(51,0) [51.0\,\%] (44.0,1) [44.0\,\%]};
+\legend{identical \cid{cell\_id}, same site\,--\,other \cid{cell\_id}, real site change}
+\end{axis}
+\end{tikzpicture}}
+\caption[Composition of consecutive-event pairs]{What a pair of back-to-back
+records actually is. On \sraw, 43.6\,\% of pairs repeat
+the same \cid{cell\_id} outright and a further 12.4\,\% change cell without
+changing place; only 44.0\,\% are a real site change. Restricting the corpus to
+mobile, non-absent users (\smob) moves the mass towards real movement ---
+51\,\% --- while the middle band stays at 12\,\%. That middle band is why every
+mobility measurement in this report is taken on the site root.}
+\label{fig:transition-composition}
+\end{figure}

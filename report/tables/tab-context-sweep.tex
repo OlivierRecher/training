@@ -1,0 +1,41 @@
+% T3 -- The context/target split swept on two datasets (slides 27 and 37).
+\begin{table}[t]
+\centering\small
+\caption[The context/target split, swept on two datasets]{Moving the cut
+between context and target, with everything else frozen. On \sfilt, exactly one
+split clears the baseline; on \smob, none does. The baseline changes from row to
+row because moving the cut changes which cell counts as ``the last one seen'', so
+each row must be read against the baseline on its own line --- never against the
+accuracy above it. Qwen2.5-0.5B + QLoRA, 100 held-out users.}
+\label{tab:context-sweep}
+\begin{tabular}{@{}lrrrrrrc@{}}
+\toprule
+\textbf{ctx / target} & \textbf{Val.} & \textbf{Test} & \textbf{Baseline} & \textbf{Gap} & \textbf{top-3} & \textbf{top-5} & \textbf{Beats?} \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{\sfilt} --- three separate trainings, one per cut}\\
+\addlinespace[2pt]
+70 / 30          & 72.3\,\% & 76.5\,\% & 76.8\,\% & $-0.3$ & 87.1\,\% & 90.1\,\% & no \\
+\textbf{80 / 20} & 73.8\,\% & \textbf{80.1\,\%} & 79.0\,\% & $\mathbf{+1.1}$ & 89.1\,\% & 91.6\,\% & \textbf{yes} \\
+90 / 10          & 75.7\,\% & 77.7\,\% & 80.1\,\% & $-2.4$ & 87.2\,\% & 90.5\,\% & no \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{\smob} --- one training at 80/20, evaluated at seven cuts}\\
+\addlinespace[2pt]
+30 / 70 & 43.0\,\% & 41.5\,\% & 42.9\,\% & $-0.9$ & 62.1\,\% & 69.9\,\% & no \\
+40 / 60 & 43.0\,\% & 42.0\,\% & 43.2\,\% & $-0.6$ & 62.1\,\% & 69.7\,\% & no \\
+50 / 50 & 43.0\,\% & 42.0\,\% & 43.3\,\% & $-0.7$ & 62.0\,\% & 69.4\,\% & no \\
+60 / 40 & 43.0\,\% & 42.7\,\% & 44.0\,\% & $-0.9$ & 62.1\,\% & 69.5\,\% & no \\
+70 / 30 & 43.0\,\% & 43.6\,\% & 44.3\,\% & $\mathbf{-0.3}$ & 62.1\,\% & 69.5\,\% & no \\
+80 / 20 & 43.0\,\% & 44.6\,\% & 45.5\,\% & $-0.9$ & 63.9\,\% & 70.7\,\% & no \\
+90 / 10 & 43.0\,\% & 47.6\,\% & 50.9\,\% & $-2.1$ & 68.0\,\% & 74.3\,\% & no \\
+\bottomrule
+\end{tabular}
+
+\vspace{4pt}
+\begin{minipage}{\textwidth}\footnotesize
+Gaps are in points. Each \sfilt{} row is a separate training, early-stopped on
+its own plateau (best validation at epoch 5, 6 and 4 respectively). The \smob{}
+rows are one single trained model evaluated seven times, which is why their
+validation column is constant --- so they measure \emph{robustness} to a context
+different from the one trained on, not which cut trains the better model.
+\end{minipage}
+\end{table}

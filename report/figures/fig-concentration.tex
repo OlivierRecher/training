@@ -1,0 +1,55 @@
+% F8 -- Where the evaluation signal lives, and what actually correlates with accuracy.
+\begin{figure}[t]
+\centering
+\replegend{\swatch{clbase}~persistence baseline \qquad \swatch{clmodel}~model,
+           \srawbig \qquad \swatch{clink}~model, \smob}
+\fitwidth{%
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=1 by 2, vertical sep=1.9cm},
+  rep, width=0.80\linewidth,
+  title style={font=\footnotesize,yshift=1pt},
+]
+% ---- (a) volume quintiles ----
+\nextgroupplot[repbar, height=4.6cm,
+  title={(a) \srawbig --- five equal groups by predictions per user},
+  symbolic x coords={va,vb,vc,vd,ve}, xtick=data,
+  xticklabels={1--2,2--6,6--17,17--58,58--1{,}533},
+  x tick label style={font=\scriptsize},
+  xlabel={predictions per user}, ylabel={top-1 accuracy (\%)},
+  ymin=0, ymax=100, ytick={0,20,...,100}, /pgf/bar width=9pt]
+\addplot[fill=clbase,draw=none] coordinates {(va,66.3)(vb,61.9)(vc,62.2)(vd,66.6)(ve,78.1)};
+\addplot[fill=clmodel,draw=none] coordinates {(va,66.0)(vb,61.9)(vc,61.9)(vd,68.1)(ve,78.6)};
+
+% ---- (b) correlations ----
+\nextgroupplot[rephbar, height=5.4cm,
+  title={(b) Pearson correlation between a per-user feature and that user's accuracy},
+  xmin=-1.2, xmax=1.2, xtick={-1,-0.5,0,0.5,1},
+  xlabel={Pearson $r$}, /pgf/bar width=5.5pt,
+  symbolic y coords={len,vol,uniq,irr,dom,ent,switch},
+  ytick={len,vol,uniq,irr,dom,ent,switch},
+  yticklabels={raw sequence length, number of predictions, unique cells visited,
+               switch irregularity, dominant-cell freq., normalised entropy,
+               \textbf{cell-switch rate}},
+  y tick label style={font=\scriptsize,align=right},
+  nodes near coords,
+  /pgf/number format/.cd, fixed, fixed zerofill, precision=3, /pgfplots/.cd,
+  every node near coord/.append style={font=\tiny}]
+\addplot[fill=clmodel,draw=none] coordinates {(0.054,len)(0.154,vol)(-0.175,uniq)(0.696,dom)(-0.811,ent)(-0.971,switch)};
+\addplot[fill=clink,draw=none]   coordinates {(-0.101,vol)(-0.232,uniq)(-0.140,irr)(0.285,dom)(-0.773,switch)};
+\end{groupplot}
+\end{tikzpicture}}
+\caption[Concentration of the evaluation signal and per-user correlations]{(a)~The
+evaluation signal is extremely concentrated: the median user contributes 11
+predictions, while the most active tenth --- 117 people --- carries 58.6\,\% of
+the 54{,}173 predictions. Accuracy nevertheless barely moves across the groups,
+and the raw correlation with volume is weak ($r = +0.15$), so this is not a
+volume effect: heavy users simply happen to switch cell less often
+($r = -0.15$). (b)~Ranked by strength, the only feature that really explains
+per-user accuracy is how often the user changes cell --- $r = -0.971$ on the
+1{,}173-user set, confirmed at $r = -0.773$ on the 100 held-out users of a
+different dataset. Features with a single bar were computed on one dataset only. Group sizes in
+panel~(a), left to right: 324, 234, 234, 234 and 117 users, carrying 353, 948,
+2{,}601, 7{,}553 and 42{,}718 predictions.}
+\label{fig:concentration}
+\end{figure}

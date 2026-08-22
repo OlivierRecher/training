@@ -1,0 +1,162 @@
+\chapter{Measuring before modelling}
+\label{ch:first}
+
+\section{The question}
+
+A fine-tuned model produces a number. Whether that number means anything
+depends entirely on three things that have nothing to do with the model: which
+checkpoint is being read, how the day is cut, and how much room the benchmark
+leaves in the first place. Each of the three cost me a wrong conclusion before
+it was understood, and each is worth more, in points, than most of the modelling
+ideas that came later. This chapter sets out the three principles and uses the
+early runs as the evidence for them.
+
+\section{The measurement, fixed once}
+
+Every result in this report uses the same three-part measurement, shown in
+Figure~\ref{fig:protocol}. Each user's day is cut once into a \emph{context}
+prefix and a \emph{target} suffix; the model is trained on the prefix and must
+produce the suffix, which it has never seen. At scoring time it predicts
+position $i$ from positions $0 \ldots i-1$ of the \emph{real} history --- so it
+can neither see the future nor drift on its own earlier mistakes --- and the
+persistence baseline answers the same questions at the same positions. The
+ranked output is then read at three depths: top-1, top-3 and top-5.
+
+\input{figures/fig-protocol}
+
+\section{Principle 1: the last epoch is never the model}
+
+A language model fine-tuned on a few hundred short sequences will memorise them.
+That is not a hypothesis; it is what the loss curve does. The clearest evidence
+in this project is a single run, deliberately allowed to continue to a hard
+ceiling of forty-nine epochs on \Draw: its training
+loss falls from 9.7 to 0.11, and its validation accuracy climbs for nine epochs,
+peaks, and then declines for the remaining forty. Panel~(a) of
+Figure~\ref{fig:validation-curves} shows both halves of that sentence at once.
+
+\input{figures/fig-validation-curves}
+
+The important part is not that overfitting happened --- it was expected --- but
+how much it costs to ignore it. The checkpoint at the end of that run scored
+48.7\,\% on the held-out users. The checkpoint at the validation peak scored
+64.2\,\%. Reading the end of training instead of its best point therefore throws
+away sixteen points, and spends forty epochs of GPU time doing so. Acting on
+that --- keeping the best checkpoint, stopping on a plateau, and adding mild
+anti-overfitting settings (adapter dropout 0.1, learning rate
+$1.5\times10^{-4}$, weight decay 0.01) --- moved test top-1 from 48.7\,\% to
+\textbf{64.4\,\%}, cut GPU time from seventy-two to twenty-nine minutes, and
+lifted top-3 from 76.2\,\% to 82.7\,\%.
+
+Panels~(b), (c) and~(d) of Figure~\ref{fig:validation-curves} confirm that the
+shape is a property of the task rather than of one run: on three further
+datasets, with baselines ranging from 43.5\,\% to 79.0\,\%, validation peaks
+between epoch four and epoch six and then decays. The peak is always early,
+which is why every run in this report is early-stopped and evaluated at its best
+checkpoint. Two runs are then always compared at their respective peaks, which
+is the only comparison that is not an accident of where each one happened to
+stop.
+
+\section{Principle 2: the cut is part of the ruler, not of the model}
+
+The share of the day given as context --- the \emph{context fraction} --- looks
+like a hyperparameter of the experiment. It is not: it is part of the
+measurement. Moving the cut changes which cell counts as ``the last one seen'',
+so it changes the persistence baseline too. A model evaluated at 90\,\% context
+is not a better model than the same model evaluated at 30\,\%; it is the same
+model measured against an easier ruler.
+
+Table~\ref{tab:context-sweep} is the evidence, and it contains the mistake this
+principle exists to prevent. On \Dfilt the model reaches
+80.1\,\% at the reference 80/20 split, against a baseline of 79.0\,\%: a gap of
+$+1.1\pt$, and the first time in the project that a trained model cleared the
+one-line rule. Read on its own that looks like a result. Read across the three
+rows it is far weaker: at 70\,\% context the model trails by $0.3\pt$, and at
+90\,\% context --- where its own validation accuracy is the \emph{highest} of the
+three --- it trails by $2.4\pt$. One split out of three passes.
+
+\input{tables/tab-context-sweep}
+
+The lower block of the same table settles it. On \Dmob
+a single trained model was evaluated at seven context fractions from 30\,\% to
+90\,\%: its accuracy rises monotonically from 41.5\,\% to 47.6\,\%, and the
+baseline rises with it, in lockstep, at every single value. No split beats the
+baseline; the closest is $-0.3\pt$ and the worst, again at 90\,\% context, is
+$-2.1\pt$. More history helps the model and helps ``repeat the last cell''
+by the same amount, so a rising accuracy curve across context fractions carries
+no information about the model at all.
+
+One clarification belongs here, because the two blocks of
+Table~\ref{tab:context-sweep} are not the same experiment. The \sfilt rows are
+three separate trainings, each with its own cut. The \smob rows are one
+training at 80/20, evaluated seven times --- so what they measure is
+\emph{robustness} to being given more or less history than the model was trained
+on, not which cut trains the best model. Both questions are legitimate; they are
+not interchangeable, and the second is the one this report can answer.
+
+\section{Principle 3: a benchmark has to leave room}
+
+The third principle is the one that took longest to accept. On a day-file taken
+as it comes, ``repeat the last cell'' is right 69.2\,\% of the time. There is
+almost nothing above that for a model to win, and most of what is left is not
+mobility at all --- it is users with three records from a single cell. A model
+scoring 64.4\,\% on such a corpus has not failed at prediction; it has been
+measured on a benchmark with no room in it.
+
+The same trained architecture, on three corpora with different populations,
+faces baselines of 69.2\,\%, 79.0\,\% and 45.5\,\%. Nothing about the rule
+changed between those three numbers; the users did. This is why every result in
+this report is a gap rather than an accuracy, and why a corpus decision --- the
+move to mobile, non-absent users described in Chapter~\ref{ch:data} --- was worth
+more than any hyperparameter: it is what created a benchmark on which the
+question could be measured at all.
+
+\section{What the three principles settled}
+
+Taken together they closed the ``tune it harder'' avenue. Once runs were read at
+their peak, once the cut was recognised as part of the ruler, and once the
+corpus had been chosen so that the yardstick was beatable in principle, the
+model still sat within a few points of a one-line rule --- usually below it, at
+every context fraction and on every corpus tried.
+
+The example that decided what to do about it is small enough to quote in full.
+On one run, user 775719, whose context is the same cell repeated ten times, is
+predicted correctly with 100\,\% confidence. User 3268099, whose context ends on
+one cell and whose next event is a different one entirely, is predicted as ``the
+same cell again'' with 68\,\% confidence. The model was right for free on the
+first and wrong for free on the second, and in neither case did training have
+much to do with the outcome. A corollary experiment made the same point
+statistically: on a 100-user version of the corpus, per-user accuracy ranged from
+10\,\% to 100\,\% and the model never passed 42.1\,\%. One hundred users is not a
+population; it is a handful of anecdotes with an average printed underneath.
+
+\section{What I did next, and why}
+
+If the same trained model scores 100\,\% on one person and 0\,\% on another, then
+the average accuracy is the least interesting number available. The interesting
+quantity is what distinguishes those two people --- and whether it is something a
+model can act on at all. Chapter~\ref{ch:user} measures that, and the answer was
+strong enough to reorganise the rest of the internship.
+
+\section{Retrospective}
+\label{sec:retro-first}
+
+Two things stand out with hindsight.
+
+The first is the $+1.1\pt$. I presented it as a result, and it was not one. Of
+the three cuts tried, one passes and the two others lose ground --- $-0.3$ and
+$-2.4\pt$ --- and every figure in that table comes from a single training. One
+favourable cell in a table of three is too weak to carry a conclusion, and the
+following iteration duly made it disappear: the same architecture on a cleaner
+corpus beat nothing at all. What I would ask of that number now is the one thing
+I did not ask of it --- repeat it. A second training, or the same cut on a second
+corpus, would have cost half an hour and would have said immediately whether
+there was anything there.
+
+The second is that the three principles of this chapter arrived one at a time,
+and each of them arrived \emph{after} a conclusion that turned out to be wrong.
+They are not deep ideas; they are hygiene. A short measurement checklist written
+before the first training --- read the validation peak and not the last epoch,
+recompute the baseline every time the cut moves, check that the benchmark leaves
+room before spending a week inside it --- would have caught all three at once,
+and the modelling work would have started two iterations earlier. That checklist
+is, in effect, what this chapter has become.

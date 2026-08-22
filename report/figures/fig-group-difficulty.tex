@@ -1,0 +1,45 @@
+% F12 -- The group label predicts difficulty, and it can be read from the past alone.
+\begin{figure}[t]
+\centering
+\replegend{\swatch{clmove}~average site-change rate over the day \qquad
+           \swatch{clbase}~persistence baseline \qquad
+           \swatch{clmodel}~detection agreement}
+\fitwidth{%
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=2 by 1, horizontal sep=2.1cm},
+  repbar, width=0.42\linewidth, height=5.4cm, xtick=data,
+  title style={font=\footnotesize,yshift=1pt},
+]
+% ---- (a) mobility vs predictability ----
+\nextgroupplot[title={(a) the ranking is exactly inverted},
+  symbolic x coords={G0,G1,G2,G3},
+  ymin=0, ymax=78, ytick={0,20,40,60},
+  ylabel={\%}, /pgf/bar width=10pt]
+\addplot[fill=clmove,draw=none] coordinates {(G0,33)(G1,42)(G2,51)(G3,52)};
+\addplot[fill=clbase,draw=none] coordinates {(G0,56.3)(G1,41.7)(G2,19.7)(G3,17.8)};
+
+% ---- (b) detection from the context prefix ----
+\nextgroupplot[title={(b) group recovered from the past alone},
+  symbolic x coords={ca,cb,cc,cd},
+  xticklabels={30\%,50\%,80\%,90\%},
+  xlabel={context fraction at question time},
+  ymin=0, ymax=118, ytick={0,25,...,100},
+  ylabel={agreement (\%)}, /pgf/bar width=13pt]
+\addplot[fill=clnonsig,draw=none] coordinates {(ca,44)(cb,61)};
+\addplot[fill=clmodel,draw=none] coordinates {(cc,92)(cd,92)};
+\node[font=\scriptsize,text=clmodel,anchor=south,align=center] at (axis cs:cc,104) {reference protocol};
+\end{groupplot}
+\end{tikzpicture}}
+\caption[Group difficulty and group detectability]{(a)~The group label is not
+merely descriptive: it says in advance how hard a user will be. G0 changes site
+about a third of the time and ``repeat the last cell'' is already right 56.3\,\%
+of the time for them; G3 changes site half again as often and the same rule is
+right only 17.8\,\% of the time. (b)~At inference only a user's past exists, so
+the group must be computed from the context prefix and never from the target.
+At the reference 80\,\% context the pipeline recovers the right group 92 times
+out of 100 unaided; below roughly 60\,\% of the day there is not enough history
+to tell the profiles apart, which is what the two pale bars mean. \smob,
+400 train / 100 test users.}
+\label{fig:group-difficulty}
+\end{figure}

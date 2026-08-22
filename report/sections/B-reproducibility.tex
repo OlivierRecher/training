@@ -1,0 +1,69 @@
+\chapter{Reproducibility}
+\label{app:repro}
+
+This appendix records what would be needed to reproduce the results: the
+configuration of every run family, and the provenance of every headline number.
+The datasets themselves are described in Table~\ref{tab:datasets}, with counts
+measured on the files rather than quoted.
+
+\section{Hyperparameters}
+
+\input{tables/tab-hyperparams}
+
+\section{Provenance of the headline numbers}
+
+\input{tables/tab-provenance}
+
+\section{Artefacts}
+
+Three notebooks and a small data-preparation pipeline produce everything above.
+Table~\ref{tab:artefacts} lists them factually; none of their internals is
+described anywhere in this report, by design.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption[Artefacts]{The artefacts, and what each one produces.}
+\label{tab:artefacts}
+\begin{tabular}{@{}ll>{\raggedright\arraybackslash}p{6.2cm}@{}}
+\toprule
+\textbf{Artefact} & \textbf{Scope} & \textbf{Produces} \\
+\midrule
+\texttt{train\_cellid\_llm.ipynb}   & one training run   & iterations 1--8: all results up to $+3.7\pt$ \\
+\texttt{train\_cellid\_final.ipynb} & four nested tiers  & iterations 10--11: the scaling ladder and its bootstrap \\
+\texttt{train\_cellid\_week.ipynb}  & seven weekdays     & the day-of-week study, which did not complete \\
+\texttt{make data-train}            & data preparation   & the train/test JSONL files, timestamps kept as hours \\
+\texttt{make data-merge}            & data preparation   & \seleven: one merged training file, nested test sets \\
+\texttt{make groups}                & analysis           & the behavioural-group report of Chapter~\ref{ch:groups} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Configuration keys that carry a methodological decision}
+
+A handful of configuration values are not tuning knobs but encode a decision
+argued in the body. They are listed here so that a reader who changes one knows
+which claim they are changing.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption[Configuration keys carrying a decision]{Configuration values that
+encode a methodological choice rather than a tuning preference.}
+\label{tab:config-keys}
+\begin{tabular}{@{}ll>{\raggedright\arraybackslash}p{6.7cm}@{}}
+\toprule
+\textbf{Key} & \textbf{Value} & \textbf{Decision it encodes} \\
+\midrule
+\texttt{context\_fraction}              & 0.8            & the reference cut; part of the ruler (Ch.~\ref{ch:first}) \\
+\texttt{max\_epochs}                    & 20             & also the cosine horizon: lowering it changes the regime \\
+\texttt{early\_stop\_patience}           & 4              & the validation peak is early on this task \\
+\texttt{transition\_windows}             & (4,6,$\times2$), (18,20,$\times4$) & the \emph{guessed} global window; fallback only \\
+\texttt{group\_windows}                  & \texttt{None}  & derive the windows from the data, per group (Ch.~\ref{ch:groups}) \\
+\texttt{transition\_chunk\_oversample}   & 3.0            & oversample windows containing a transition \\
+\texttt{group\_bands}                    & 4 bands        & coarse enough for each band to be estimable \\
+\texttt{group\_shrinkage}                & 8.0            & a sparse band must not dominate a profile \\
+\texttt{group\_detect\_fraction}         & prefix only    & no leakage: the group is read from the past \\
+\texttt{max\_steps} (scaling)            & 1{,}000        & constant compute across tiers (Ch.~\ref{ch:scale}) \\
+\texttt{val\_subsample} (scaling)        & 250 fixed users& the same stopping rule at every tier \\
+\bottomrule
+\end{tabular}
+\end{table}

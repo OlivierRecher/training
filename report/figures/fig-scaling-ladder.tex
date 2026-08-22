@@ -1,0 +1,55 @@
+% F14 -- The whole ladder: gap to each run's own baseline, against training-set size.
+\begin{figure}[t]
+\centering
+\fitwidth{%
+\begin{tikzpicture}
+\begin{axis}[rep, width=0.97\linewidth, height=6.4cm,
+  xmode=log, log basis x=10,
+  xmin=380, xmax=30000,
+  xtick={500,1000,1500,2000,5000,10000,15000,21000},
+  xticklabels={500,1{,}000,1{,}500,2{,}000,5{,}000,10{,}000,15{,}000,21{,}000},
+  x tick label style={font=\scriptsize,rotate=40,anchor=east},
+  ymin=-0.5, ymax=7.6, ytick={0,1,...,5},
+  yticklabels={0,$+1$,$+2$,$+3$,$+4$,$+5$},
+  xlabel={training users (logarithmic scale)},
+  ylabel={points gained over that run's own baseline},
+  xmajorgrids, ymajorgrids,
+]
+% regime bands
+\fill[clnonsig!30] (axis cs:380,-0.5) rectangle (axis cs:500,7.6);
+\fill[clgain!12]   (axis cs:500,-0.5) rectangle (axis cs:2000,7.6);
+\fill[clbase!12]   (axis cs:2000,-0.5) rectangle (axis cs:30000,7.6);
+\node[font=\scriptsize,text=clrule,anchor=north,align=center] at (axis cs:1000,7.45)
+  {\textbf{GENERALISATION}\\ the four profiles become\\ large enough to read\\ \textcolor{clgain}{$+3.6\pt$}};
+\node[font=\scriptsize,text=clrule,anchor=north,align=center] at (axis cs:8000,7.45)
+  {\textbf{SATURATION}\\ every new user is a\\ behavioural duplicate\\ \textcolor{clbase}{$+0.1\pt$}};
+\node[font=\scriptsize,text=clrule,anchor=south,align=center,rotate=90] at (axis cs:428,1.2)
+  {\textbf{IMITATION}};
+
+\addplot[clmodel,thick,mark=*,mark size=1.8pt] coordinates {
+(500,0.6)(1000,2.8)(1500,3.5)(2000,4.2)(5000,4.3)(10000,4.4)(15000,4.7)(21000,4.3)};
+\addplot[clbase,dashed,thick,domain=380:30000,samples=2]{0};
+
+\node[font=\scriptsize,anchor=west] at (axis cs:520,0.95) {$+0.6$};
+\node[font=\scriptsize,anchor=north] at (axis cs:1000,2.62) {$+2.8$};
+\node[font=\scriptsize,anchor=north] at (axis cs:1500,3.32) {$+3.5$};
+\node[font=\scriptsize,anchor=north west] at (axis cs:2050,4.15) {$+4.2$};
+\node[font=\scriptsize,anchor=south] at (axis cs:5000,4.35) {$+4.3$};
+\node[font=\scriptsize,anchor=south] at (axis cs:10000,4.45) {$+4.4$};
+\node[font=\scriptsize,anchor=south] at (axis cs:15000,4.75) {$+4.7$};
+\node[font=\scriptsize,anchor=south] at (axis cs:21000,4.35) {$+4.3$};
+\node[font=\scriptsize,text=clbase,anchor=east] at (axis cs:28000,0.24) {the persistence baseline of each run};
+\end{axis}
+\end{tikzpicture}}
+\caption[The whole scaling ladder, in points over each run's own baseline]{Eight
+training-set sizes, each read against the persistence baseline measured on its
+\emph{own} test users --- the only quantity that survives a change of test set.
+The 500 to 2{,}000-user tiers are scored on \stwok (100 test users, 48.2\,\%
+baseline; the 500-user point is the \smob run, 43.1\,\% baseline), the
+5{,}000 to 21{,}000-user tiers on \seleven (1{,}000 test users, 50.2\,\%
+baseline). A four-fold increase from 500 to 2{,}000 users buys $+3.6\pt$; the
+ten-fold increase that follows buys $+0.1\pt$, and none of the steps inside it
+is statistically distinguishable from zero (Table~\ref{tab:bootstrap}). The
+curve does not slow down --- it stops.}
+\label{fig:scaling-ladder}
+\end{figure}

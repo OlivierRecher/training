@@ -1,0 +1,38 @@
+% T4 -- The seven worst users, and what actually separates them (slide 28).
+\begin{table}[t]
+\centering\small
+\caption[The seven worst users]{Every user scoring at or below 12.5\,\% on
+\sfilt. ``Preds.'' is how many predictions that user contributes and
+``ceiling'' is the best score reachable given the cells present in that user's
+own history. Three distinct situations hide behind one bad number --- and only
+the third is about the model.}
+\label{tab:worst-users}
+\begin{tabular}{@{}lrrrrl@{}}
+\toprule
+\textbf{User} & \textbf{Preds.} & \textbf{Ceiling} & \textbf{Baseline} & \textbf{Model} & \textbf{Situation} \\
+\midrule
+1049149 & 3  & 0\,\%   & 0\,\%  & 0\,\%    & \multirow{4}{*}{\begin{tabular}{@{}l@{}}\textbf{A} --- two to twelve predictions each:\\ too little material to judge a model\end{tabular}} \\
+1291964 & 3  & 0\,\%   & 0\,\%  & 0\,\%    & \\
+1344347 & 8  & 25\,\%  & 12\,\% & 12.5\,\% & \\
+929903  & 12 & 75\,\%  & 8\,\%  & 8.3\,\%  & \\
+\addlinespace
+1161518 & 9  & 89\,\%  & 67\,\% & 11.1\,\% & \textbf{B} --- a real behaviour shift \\
+\addlinespace
+828479  & 2  & 100\,\% & 50\,\% & 0\,\%    & \multirow{2}{*}{\begin{tabular}{@{}l@{}}\textbf{C} --- beaten by a trivial rule\end{tabular}} \\
+1067194 & 3  & 100\,\% & 67\,\% & 0\,\%    & \\
+\bottomrule
+\end{tabular}
+
+\vspace{4pt}
+\begin{minipage}{\textwidth}\footnotesize
+\textbf{A} (four users): between two and twelve predictions each, and a ceiling
+between 0 and 75\,\% --- far too little material for the score to say anything
+about a model. \textbf{B} (one user): a ceiling of 89\,\%, so the behaviour was
+learnable, and neither the baseline nor the model tracked it. \textbf{C} (two
+users): the ceiling is 100\,\%, plain repetition already scores 50--67\,\%, and
+the model scores nothing --- these users oscillate between near-twin cells of
+the \emph{same} antenna, e.g.\ \cid{UKVCHE102} and \cid{UKVCHE104}, which is the
+observation that led to measuring mobility on the site root while keeping the
+raw \cid{cell\_id} as the prediction target.
+\end{minipage}
+\end{table}

@@ -1,0 +1,308 @@
+\chapter{How many users are enough}
+\label{ch:scale}
+
+\section{The question}
+
+Chapter~\ref{ch:groups} ended on an uncomfortable arithmetic. Four hundred
+training users split across four behavioural profiles leaves the smallest
+profile with a few dozen people, and a profile estimated from a few dozen people
+is barely a profile. If the mechanism that produced the project's only real gain
+depends on profiles being well populated, then the obvious next lever is
+population size. Hence the question of this chapter: \emph{how many users does a
+model need before the population itself is described, and what happens after
+that point?}
+
+The question is unusually well posed on this corpus, for the reason established
+in Chapter~\ref{ch:data}: a user is exactly one day, and the day-files share no
+users. There is no way to give the model more \emph{history per person}. The only
+scaling axis available is more \emph{people}, which means this chapter measures
+the value of a population prior and nothing else.
+
+\section{First, a wrong way to ask it}
+
+An early attempt at the same question got a misleading answer, and it is worth
+recording because the mistake is easy to repeat. On the raw day-file, moving from
+500 to 5{,}000 users lifted the model's top-1 from 64.4\,\% to 76.0\,\% ---
+eleven and a half points, for eight times the training time. Read alone that
+looks like a scaling law.
+
+It is not, because the persistence baseline of the larger sample rose from
+69.2\,\% to 81.6\,\% at the same time. The gap to the baseline did not close; it
+\emph{widened}, from $-4.8$ to $-5.6\pt$. What had actually happened is that a
+larger random sample of an unfiltered day-file contains a larger absolute number
+of near-immobile users, so both the model and the trivial rule got easier
+questions. Scaling a dataset within a regime whose baseline scales with it buys
+nothing at all, and this is the clearest illustration in the report of why every
+number here is a gap.
+
+\section{The ladder, done properly}
+
+The proper version fixes everything except the number of users. Same
+architecture, same hyperparameters, same context fraction, hour tokens and
+behavioural groups active throughout, and --- crucially --- each tier read
+against the persistence baseline of its own test users. Eight training-set sizes
+were measured, from 400 training users up to 21{,}000.
+
+The largest tiers required a corpus built for the purpose: eleven day-files of
+2{,}000 users each, concatenated into 22{,}000 user-days, of which 1{,}000 users
+are held out and never trained on. Because no user appears in two day-files, that
+concatenation is exactly what it looks like --- more people, each observed for
+one day. The tiers are nested, so that a larger tier is strictly \emph{more}
+data and never \emph{other} data: the 21{,}000-user set is the 5{,}000-user set
+plus sixteen thousand more. Over those tiers the number of events grows from
+369{,}451 to 1{,}538{,}379 and the number of available training windows from
+5{,}379 to 22{,}522, for a total of two hours fifty-one minutes of GPU time ---
+forty-two minutes per tier.
+
+Figure~\ref{fig:scaling-ladder} is the result, and it has three distinct
+regions.
+
+\input{figures/fig-scaling-ladder}
+
+\begin{description}
+  \item[Imitation, at 400 training users.] $+0.6\pt$. The model is barely
+        distinguishable from the rule it is supposed to beat.
+  \item[Generalisation, from 400 to 1{,}900.] $+0.6 \rightarrow +2.8
+        \rightarrow +3.5 \rightarrow +4.2\pt$. A roughly four-fold increase in
+        population buys $+3.6\pt$ of edge --- essentially the entire benefit the
+        project ever obtained from data volume.
+  \item[Saturation, from 1{,}900 to 21{,}000.] $+4.3$, $+4.4$, $+4.7$,
+        $+4.3\pt$. A further ten-fold increase buys $+0.1\pt$, and not
+        monotonically: the best tier (15{,}000) is followed by the worst
+        (21{,}000).
+\end{description}
+
+The curve does not slow down. It stops.
+
+\section{Is the flatness real, or is it noise?}
+
+``The best tier is followed by the worst'' is the signature of noise, but a
+signature is not a test. The test used is a \emph{paired} bootstrap over the
+1{,}000 held-out users, 2{,}000 resamples: the same users are resampled for both
+tiers being compared, so the luck of the test draw cancels and what remains is
+the difference between the two models. Table~\ref{tab:bootstrap} gives it.
+
+\input{tables/tab-bootstrap}
+
+Every interval contains zero --- each individual step, and the interval spanning
+the entire ladder from 5{,}000 to 21{,}000 users, whose point estimate is
+$+0.04\pt$. Fitting a scaling law to the same points gives a slope of
+$+0.18\pt$ per ten-fold increase in users with $R^2 = 0.12$; at that slope, one
+additional point of accuracy would require on the order of 1.5 billion users.
+The correct statement is therefore not ``the gain is small'' but ``no gain was
+measured''.
+
+Nor does anything hide behind the aggregate. Table~\ref{tab:all-metrics} takes
+the same four tiers through six different metrics --- top-1, top-3, top-5, the
+cold-start regime with only 30\,\% of the history, the median user, and the
+bottom decile of users --- and the spread across the whole ladder is between
+$0.2$ and $1.3\pt$ on every line. Depth of ranking is flat. The hard decile is
+flat. Cold start is flat.
+
+\input{tables/tab-all-metrics}
+
+One line of that table is worth isolating, because it is the only place where
+scale might have been expected to pay and where the model is genuinely more
+useful: with only 30\,\% of a user's day in context, the model beats its baseline
+by $+4.6\pt$ against $+4.3\pt$ at 80\,\%. Its edge is largest on users about
+whom little is known --- which is the commercially interesting case. But that
+edge, too, is identical at 5{,}000 and at 21{,}000 users.
+Table~\ref{tab:context-scale} shows the same insensitivity across every context
+fraction at the smaller tiers: the edge is already $+4.3\pt$ when only 30\,\%
+of the day has been seen, so what the model contributes is largely independent
+of how much history it is handed.
+
+\input{tables/tab-context-scale}
+
+\section{What does move the score}
+
+Two things, and both of them are properties of the user rather than of the
+dataset.
+
+The first is how much history that user has.
+Table~\ref{tab:record-count} cuts the 1{,}000 held-out users into six equal
+groups by record count. The persistence baseline is right 17.8\,\% of the time on
+a user with fewer than thirty records and 59.8\,\% of the time on a user with
+more than a hundred and twenty --- a spread of \textbf{42.0 points}, against
+$0.3\pt$ for the entire training-size ladder.
+
+\input{tables/tab-record-count}
+
+The second is which behavioural profile they belong to. Evaluated with the
+21{,}000-user model on the same held-out users, the four groups score 62.8\,\%
+(sedentary, 22\,\% of users), 53.6\,\% (regular, 37\,\%), 43.0\,\%
+(afternoon-mobile, 22\,\%) and 40.4\,\% (morning-mobile, 18\,\%): a spread of
+\textbf{22.4 points}. And the four profiles were quantitatively identical at
+every tier, which is itself a scaling result --- 5{,}000 users already describe
+this population completely, so there is nothing left for the next sixteen
+thousand to add.
+
+Put side by side: who the user is outweighs how much data was used to train, by
+a factor of roughly seventy.
+
+\section{Why it climbs and then stops}
+
+Two mechanisms account for the two ends of the curve, and both are checkable.
+
+\paragraph{Below the threshold, copying is simply the cheapest way to lower the
+loss.} On the 7{,}745 predictions of the 100-user test set, 48\,\% ask for the
+same cell again and 52\,\% are an actual decision. Half the loss therefore falls
+without modelling anything at all. Before any of the 369 cell identifiers means
+a place, the model has to learn them as symbols; the median user offers around
+twenty-one candidate cells over sixty-four events. Meanwhile 400 training users
+split across four profiles and four bands of the day leaves roughly
+twenty-five examples per cell of that grid, and twenty-five examples cannot tell
+a habit from a coincidence. A $+0.6\pt$ edge is the signature of a model that
+has learned the format and the trivial habit and nothing about behaviour --- which
+is exactly what the ablations of Chapter~\ref{ch:groups} independently
+concluded.
+
+\paragraph{The jump happens where the smallest profile becomes estimable.} One
+mechanism fits the timing of the transition, and it is testable. The
+afternoon-mobile profile is the least populated of the four: 14\,\% of users. At
+the 400-user tier that is \textbf{56 people}; at 900 training users,
+\textbf{126}; at 1{,}900, \textbf{266}. It crosses roughly a hundred members
+exactly between the two tiers where the edge jumps from $+0.6$ to $+2.8\pt$. A
+group token can only carry information if the group has enough inhabitants for
+its rhythm to be estimated at all --- below that, the model is right to ignore
+it, which is precisely what the failed ablation showed it doing. Cross-training
+did not become a better idea at 900 users than at 400; the groups simply became
+large enough to be worth reading.
+
+\paragraph{And above the threshold, every new user is a behavioural duplicate.}
+With 113 physical sites, four profiles and a test vocabulary already fully
+covered at 5{,}000 users, the sixteen thousand additional people bring no
+behaviour the model has not already seen several hundred times.
+
+\section{Two limits of the experiment, stated plainly}
+
+The flat half of the curve was measured at \emph{constant compute}, and that is
+a deliberate choice with a consequence. Every tier received the same budget of
+optimiser steps --- enough to read 8{,}000 training examples, however many were
+available. At 5{,}000 users there are 5{,}379 windows, so the run gets through all
+of them one and a half times. At 21{,}000 users there are 22{,}522, so 8{,}000
+are read and \textbf{14{,}522 are never read even once}: 36\,\% coverage. The
+larger dataset was not added, it was spread thinner. Separately, only about
+2\,\% of the model was ever allowed to change, and that fraction was never
+increased with the data.
+
+So the defensible conclusion is \emph{``with this much training time and this
+much trainable capacity, 2{,}000 users are enough''}, not ``more users can never
+help''. Both statements would draw the same flat line, and one experiment would
+tell them apart: give the largest dataset the training time its size deserves.
+That run was not performed, and the claim is limited accordingly.
+
+\section{A parenthesis: levelling records instead of adding users}
+\label{sec:levelling}
+
+One alternative to adding users was tested in the same iteration, and it is
+instructive enough to deserve its own section --- both for what it delivers and
+for why it does not work here.
+
+The idea, adapted from a colleague's work, is that a few very long users dominate
+training: with natural sequence lengths, the top quarter of users carries
+44.3\,\% of the training positions, so a fine-tune spends most of its budget
+learning the habits of the heaviest users. The remedy is to stretch every
+sequence to exactly 200 records by repeating each existing record a few times,
+spread evenly along the sequence rather than piled up at one end.
+
+\paragraph{What it delivers is exactly what it promises.} Measured on the 400
+training users: the ratio between longest and shortest user goes from 200:19 to
+1:1; the Gini coefficient of per-user weight goes from 0.294 to \textbf{0}; the
+top decile's share of training positions falls from 21.0\,\% to 10.0\,\% and the
+top quartile's from 44.3\,\% to 25.0\,\%; and the number of training positions
+rises from 34{,}408 to 80{,}000. Every user now contributes exactly 0.25\,\% of
+the gradient. The diagnosis behind the technique is right, and the technique does
+what it was designed to do.
+
+\paragraph{What it does to the score is a warning about baselines.}
+Figure~\ref{fig:resampling} shows the outcome. The model on levelled sequences
+reaches 74.9\,\%, which is twenty-eight points above the natural-length run and
+by a wide margin the highest absolute accuracy in the whole project. On the same
+levelled sequences, the persistence baseline reaches 76.5\,\%. The gap changed
+sign: from $+3.7\pt$ to $-1.6\pt$.
+
+\input{figures/fig-resampling}
+
+The arithmetic is simple once seen. The reference protocol scores the last 20\,\%
+of each sequence --- forty predictions per user, 4{,}000 over the hundred test
+users --- and \textbf{2{,}262 of those 4{,}000 positions ask for a record that is
+a copy of the one before}. Any rule that repeats is right on all of them by
+construction. Both the model and the baseline are handed those 2{,}262 free
+answers, which is why both rose by about thirty points. On the 1{,}738 positions
+that are real decisions, the baseline scores 45.9\,\% and the model between
+42.2\,\% and 44.8\,\% depending on how many copies one assumes it misses --- below
+the baseline at either end, where the natural-length run had been $+3.7\pt$
+above it.
+
+The redistribution the technique intends is visible in the results, and it is
+paid for exactly as one would fear: split by sequence length, the shortest
+quartile of users comes out at parity ($-1.1\pt$, on sequences that are 82\,\%
+copies) while the longest quartile loses $3.6\pt$ (22\,\% copies). Weight was
+successfully transferred from the users who had the most to say to the users who
+had the least.
+
+\paragraph{Why it is not conclusive, and why it could not be.} The deeper reason
+is that copying destroys the very signal the behavioural profiles are cut on. A
+copied step never changes site, by construction. So on the training users the
+average site-change rate falls from 0.508 to 0.189; the standard deviation
+\emph{between} users --- which is what the four profiles are carved out of ---
+falls from 0.183 to 0.079, a factor of $2.3$; and the most mobile user in the
+corpus, who changed site at every step, drops from 1.00 to 0.56. The whole range
+compresses from $0.17$--$1.00$ to $0.08$--$0.56$: every user drifts towards the
+homebody profile.
+
+That is fatal for this particular pipeline, because group detection is the
+mechanism that produced the project's only real gain, and group detection needs
+between-user spread to work. Levelling the records makes the users look alike,
+which makes the profiles harder to tell apart, which disables cross-training.
+The technique is not wrong --- it fixes a real imbalance, and the imbalance it
+fixes is genuine --- but on this corpus and with this method it removes more
+information than it redistributes.
+
+\section{What the numbers said}
+
+The chapter settles three things. Data volume is a real lever over one narrow
+stretch --- roughly 500 to 2{,}000 users --- and is worth nothing above it, at
+constant compute. What difficulty there is lives in the user: 42 points across
+history lengths and 22 points across behavioural profiles, against 0.3 points
+across the whole training ladder. And levelling the amount of data per user, an
+otherwise sound idea, cannot be applied here without destroying the behavioural
+signal that makes the model work.
+
+\section{What I did next, and why}
+
+What remains open after this is no longer a question of volume. Every
+experiment in this report predicts the end of one day from its beginning, for
+people never seen before and never seen again. The natural next step is the one
+the corpus cannot express with a single day per user: predicting day $N+1$ from
+days $1 \ldots N$ for the same person. A seven-day experiment was set up for
+exactly that and did not finish --- the session crashed after five hours with
+none of the seven trainings complete --- which is where the work stands.
+
+\section{Retrospective}
+\label{sec:retro-scale}
+
+Finding the operating point --- the number of training users beyond which
+nothing further is bought --- is the result of this chapter I am most satisfied
+with, because it is a statement about the problem rather than about my pipeline.
+Knowing that the curve stops at around two thousand users turns ``get more
+data'' from an assumption into a settled question, and it is cheap knowledge:
+the eight tiers together cost under three hours of GPU time.
+
+What I would change is \emph{when} it was measured, not how. Most of the
+internship was spent improving the model on four hundred training users --- a
+tier that this very curve later placed inside the imitation regime, the one
+place where a fine-tuned model cannot be told apart from the rule it is meant to
+beat. Establishing the ladder in the first weeks would have said so
+immediately, and the work on the temporal signal and on the behavioural groups
+could then have been carried out at a tier where those mechanisms have room to
+show an effect at all.
+
+It did, at least, arrive in time to inform the final findings rather than after
+them --- and there is a reason the order was not simply wrong. The explanation
+for the threshold, that the smallest behavioural profile crosses roughly a
+hundred members exactly where the edge jumps, only exists because the profiles
+had already been built and measured. Run first, the scaling study would have
+produced the curve without the mechanism that explains it. Run last, it produced
+both.

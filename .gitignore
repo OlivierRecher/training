@@ -19,3 +19,33 @@ data/
 .ipynb_checkpoints/
 
 REPORT.md
+# LaTeX - fichiers auxiliaires et sorties de compilation
+*.aux
+*.bbl
+*.blg
+*.bcf
+*.brf
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.lot
+*.loa
+*.nav
+*.snm
+*.out
+*.toc
+*.run.xml
+*.synctex.gz
+*.synctex(busy)
+*.xdv
+*.dvi
+
+# PDF compile du rapport (regenerable via `make -C report`)
+report/main.pdf
+*.figlist
+*.makefile
+*.figlist-*
+*-blx.bib

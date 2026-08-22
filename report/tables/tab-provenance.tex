@@ -1,0 +1,28 @@
+% T13 -- Which artefact produces which headline number.
+\begin{table}[t]
+\centering\footnotesize
+\caption[Provenance of the headline numbers]{Where each figure quoted in the
+report comes from. ``Iteration'' is the weekly presentation of
+Appendix~\ref{app:timeline}.}
+\label{tab:provenance}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.5cm}ll>{\raggedright\arraybackslash}p{6.0cm}@{}}
+\toprule
+\textbf{Headline} & \textbf{Data} & \textbf{Iter.} & \textbf{Produced by} \\
+\midrule
+16.87\,\% first signal              & \sraw & 1  & single-notebook Mistral-7B QLoRA run, 100 steps \\
+48.7\,\% $\rightarrow$ 64.4\,\%     & \sraw & 2  & same notebook, best-checkpoint selection added \\
+$r=-0.971$ on the switch rate       & \srawbig & 2 & per-user analysis of the 1{,}173-user evaluation \\
+$+1.1\pt$ at 80/20                  & \sfilt & 4  & filtered-corpus training run \\
+No split beats the baseline         & \smob & 5  & one trained model, seven evaluation passes \\
+$-3.0\pt$ hour-shuffle ablation     & \smob & 6  & ablation pass over the trained checkpoint \\
+$+2.6\pt$ at 18--20h                & \smob & 6  & targeted-sampling run, full-sequence evaluation \\
+$-27.4$ pp window separation        & \smob & 7  & behavioural-group analysis of the training file \\
+$+3.7\pt$, first run over the baseline & \smob & 8 & per-group adapter routing \\
+$+4.2\pt$ at 1{,}900 training users & \stwok & 9  & scaling run on the 2{,}000-user day \\
+$-1.6\pt$ on levelled sequences     & \slev & 9 & 200-record resampling run \\
+$+4.3\pt$ flat from 5{,}000 to 21{,}000 & \seleven & 10 & four-tier scaling notebook, constant step budget \\
+Paired bootstrap intervals          & \seleven & 10 & 2{,}000 paired resamples over the test users \\
+0/7 weekday trainings               & \seleven & 11 & seven-day notebook; the session crashed after 5\,h \\
+\bottomrule
+\end{tabular}
+\end{table}

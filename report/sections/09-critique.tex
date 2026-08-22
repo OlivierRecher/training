@@ -1,0 +1,138 @@
+\chapter{Critical review and limitations}
+\label{ch:critique}
+
+The chapter retrospectives give my view of each step as it happened. This chapter
+consolidates what the work can and cannot be said to establish, and what would
+have to be done to remove each limitation. The order is from the limitations that
+bound the conclusions most tightly to those that bound them least.
+
+\section{What the work establishes, and with what confidence}
+
+\paragraph{Solid.} A fine-tuned model beats the persistence baseline by
+$+3.7\pt$ on the mobile-user corpus and by $+4.2$ to $+4.7\pt$ on the two larger
+corpora --- five independent training runs, two different held-out test sets,
+each measured against its own baseline. The effect is larger than any plausible
+noise floor and is reproduced across corpora. The mechanism is identified: the
+gain is concentrated in the behavioural profiles where repetition fails, and the
+correlation between how easy a profile is and how much the model adds to it is
+$-0.99$.
+
+\paragraph{Solid, and negative.} From roughly 2{,}000 to 21{,}000 training users
+the edge over the baseline does not grow. This is not an absence of evidence but
+a measured null: four tiers, a paired bootstrap over 1{,}000 held-out users with
+2{,}000 resamples, and every confidence interval containing zero --- including
+the one spanning the whole range, whose point estimate is $+0.04\pt$. Six
+different metrics give the same verdict.
+
+\paragraph{Well supported but not proven.} The explanation for \emph{why} the
+curve climbs between 400 and 1{,}900 users and then stops --- that the smallest
+behavioural profile crosses roughly a hundred members exactly there --- fits the
+timing and is consistent with the ablation showing the model ignoring an
+under-populated group token. It is one mechanism that fits, not a mechanism that
+has been isolated.
+
+\paragraph{Measured, but not a gain.} Levelling every user to 200 records does
+what it claims (per-user weight inequality falls to zero) and reverses the sign
+of the gap ($+3.7 \rightarrow -1.6\pt$), for a reason that is arithmetic rather
+than modelling. The diagnosis behind it is sound and the remedy is incompatible
+with this pipeline.
+
+\section{Limitations that bound the conclusions}
+
+\paragraph{One day per user, and users are never repeated.} This is the
+strongest limitation and it is a property of the corpus, not of the method. No
+user appears in two day-files, and each user is observed for exactly one day. The
+model can therefore only ever learn how a \emph{population} moves, never how one
+person moves. Every result here is a population prior, and the flatness of the
+scaling curve should be read in that light: what saturates is the description of
+a population, which is a much smaller object than the description of a person.
+Removing this limitation requires data that follows the same identifiers across
+days --- not more people.
+
+\paragraph{Day-to-day and corpus-to-corpus comparisons are deltas only.} Because
+the day-files share no users, the test population changes whenever the corpus
+does, and with it the baseline. Two runs on two corpora cannot be compared on
+absolute accuracy at all. This is why every figure in this report is a gap, and
+why the two headline numbers of the last two iterations --- $+3.7\pt$ on a
+100-user test set with a 43.1\,\% baseline, and $+4.2\pt$ on a different 100-user
+test set with a 48.2\,\% baseline --- are reported as two separate
+measurements of the same effect rather than as a progression. The clean fix is
+cheap and was not done: re-scoring the earlier checkpoint on the later test file
+is a single evaluation pass, no retraining, and it would place all the tiers on
+one axis.
+
+\paragraph{The scaling null holds at constant compute.} Every tier read 8{,}000
+training examples regardless of how many were available, so at 21{,}000 users
+14{,}522 of 22{,}522 windows were never read once. The defensible claim is
+``with this training budget, 2{,}000 users are enough'', and the experiment that
+would separate it from ``more users never help'' --- giving the largest tier the
+compute its size deserves --- was not run.
+
+\paragraph{One seed per run.} The paired bootstrap covers the sampling of the
+test users; it does not cover the variance of training itself. Differences of a
+few tenths of a point between tiers, and the $+0.8\pt$ measured on the easiest
+behavioural profile, therefore sit on an unknown noise floor. A single tier
+repeated with a different seed would establish it, at a cost of about half an
+hour.
+
+\paragraph{Part of the gain may be capacity rather than grouping.} Routing four
+behavioural groups to four adapters multiplies the trainable parameters by four.
+The control --- one adapter of four times the rank, same data --- was not run.
+The ablations of the failed run argue that the grouping carries most of the
+effect, since the model extracted nothing from the group when it arrived as a
+token, but that is an argument and not a measurement.
+
+\paragraph{Group detection fails exactly where help is most valuable.} The
+behavioural group is recovered from the context prefix with 92\,\% agreement at
+the reference protocol, and with 61\,\% and 44\,\% agreement when only half or
+30\,\% of the day is available. The mechanism therefore does not work on a cold
+start --- the case in which an operator has the least information and would most
+want a prediction.
+
+\paragraph{The metric deliberately penalises a non-movement.} The prediction
+target is the raw \cid{cell\_id}, so a handset re-attaching to another cell of
+the same antenna is scored as an error even though nobody moved --- 12.4\,\% of
+consecutive pairs are of that kind. This is a considered choice, explained in
+Chapter~\ref{ch:user}: it is the question that was asked, and changing the target
+midway would have made every earlier number incomparable. The consequence is
+that a known, small share of the reported error is not a modelling failure.
+
+\paragraph{One study area, one fortnight, one operator.} All results come from a
+single Czech region over fifteen days in March 2014, with 369 cells over 113
+sites. A denser urban area with thousands of cells, or a corpus in which
+vocabulary coverage is not already complete, could behave differently ---
+particularly the saturation result, which partly reflects how small this world
+is.
+
+\paragraph{The day-of-week experiment did not finish.} A seven-day comparison,
+one independent training per weekday, was prepared and launched; the session
+crashed after five hours with none of the seven complete. No day-of-week effect
+was measured, and the report claims none.
+
+\section{What I would do next, in order}
+
+\begin{enumerate}
+  \item \textbf{Re-score the earlier checkpoint on the later test file.} One
+        evaluation pass, no training. It is the cheapest possible improvement to
+        the report's internal consistency and it removes the only caveat that
+        affects the headline numbers.
+  \item \textbf{Repeat one tier with a different seed.} Half an hour, and it
+        establishes the noise floor below which none of the small differences in
+        this report should be read.
+  \item \textbf{Run the capacity control} --- one adapter of four times the rank
+        against four adapters --- to establish how much of the cross-training
+        gain is the grouping and how much is the extra capacity.
+  \item \textbf{Give the largest dataset the compute its size deserves}, and see
+        whether the flat half of the scaling curve is a property of the data or
+        of the budget.
+  \item \textbf{Encode the hour as a pair of sine and cosine features} rather
+        than as twenty-four independent tokens, so that neighbouring hours share
+        structure instead of being unrelated symbols. The ablation shows the
+        model already learns the ordering; this would give it for free.
+  \item \textbf{Obtain multi-day data for the same users.} This is the only item
+        on the list that changes what the problem \emph{is} rather than how well
+        it is measured, and everything the report leaves open depends on it:
+        home--activity transitions observed several times per person, day
+        $N{+}1$ predicted from days $1 \ldots N$, and any notion of
+        personalisation at all.
+\end{enumerate}

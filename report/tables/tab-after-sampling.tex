@@ -1,0 +1,24 @@
+% T6 -- What targeted transition sampling cost outside the windows (slide 46).
+\begin{table}[t]
+\centering\small
+\caption[The cost of targeted transition sampling]{The same test users and the
+same protocol, before and after the three targeted-sampling changes. The gap to
+the baseline widens at \emph{every} context fraction, and top-3/top-5 fall by
+$2.6$ to $4.8\pt$ everywhere. A single degraded row would be noise; seven
+consistent rows are a narrowed model. \smob, 100 held-out users.}
+\label{tab:after-sampling}
+\begin{tabular}{@{}lrrrcc@{}}
+\toprule
+\textbf{Context} & \textbf{Gap before} & \textbf{Gap after} & \textbf{$\Delta$ gap}
+& \textbf{top-3 before $\rightarrow$ after} & \textbf{top-5 before $\rightarrow$ after} \\
+\midrule
+30\,\% & $-0.9$ & $-1.6$ & $-0.7$ & 61.4\,\% $\rightarrow$ 58.8\,\% & 69.1\,\% $\rightarrow$ 65.7\,\% \\
+40\,\% & $-0.6$ & $-1.5$ & $-0.9$ & 61.7\,\% $\rightarrow$ 58.8\,\% & 69.0\,\% $\rightarrow$ 65.6\,\% \\
+50\,\% & $-0.7$ & $-1.1$ & $-0.4$ & 61.4\,\% $\rightarrow$ 58.8\,\% & 68.6\,\% $\rightarrow$ 65.4\,\% \\
+60\,\% & $-0.9$ & $-1.5$ & $-0.6$ & 61.7\,\% $\rightarrow$ 58.7\,\% & 68.7\,\% $\rightarrow$ 65.3\,\% \\
+70\,\% & $-0.3$ & $-1.3$ & $-1.0$ & 61.4\,\% $\rightarrow$ 58.5\,\% & 68.6\,\% $\rightarrow$ 65.2\,\% \\
+80\,\% \textit{(ref.)} & $-0.9$ & $-1.3$ & $-0.4$ & 62.3\,\% $\rightarrow$ 59.1\,\% & 70.2\,\% $\rightarrow$ 65.4\,\% \\
+90\,\% & $-2.1$ & $-2.8$ & $-0.7$ & 64.6\,\% $\rightarrow$ 60.6\,\% & 72.3\,\% $\rightarrow$ 67.7\,\% \\
+\bottomrule
+\end{tabular}
+\end{table}

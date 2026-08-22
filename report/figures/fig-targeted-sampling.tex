@@ -1,0 +1,32 @@
+% F10 -- Targeted transition sampling: the windows are won, the rest is lost.
+\begin{figure}[t]
+\centering
+\replegend{\swatch{clbase}~persistence baseline \qquad \swatch{clmodel}~model}
+\fitwidth{%
+\begin{tikzpicture}
+\begin{axis}[repbar, width=\linewidth, height=5.6cm,
+  symbolic x coords={wa,wb,wc,wd}, xtick=data,
+  xticklabels={{04--06h\\$n=128$},{18--20h\\$n=604$},{both windows\\$n=732$},{outside them\\$n=7{,}893$}},
+  /pgf/bar width=13pt,
+  ymin=28, ymax=86, ytick={30,40,...,80},
+  ylabel={top-1 accuracy (\%)},
+  x tick label style={font=\small,align=center},
+]
+\addplot[fill=clbase,draw=none]  coordinates {(wa,70.3)(wb,37.9)(wc,43.6)(wd,43.4)};
+\addplot[fill=clmodel,draw=none] coordinates {(wa,71.1)(wb,40.6)(wc,45.9)(wd,40.8)};
+\node[font=\scriptsize,text=clgain,anchor=south] at (axis cs:wa,78.5) {$+0.8\pt$};
+\node[font=\scriptsize,text=clgain,anchor=south] at (axis cs:wb,48.5) {$+2.6\pt$};
+\node[font=\scriptsize,text=clgain,anchor=south] at (axis cs:wc,53.5) {$+2.3\pt$};
+\node[font=\scriptsize,text=clloss,anchor=south] at (axis cs:wd,51.5) {$-2.6\pt$};
+\end{axis}
+\end{tikzpicture}}
+\caption[Targeted transition sampling]{The first time in the project that the
+model beat ``repeat the last cell'' anywhere --- and the price. Oversampling
+training windows that contain a transition-window event, and weighting
+$18$--$20$h four times instead of twice, buys $+2.6\pt$ at $18$--$20$h and
+$+2.3\pt$ over the two windows combined, but costs $-2.6\pt$ on the
+7{,}893 predictions that fall outside them. \smob, 100 held-out users, full
+sequence. The $04$--$06$h result rests on 128 predictions and should be read as
+``not worse'' rather than as a win.}
+\label{fig:targeted-sampling}
+\end{figure}

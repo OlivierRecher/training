@@ -1,0 +1,65 @@
+% F5 -- The context/target split, teacher forcing, and how top-k is scored.
+\begin{figure}[t]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  ar/.style={-{Stealth[length=4pt]},clrule},
+  cand/.style={draw=clrule,fill=white,rounded corners=2pt,align=center,
+               inner sep=3pt,text width=1.9cm,font=\scriptsize},
+  hit/.style={cand,draw=clgain,fill=clgain!10},
+  ctx/.style={draw=clrule,fill=clsoft,rounded corners=2pt,inner sep=4pt,
+              font=\scriptsize,text width=2.8cm,align=center},
+  prd/.style={draw=clmodel,fill=clmodel!8,rounded corners=2pt,inner sep=4pt,
+              font=\scriptsize,text width=2.0cm,align=center},
+]
+% ---- (a) the split ------------------------------------------------------
+\node[anchor=west,font=\footnotesize\bfseries] at (0,0.95) {(a) One user's day, cut once};
+\fill[clmodel!22] (0,0) rectangle (11.1,0.62);
+\fill[clink!25]  (11.1,0) rectangle (13.9,0.62);
+\draw[clrule] (0,0) rectangle (13.9,0.62);
+\node[font=\footnotesize] at (5.55,0.31) {\textbf{CONTEXT} --- 80\,\% of the events, given to the model};
+\node[font=\footnotesize] at (12.5,0.31) {\textbf{TARGET} --- 20\,\%};
+\node[font=\scriptsize,anchor=north,text=clrule] at (6.95,-0.08)
+  {the \emph{context fraction} is the position of this cut; it is swept from 30\,\% to 90\,\% in several experiments};
+
+% ---- (b) teacher forcing ------------------------------------------------
+\node[anchor=west,font=\footnotesize\bfseries] at (0,-1.15)
+  {(b) Scoring, one position at a time --- the model never sees the future, nor its own mistakes};
+\begin{scope}[yshift=-1.55cm]
+  \node[ctx] (b0) at (2.4,-0.35)  {given $c_0$};
+  \node[prd] (p0) at (5.4,-0.35)  {predict $c_1$};
+  \node[ctx] (b1) at (2.4,-1.10)  {given $c_0\,c_1$};
+  \node[prd] (p1) at (5.4,-1.10)  {predict $c_2$};
+  \node[ctx] (b2) at (2.4,-1.85)  {given $c_0\,c_1\,c_2$};
+  \node[prd] (p2) at (5.4,-1.85)  {predict $c_3$};
+  \draw[ar] (b0) -- (p0); \draw[ar] (b1) -- (p1); \draw[ar] (b2) -- (p2);
+  \node[font=\scriptsize,anchor=west,text width=6.0cm,align=left] at (7.1,-1.10)
+    {At position $i$ the model is handed the \emph{real} history
+     $c_0 \ldots c_{i-1}$ and must produce $c_i$. The persistence baseline is
+     scored on exactly the same positions, and simply answers $c_{i-1}$.};
+\end{scope}
+
+% ---- (c) top-k ----------------------------------------------------------
+\node[anchor=west,font=\footnotesize\bfseries] at (0,-4.25) {(c) The same prediction read at three depths};
+\begin{scope}[yshift=-5.35cm]
+  \node[cand] (k1) at (0.95,0) {\#1\\ \cid{UKVBER101}\\ 52\,\%};
+  \node[cand] (k2) at (3.25,0) {\#2\\ \cid{UKVTGM104}\\ 23\,\%};
+  \node[hit]  (k3) at (5.55,0) {\#3\\ \cid{BKVPAN1}\\ 13\,\%};
+  \node[cand] (k4) at (7.85,0) {\#4\\ \cid{UKVDVO104}\\ 7\,\%};
+  \node[cand] (k5) at (10.15,0){\#5\\ \cid{BKVBOH1}\\ 5\,\%};
+  \node[font=\scriptsize,text=clgain,anchor=south] at (5.55,0.52) {$\uparrow$ the cell actually visited};
+  \node[font=\scriptsize,anchor=west] at (11.5,0.30) {\textbf{top-1} \ \textcolor{clloss}{wrong}};
+  \node[font=\scriptsize,anchor=west] at (11.5,0.00) {\textbf{top-3} \ \textcolor{clgain}{right}};
+  \node[font=\scriptsize,anchor=west] at (11.5,-0.30){\textbf{top-5} \ \textcolor{clgain}{right}};
+\end{scope}
+\end{tikzpicture}}
+\caption[The evaluation protocol]{The evaluation protocol, which never changes
+across the report. (a)~Each user's day is cut once into a context prefix and a
+target suffix; the model is trained on the prefix only. (b)~At scoring time the
+model predicts position $i$ from positions $0\ldots i-1$ of the \emph{real}
+history, so it can neither see the future nor drift on its own errors --- and
+the baseline is scored on the very same positions. (c)~The same ranked output
+gives top-1, top-3 and top-5; the example is the one used in the weekly
+presentations.}
+\label{fig:protocol}
+\end{figure}

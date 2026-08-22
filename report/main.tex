@@ -1,0 +1,65 @@
+\documentclass[12pt,a4paper]{report}
+\input{preamble}
+
+\begin{document}
+
+% ============================== TITLE PAGE ==============================
+\begin{titlepage}
+\centering
+\vspace*{1.2cm}
+{\small\scshape Institut Mines-T\'el\'ecom --- SIO\par}
+{\small Second-year engineering internship (\emph{Stage 2A})\par}
+\vspace{2.2cm}
+{\LARGE\bfseries Predicting the Next Cell of a Mobile-Network User\\[6pt]
+with a Fine-Tuned Language Model\par}
+\vspace{0.9cm}
+{\large What a 2G/3G trace allows, and what the user decides\par}
+\vspace{2.6cm}
+{\large\bfseries Olivier Recher\par}
+\vspace{1.6cm}
+\begin{tabular}{@{}r@{\hspace{1.2em}}l@{}}
+\textit{Host institution} & \host\\[3pt]
+\textit{Department}       & Department of Telecommunication Engineering\\[3pt]
+\textit{Academic supervisor} & \supervisor\\[3pt]
+\textit{School supervisor}   & \rule{4.5cm}{0.4pt}\\[3pt]
+\textit{Period}           & 3 July -- 19 August\\
+\end{tabular}
+\vfill
+{\small Prague, August 2026\par}
+\end{titlepage}
+
+% ============================== ABSTRACT ==============================
+\input{sections/00-abstract}
+
+\cleardoublepage
+\pdfbookmark[0]{Contents}{toc}
+\tableofcontents
+\cleardoublepage
+\listoffigures
+\cleardoublepage
+\listoftables
+\cleardoublepage
+
+% ============================== BODY ==============================
+\input{sections/01-introduction}
+\input{sections/02-data}
+\input{sections/03-tools}
+\input{sections/04-first-runs}
+\input{sections/05-user}
+\input{sections/06-time}
+\input{sections/07-groups}
+\input{sections/08-scale}
+\input{sections/09-critique}
+\input{sections/10-conclusion}
+
+% ============================== APPENDICES ==============================
+\appendix
+\input{sections/A-timeline}
+\input{sections/B-reproducibility}
+\input{sections/C-ethics}
+\input{sections/D-glossary}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

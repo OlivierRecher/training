@@ -1,0 +1,48 @@
+% F1 -- Where this internship sits inside the team's work on the same corpus.
+\begin{figure}[t]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw=clrule,fill=clsoft,rounded corners=2pt,align=center,
+              inner sep=5pt,minimum height=1.05cm,text width=3.5cm},
+  mine/.style={box,draw=clmodel,fill=clmodel!8,text width=3.9cm},
+  corpus/.style={box,draw=clrule,fill=white,text width=11.6cm},
+  yard/.style={draw=clbase,dashed,fill=clbase!8,rounded corners=2pt,align=center,
+               inner sep=5pt,text width=11.6cm},
+  ar/.style={-{Stealth[length=4pt]},clrule,thick},
+]
+\node[corpus] (raw) {\textbf{Shared corpus} --- 15 daily files, 12--26 March 2014,
+  Karlovy Vary study area\\[1pt]
+  \footnotesize 80{,}217 to 99{,}504 users per day $\cdot$ 369 cells over 113 base stations
+  $\cdot$ one row = one user, one day};
+
+\node[box,below left=1.0cm and 0.05cm of raw.south] (nino) {\textbf{Nino}\\[1pt]
+  \footnotesize cleaning, per-day exports, mobile-user selection};
+\node[box,right=0.35cm of nino] (tb) {\textbf{Tiphain \& Benjamin}\\[1pt]
+  \footnotesize move-or-stay classification, prompting a frozen model};
+\node[box,right=0.35cm of tb] (tip) {\textbf{Tiphain}\\[1pt]
+  \footnotesize equal record count per user (200 records)};
+
+\node[mine,below=1.15cm of tb] (me) {\textbf{This internship}\\[1pt]
+  \footnotesize \emph{fine-tune} a language model to predict a user's next \cid{cell\_id}};
+
+\node[yard,below=0.75cm of me] (yardn) {\textbf{The common yardstick: the persistence baseline}
+  --- ``predict the last-seen \cid{cell\_id}'', no model at all.\\[1pt]
+  \footnotesize Every claim in this report is stated as a gap to this baseline, measured on the very same data.};
+
+\draw[ar] (raw.south) ++(-3.9,0) -- (nino.north);
+\draw[ar] (raw.south) -- (tb.north);
+\draw[ar] (raw.south) ++(3.9,0) -- (tip.north);
+\draw[ar] (nino.south) -- ++(0,-0.35) -| (me.north west);
+\draw[ar] (tb.south) -- (me.north);
+\draw[ar] (tip.south) -- ++(0,-0.35) -| (me.north east);
+\draw[ar] (me.south) -- (yardn.north);
+\end{tikzpicture}}
+\caption[Where this internship sits inside the team's work]{Where this
+internship sits. Three colleagues worked on the same 15-day corpus with
+different instruments; I inherited their cleaned exports and their reusable
+ideas, and contributed the fine-tuning branch. Everything below the dashed
+line is what makes the branches comparable: a single, model-free yardstick.}
+\label{fig:team-context}
+\end{figure}

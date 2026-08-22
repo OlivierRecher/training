@@ -1,0 +1,60 @@
+% F2 -- Anatomy of a cell_id, and why movement is measured on the site root.
+\begin{figure}[t]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  seg/.style={draw=clrule,minimum height=0.85cm,inner xsep=6pt,align=center},
+  note/.style={draw=clrule,fill=clsoft,rounded corners=2pt,align=left,
+               inner sep=5pt,text width=3.85cm,font=\footnotesize},
+  ar/.style={-{Stealth[length=4pt]},clrule},
+  chip/.style={draw=clrule,fill=white,rounded corners=2pt,inner sep=3pt,font=\footnotesize\ttfamily},
+]
+% --- the anatomy, top left ----------------------------------------------
+\node[seg,fill=clmodel!14] (t) at (1.35,0) {\ttfamily\large B};
+\node[seg,fill=clink!18,right=0pt of t] (root) {\ttfamily\large SOCHO};
+\node[seg,fill=clmove!18,right=0pt of root] (z) {\ttfamily\large 1};
+
+% --- four ids, one place, top right -------------------------------------
+\begin{scope}[xshift=8.15cm,yshift=0.42cm]
+  \node[chip] (c1) at (0,0)      {BKVCHE1};
+  \node[chip] (c2) at (1.95,0)   {BKVCHE4};
+  \node[chip] (c3) at (0,-0.62)  {UKVCHE102};
+  \node[chip] (c4) at (1.95,-0.62){UKVCHE201};
+  \node[font=\scriptsize,anchor=west,text=clrule] at (2.95,0)      {2G, sectors 1 and 4};
+  \node[font=\scriptsize,anchor=west,text=clrule] at (2.95,-0.62)  {3G, zones 1 and 2};
+  \node[draw=clink,fill=clink!12,rounded corners=2pt,inner sep=4pt,
+        font=\footnotesize,text width=5.4cm,align=center] (share) at (2.1,-1.28)
+        {all four share the site root \cid{KVCHE} = \textbf{the same location}};
+\end{scope}
+
+% --- the three notes, in a row across the page --------------------------
+\node[note,anchor=north west] (nt)    at (0,-2.15)
+  {\textbf{1. Radio technology}\\ 2G: starts with \cid{B} or \cid{D}\\
+   3G: starts with \cid{U} or \cid{V}};
+\node[note,anchor=north west] (nroot) at (5.15,-2.15)
+  {\textbf{2. Site root} --- the physical antenna. \emph{This, and only this, is a place.}};
+\node[note,anchor=north west] (nz)    at (10.3,-2.15)
+  {\textbf{3. Zone / sector} of that antenna\\ 2G: one digit \cid{0}--\cid{9}\\
+   3G: zone \cid{1}/\cid{2} + sector \cid{01}--\cid{09}};
+
+\draw[ar] (t.south)    -- ++(0,-0.75) -| (nt.north);
+\draw[ar] (root.south) -- ++(0,-0.75) -| ([xshift=-1.2cm]nroot.north);
+\draw[ar] (z.south)    -- ++(0,-0.95) -| ([xshift=-1.4cm]nz.north);
+
+% --- the 12.4% point ----------------------------------------------------
+\node[draw=clrule,fill=white,rounded corners=2pt,align=left,inner sep=6pt,
+      text width=13.9cm,font=\footnotesize,anchor=north west] at (0,-4.45)
+  {\textbf{Why this matters for every measurement in this report.} On the day
+   used for the behavioural analysis, \textbf{12.4\,\%} of all
+   consecutive-event pairs are ``same site root, different \cid{cell\_id}'':
+   the handset re-attached to another cell of the same antenna while the person
+   did not go anywhere. Counting that as movement would blur the very
+   distinction the behavioural profiles of Chapter~\ref{ch:groups} exist to
+   capture, so mobility is always computed on the site root, never on the raw
+   \cid{cell\_id}.};
+\end{tikzpicture}}
+\caption[Anatomy of a \cid{cell\_id}]{A \cid{cell\_id} is not an opaque
+location token: it is a technology letter, a site root and a zone/sector
+index. Two different \cid{cell\_id} values can denote the same physical place.}
+\label{fig:cellid-anatomy}
+\end{figure}

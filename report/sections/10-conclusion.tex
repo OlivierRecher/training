@@ -1,0 +1,67 @@
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+The question given to me at the start of this internship was whether a
+fine-tuned language model can predict the next \cid{cell\_id} of a
+mobile-network user. Eight weeks and eleven iterations later the answer is yes,
+by a modest and measurable margin, and the more interesting part of the answer is
+the conditions under which that is true.
+
+\paragraph{What the work settles.} A fine-tuned Qwen2.5-0.5B with LoRA adapters
+beats the persistence baseline by \textbf{+4.3 points} of top-1 accuracy,
+reproducibly, on two independent held-out test sets and across five training
+runs. That number is not large, and it should not be: the competitor is a
+one-line rule that is right roughly half the time on mobile users, and for five
+of the eleven iterations nothing I trained beat it at all. What made the
+difference was neither capacity nor volume but \emph{conditioning on who the
+user is} --- grouping users by the hours at which they actually change physical
+site, and routing each group to its own set of weights. That single change took
+the model from $1.8$ points below the rule to $3.7$ points above it, with the
+gain distributed in exact inverse proportion to how well repetition already
+worked for each profile ($r = -0.99$).
+
+\paragraph{The operating point is small.} Data volume is a real lever over one
+narrow stretch --- from roughly 400 to 2{,}000 training users, where the edge
+grows from $+0.6$ to $+4.2$ points --- and worth nothing above it. A further
+ten-fold increase, to 21{,}000 users, buys $+0.1\pt$, and a paired bootstrap over
+1{,}000 held-out users puts zero inside every confidence interval, including the
+one spanning the entire range. One mechanism fits the timing of that transition:
+the least populated of the four behavioural profiles crosses roughly a hundred
+members exactly between the two tiers where the score moves. Below that, a
+profile cannot be estimated and the model is right to ignore it.
+
+\paragraph{Difficulty lives in the user, not in the dataset.} This is the finding
+I would keep if I had to keep one. Twenty-two points separate the most sedentary
+behavioural profile from the most mobile one, and forty-two points separate the
+users with the shortest histories from those with the longest --- against three
+tenths of a point across the whole training-size ladder. Per-user accuracy on
+this task ranges from zero to one hundred per cent, and what predicts it is how
+repetitive that person's mobility already is. An aggregate accuracy on this
+problem is a weighted average over segments of wildly different difficulty, and
+quoting it alone hides the only part of the result that is about the model.
+
+\paragraph{And a methodological point that cost more than most of the
+modelling.} Three of the largest single improvements of the internship were not
+modelling ideas. Reading the best checkpoint instead of the last was worth
+$+15.7$ points. Recognising that the context cut is part of the ruler rather than
+of the model retired a $+1.1$-point ``result'' that was noise. Choosing a corpus
+on which the trivial rule does not already score 69\,\% is what made the question
+measurable at all. On a task whose honest yardstick is a one-line heuristic, the
+first place to look for points is the measurement.
+
+\paragraph{What it leaves open.} Everything that matters next needs different
+data rather than a better model. Every experiment here predicts the end of one
+day from its beginning, for people who are never seen again: the corpus contains
+one day per user and no user appears twice. The model can therefore only learn a
+population prior --- and a population prior, on this study area, is fully bought
+by two thousand people. Predicting day $N{+}1$ from days $1 \ldots N$ for the
+same person, observing a home--activity transition several times for one
+individual, and anything that could be called personalisation all require
+multi-day identifiers that this corpus does not have. A seven-day comparison set
+up to probe part of that question crashed after five hours without completing a
+single training, and the report claims no day-of-week effect as a result.
+
+The honest summary of the eight weeks is therefore narrow and, I think, useful:
+on single-day cellular traces, the population prior is cheap, it is measurable,
+it is worth about four points over a trivial rule, and it is exhausted at two
+thousand users. What is left is not more people. It is more days.
