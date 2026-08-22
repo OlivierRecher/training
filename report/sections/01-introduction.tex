@@ -3,11 +3,11 @@
 
 \section{Where the work took place}
 
-This report covers a second-year engineering internship (\emph{Stage 2A}) carried
-out from 3 July to 19 August in the Department of Telecommunication Engineering
-of the \host, under the supervision of \supervisor. The department holds a
-corpus of anonymised mobile-network signalling records donated by a Czech
-operator, and hosts a small group of interns analysing it from different angles.
+This report covers a second-year engineering internship carried out from
+29 June to 28 August 2026 at the \host, under the supervision of \supervisor.
+The host laboratory holds a corpus of anonymised mobile-network signalling
+records donated by a Czech operator, and hosts a small group of interns
+analysing it from different angles.
 
 \section{The corpus, and the team around it}
 
@@ -17,16 +17,20 @@ area, holding between 80{,}217 and 99{,}504 users per day, where each row record
 one person's whole day as a list of (cell, timestamp) pairs. The area is served
 by 369 distinct radio cells mounted on 113 physical base stations.
 
-Three colleagues were working on that same corpus when I arrived, with different
+Four colleagues were working on that same corpus when I arrived, with different
 instruments, and the division of labour is worth stating because it determines
-what is mine and what is not (Figure~\ref{fig:team-context}). Nino had built the
-descriptive analysis and the cleaning pipeline: per-day exports, the
-classification of home and activity cells, the selection of users who are mobile
-and present in the recording area for the whole day. Tiphain and Benjamin had
-framed the problem as a binary one --- at the next record, does this user move or
-stay? --- and were pursuing the prediction side of it by \emph{prompting} a frozen
-language model, that is, by writing better instructions rather than changing any
-weights.
+what is mine and what is not (Figure~\ref{fig:team-context}). Nino was pursuing
+his own descriptive analysis of the corpus, on questions of his own: the
+classification of home and activity cells, and the characterisation of users who
+are mobile and present in the recording area across the day. He had built
+tooling for that analysis, and he very kindly used it to produce the per-day
+extracts and the user selections I asked for, which was a considerable help and
+without which most of the experiments reported here would not have been
+practical. Tiphain and Benjamin had framed the problem as a binary one, namely
+whether a user moves or stays at the next record, and were pursuing the
+prediction side of it by \emph{prompting} a frozen language model, that is, by
+writing better instructions rather than changing any weights. Reda was working on the
+same corpus alongside them.
 
 \input{figures/fig-team-context}
 
@@ -40,15 +44,15 @@ different questions and neither supersedes the other.
 
 Why a language model at all, for a problem with no language in it? Because the
 shapes match. A trajectory is an ordered sequence of symbols drawn from a small
-closed vocabulary --- 369 cell identifiers --- and next-symbol prediction over a
+closed vocabulary, 369 cell identifiers, and next-symbol prediction over a
 sequence is precisely what these models are built to do. Adapting one to this
 task is mostly a matter of teaching it that a \cid{cell\_id} is a symbol rather
 than a string of characters, which Chapter~\ref{ch:tools} describes.
 
 What makes the question genuinely hard is not the model. It is the competitor. A
 person's phone re-attaches to the same cell over and over, so the rule
-\emph{``predict that the next cell is the last one seen''} --- one line of code,
-no parameters, no training --- is right most of the time. That rule is called the
+\emph{``predict that the next cell is the last one seen''}, one line of code,
+no parameters, no training, is right most of the time. That rule is called the
 \textbf{persistence baseline} throughout this report, and beating it is the only
 result that means anything. For five of the eleven weekly iterations, nothing I
 trained managed to.
@@ -63,27 +67,27 @@ reader can check every later claim against them.
         the same data.} An absolute accuracy on this task is close to
         meaningless: the same trivial rule scores 69.2\,\% on one population and
         43.1\,\% on another, because the populations differ. The corpus changed
-        four times over the internship --- each time because a new approach
-        needed data the previous files did not carry --- and with it the
+        four times over the internship, each time because a new approach
+        needed data the previous files did not carry, and with it the
         difficulty of the test users. Only the distance to the matching baseline
         survives that.
   \item \textbf{The score is set by the user; the model moves the residual.}
         Per-user accuracy on this task varies from 0\,\% to 100\,\%, and what
         explains it is how repetitive that person's mobility already is. The
-        model's genuine contribution is concentrated in the volatile minority ---
+        model's genuine contribution is concentrated in the volatile minority,
         which is also the minority that owns the smallest share of the
         evaluation volume. This is the finding that reorganised the second half
         of the internship, and it is why results here are reported per segment
         rather than as a single number.
 \end{enumerate}
 
-Read against those two ideas, the outcome of the eight weeks is a modest but
+Read against those two ideas, the outcome of the nine weeks is a modest but
 solid one: a fine-tuned model that clears the persistence baseline by
 \textbf{+4.3 points}, reproducibly and on two independent held-out test sets;
 an operating point of about \textbf{2{,}000 training users}, below which the model
 merely imitates the rule and above which a further ten-fold increase in data
 buys $+0.1\pt$ and no measurable gain; and a quantified statement of where the
-difficulty actually lives --- 22 points between behavioural profiles and 42
+difficulty actually lives, 22 points between behavioural profiles and 42
 points between history lengths, against 0.3 points across the entire scaling
 ladder.
 
@@ -91,7 +95,7 @@ ladder.
 
 The chapters are organised by \emph{question}, not by week. Chapter~\ref{ch:data}
 establishes what the data is and what it permits. Chapter~\ref{ch:tools} settles
-the instrument --- which fine-tuning regime, which model, which representation.
+the instrument, which fine-tuning regime, which model, which representation.
 Chapter~\ref{ch:first} sets out three measurement principles that cost more, in
 points, than most of the modelling that followed. Chapter~\ref{ch:user}
 establishes that the user, not the model, sets the score.
@@ -103,8 +107,8 @@ that requires, and finds the answer sooner than expected.
 Chapters~\ref{ch:critique} and~\ref{ch:conclusion} consolidate.
 
 Each of Chapters~\ref{ch:data} to~\ref{ch:scale} follows the same internal
-shape --- the question, what I did, what the numbers said, what I concluded, and
-what I did next and why --- and closes with a short \emph{Retrospective} giving
+shape, the question, what I did, what the numbers said, what I concluded, and
+what I did next and why, and closes with a short \emph{Retrospective} giving
 my own view of that step with hindsight. The week-by-week chronology, which the
 thematic organisation deliberately breaks, is preserved in
 Appendix~\ref{app:timeline}. Appendix~\ref{app:repro} gives the configuration of

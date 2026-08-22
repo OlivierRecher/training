@@ -8,37 +8,37 @@ contains. The question that opens this report is therefore not ``how well can a
 model predict the next cell?'' but the more modest one that has to be answered
 first: \emph{what does a record in this dataset represent, and what kind of
 claim can it support?} The answer shaped every experiment that follows, and two
-of its consequences --- that a record is not a movement, and that a
-\cid{cell\_id} is not a place --- are the reason several later results look
+of its consequences, that a record is not a movement, and that a
+\cid{cell\_id} is not a place, are the reason several later results look
 counter-intuitive at first sight.
 
 \section{The corpus}
 
 The material is a set of fifteen daily CSV exports of anonymised mobile-network
 signalling records, covering 12 to 26 March 2014 in the Karlovy Vary study area
-of north-west Bohemia --- the area referred to as \cid{cd\_142} in the working
+of north-west Bohemia, the area referred to as \cid{cd\_142} in the working
 files, and the only one of the three available zones the team used. One row is
 one user for one day, from \texttt{00:00:00} to \texttt{23:59:59}. The number
 of rows varies from 80{,}217 to 99{,}504 depending on the day; the day used for
 most of the work reported here, 12 March 2014, holds 85{,}946 users.
 
-A row begins with eight fixed metadata columns --- an anonymous user identifier,
+A row begins with eight fixed metadata columns, an anonymous user identifier,
 age, gender, an unexplained five-digit number, a behaviour class, a ``home
-cell'', an ``activity cell'' and the number of records that follow --- and then
+cell'', an ``activity cell'' and the number of records that follow, and then
 alternates \cid{cell\_id} and timestamp for as many records as that user
 produced that day. The timestamp is expressed in seconds since local midnight
 and always \emph{follows} the \cid{cell\_id} it belongs to, so that
 $\lfloor \mathit{ts}/3600 \rfloor$ gives the hour of day of that event. Only
 the user identifier, the record count and the (\cid{cell\_id}, timestamp) pairs
-are used in this work; the remaining metadata carries known aberrations --- ages
-of 1078, negative values --- and is not needed for a next-cell prediction.
+are used in this work; the remaining metadata carries known aberrations, ages
+of 1078, negative values, and is not needed for a next-cell prediction.
 
 \subsection*{A record is not a movement}
 
 This is the single most important property of the corpus, and it is easy to
 miss. A record is produced whenever a handset and a base station communicate.
 That includes the case where nothing happens at all: a base station re-signals
-to the handsets attached to it on a regular cycle --- typically every four hours
+to the handsets attached to it on a regular cycle, typically every four hours
 on 2G and every two hours on 3G. A user who spends the whole day in one place
 therefore still produces records, at a rate set by the network rather than by
 the person. Two consequences follow immediately:
@@ -60,17 +60,17 @@ against, and it is worth stating precisely before any model appears.
 \emph{The persistence baseline} is the rule ``predict that the next
 \cid{cell\_id} is the last one seen''. It contains no model, no training and no
 parameters. It is scored on exactly the same positions as the model, in exactly
-the same way --- the measurement is set out in Chapter~\ref{ch:first} --- so the
+the same way, the measurement is set out in Chapter~\ref{ch:first}, so the
 two are directly comparable.
 
-Its value is not a constant --- and this is the second thing that is easy to
+Its value is not a constant, and this is the second thing that is easy to
 miss. It is a property of the data. On a day-file taken as it comes, where a
 large share of users barely move, ``repeat the last cell'' is right 69.2\,\% of
 the time. Once the corpus is restricted to users who actually move, the same
 rule falls to 45.5\,\%. Nothing about the rule changed; the population did. For
-this reason every result in this report is stated as a \textbf{gap} --- model
+this reason every result in this report is stated as a \textbf{gap}, model
 minus persistence baseline, both measured on the same users and the same scored
-positions --- and never as a bare accuracy. Whenever a chapter introduces a new
+positions, and never as a bare accuracy. Whenever a chapter introduces a new
 data regime, the value of its baseline is stated with it, and the reader should
 resist comparing an accuracy in one chapter with an accuracy in another.
 
@@ -82,7 +82,7 @@ Figure~\ref{fig:cellid-anatomy}: a letter giving the radio technology
 (\cid{B} or \cid{D} for 2G, \cid{U} or \cid{V} for 3G), a \emph{site root}
 identifying the physical antenna, and trailing digits identifying the
 zone or sector of that antenna. The study area contains \textbf{369 distinct
-cells over 113 site roots} --- 112 distinct coordinate pairs --- split into 224
+cells over 113 site roots}, 112 distinct coordinate pairs, split into 224
 2G cells and 145 3G cells. In other words, the same physical mast appears in the
 data under three or four different names.
 
@@ -91,7 +91,7 @@ data under three or four different names.
 The practical consequence is measurable. On the day used for the behavioural
 analysis of Chapter~\ref{ch:groups}, 43.6\,\% of all consecutive-event pairs
 repeat the same \cid{cell\_id} outright, 44.0\,\% are a genuine change of
-physical site --- and \textbf{12.4\,\%} fall in between: the handset re-attached
+physical site, and \textbf{12.4\,\%} fall in between: the handset re-attached
 to a different cell of the \emph{same} antenna without the person going
 anywhere (Figure~\ref{fig:transition-composition}). Counting that middle band as
 mobility would inflate every movement statistic by roughly a quarter and, worse,
@@ -122,7 +122,7 @@ later results should be read.
 \paragraph{The split is by user, and it is stratified.} Train and test users are
 disjoint: the model is graded only on people it has never seen. The assignment
 is stratified on the number of records per user rather than taken at random, so
-that the two groups have comparable sequence-length distributions --- checked
+that the two groups have comparable sequence-length distributions, checked
 with a Mann--Whitney test on the two length distributions. Without that
 precaution, a train/test split can silently hand the easier, longer users to one
 side.
@@ -161,7 +161,7 @@ the previous files did not carry. Adding the hour of day required regenerating
 the sequences with their timestamps preserved. Testing whether more users help
 required a day-file with more users. Testing whether \emph{many} more users help
 required concatenating eleven day-files. And because the day-files share no
-users at all, each regeneration produced a new set of test users --- and
+users at all, each regeneration produced a new set of test users, and
 therefore a new baseline.
 
 \input{tables/tab-datasets}
@@ -187,8 +187,8 @@ estimates of the transitions between cells that are already known.
 
 \paragraph{The end of a day is not the next day.} Every experiment in this
 report predicts the end of a user's day from its beginning. That is a legitimate
-task, but it is not the task an operator would care most about --- predicting
-tomorrow from the days before --- and the data cannot express it.
+task, but it is not the task an operator would care most about, predicting
+tomorrow from the days before, and the data cannot express it.
 
 \section{What I did next, and why}
 
@@ -205,17 +205,17 @@ feasible? That is the subject of Chapter~\ref{ch:tools}.
 \label{sec:retro-data}
 
 Looking back, the decision that mattered most in this chapter was not a
-modelling decision at all --- it was accepting that the raw day-file could not
+modelling decision at all, it was accepting that the raw day-file could not
 support the question being asked. Taken as it came, a day puts the evaluation in
 a regime where a large share of users produce a handful of records from a single
 cell: there is no history to reason over, and a one-line heuristic is right
 69.2\,\% of the time. Nothing that happens downstream of that can be measured
 properly.
 
-Moving to the cleaned, mobile and non-absent selection prepared by Nino was
+Moving to the mobile, non-absent selection Nino extracted for me was
 therefore the first real lever of the internship, and I would describe it as a
 data-quality result rather than a modelling one. It gave users with a decent
-number of records, present in the recording area across the day --- that is,
+number of records, present in the recording area across the day, that is,
 trajectories on which \emph{analysing the past in order to predict the rest} is
 a meaningful exercise at all. It cost the comfortable-looking accuracies of the
 early runs, since the baseline fell from 69.2\,\% to the mid-forties, and that

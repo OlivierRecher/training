@@ -10,7 +10,7 @@ model are actually feasible?} This chapter answers it, and states the verdict on
 each choice with the benefit of eleven iterations of hindsight. It is worth
 saying at the outset that this toolchain was decided in the first week and did
 not change afterwards. What changed over the internship was the data and the
-training signal, never the instrument --- which is what makes the later
+training signal, never the instrument, which is what makes the later
 comparisons between runs meaningful.
 
 \section{How much of the model to move}
@@ -21,7 +21,7 @@ different costs, and the difference between them is not accuracy but memory.
 \begin{description}
   \item[Full fine-tuning] updates all of the model's weights. It has the
         highest ceiling in principle, and it requires holding the weights, their
-        gradients and the optimiser state in GPU memory at once --- several times
+        gradients and the optimiser state in GPU memory at once, several times
         the size of the model itself.
   \item[LoRA] (Low-Rank Adaptation, \cite{hu2022lora}) freezes the original
         weights entirely and inserts small trainable matrices alongside them.
@@ -55,14 +55,14 @@ was chosen in the first week for one property above all others: complete freedom
 over the training configuration, including the loss function itself.
 
 That property is what made the second half of the internship possible. From the
-sixth iteration onward the work depends on \emph{modifying the loss} ---
+sixth iteration onward the work depends on \emph{modifying the loss},
 weighting individual target positions according to the hour of day they fall in
 (Chapter~\ref{ch:time}), and later routing whole sequences to different adapters
 according to the behavioural group of the user (Chapter~\ref{ch:groups}).
 Neither is expressible by configuration; both require reaching into the training
 step. The one piece of TRL that survived to the end is therefore its data
-format --- each user-day stored as a short conversation, with a system message
-describing the task and an assistant message carrying the trajectory --- while
+format, each user-day stored as a short conversation, with a system message
+describing the task and an assistant message carrying the trajectory, while
 the training loop itself became a customised one.
 
 \section{Which base model}
@@ -70,8 +70,8 @@ the training loop itself became a customised one.
 
 The first real run used \textbf{Mistral-7B} \cite{jiang2023mistral}, a
 seven-billion-parameter general-purpose model, loaded in 4-bit. A first,
-deliberately small experiment --- one hundred optimiser steps, about
-thirty minutes, covering 1.2\,\% of the training data --- produced 16.87\,\%
+deliberately small experiment, one hundred optimiser steps, about
+thirty minutes, covering 1.2\,\% of the training data, produced 16.87\,\%
 next-cell accuracy, with the training loss falling from 0.902 to 0.583. As a
 signal that the pipeline worked end to end this was encouraging. A Llama model
 tried at the same scale did not even return well-formed \cid{cell\_id} values.
@@ -79,7 +79,7 @@ tried at the same scale did not even return well-formed \cid{cell\_id} values.
 Scaled up to a full run on 500 users, however, Mistral-7B spent roughly five and
 a half hours on a Colab T4 to reach a best validation accuracy of 41.1\,\% and
 then stopped improving. The same corpus given to \textbf{Qwen2.5-0.5B-Instruct}
-\cite{qwen2025} --- fourteen times smaller --- ran forty-nine epochs in about
+\cite{qwen2025}, fourteen times smaller, ran forty-nine epochs in about
 seventy-two minutes and, after the harness fixes described in
 Chapter~\ref{ch:first}, twenty-nine minutes. Mistral-7B was abandoned.
 
@@ -88,7 +88,7 @@ task is narrow. Predicting the next cell in a sequence drawn from a 369-symbol
 vocabulary requires no world knowledge, no reasoning in natural language and no
 instruction following; it requires learning the transition structure of one
 small geographical area. A seven-billion-parameter model brings capacity that
-the task cannot use, and charges for it in wall-clock time --- roughly a factor
+the task cannot use, and charges for it in wall-clock time, roughly a factor
 of twenty-three per run, which over eleven weeks is the difference between
 thirty experiments and two.
 
@@ -101,13 +101,13 @@ statement with a large consequence.
 tokenizer as dedicated tokens, so that a cell is a single symbol rather than a
 handful of sub-word fragments. Predicting the next cell then becomes a choice
 among 369 known symbols rather than the generation of a string that may or may
-not be a valid identifier --- which is precisely the failure the Llama attempt
+not be a valid identifier, which is precisely the failure the Llama attempt
 exhibited. The embeddings of these new tokens are trained alongside the
 adapters.
 
 \paragraph{One hour, one token.} From the sixth iteration each event is preceded
 by a dedicated token for its hour of day, \cid{<H00>} to \cid{<H23>}. The
-alternative --- writing the timestamp out in text --- would have cost several
+alternative, writing the timestamp out in text, would have cost several
 tokens per event and eaten the context budget that the trajectory itself needs.
 Hour granularity, rather than minute or second, was chosen for that reason:
 twenty-four learnable symbols against an unlearnable vocabulary of 86{,}400.
@@ -124,7 +124,7 @@ only on the positions where a \cid{cell\_id} has to be produced.
 Two mechanisms deserve to be named because later chapters depend on them.
 
 \paragraph{Best-checkpoint selection.} Validation accuracy on this task peaks
-early --- typically between epoch four and epoch nine --- and then declines for
+early, typically between epoch four and epoch nine, and then declines for
 tens of epochs while the training loss keeps falling. Keeping the checkpoint
 with the best validation score, instead of the one at the end of training, was
 worth $+15.7\pt$ of test top-1 on its own and cut GPU time by 60\,\%
@@ -137,13 +137,13 @@ to the hour they fall in, and training windows containing such a position could
 be drawn three times more often than the rest. Both are ways of telling the
 optimiser \emph{which} mistakes matter, without duplicating any data. They are
 the mechanism behind Chapters~\ref{ch:time} and~\ref{ch:groups}, and both turned
-out to help only where the targeted positions were genuinely the hard ones ---
+out to help only where the targeted positions were genuinely the hard ones,
 which is the subject of those chapters.
 
 \section{Compute, and analysis}
 
 All reported runs were trained on Google Colab, on a T4 or L4 GPU, under the
-constraint of a daily free quota --- which is why the experiment schedule is
+constraint of a daily free quota, which is why the experiment schedule is
 organised as ``one training per iteration'' rather than as sweeps. A local
 Apple-silicon GPU was used for smoke tests only: a full training there swaps to
 a crawl, so it could validate that a notebook runs but never produce a number.
@@ -158,15 +158,17 @@ remains.
 
 \section{What I reused from my colleagues}
 
-Three pieces came from the team and are attributed as such. The per-day cleaned
-exports and the mobile, non-absent user selection are Nino's, and they are the
-data regime on which most of this report's modelling rests. The move-or-stay
-framing --- separating the steps where a user really goes somewhere from the
-steps where nothing happens --- is Tiphain and Benjamin's, and it is the idea
+Three pieces came from the team and are attributed as such. The per-day exports
+and the mobile, non-absent user selection came out of Nino's own analysis
+tooling: he ran the extraction for me whenever I needed a new regime, and those
+files are the data on which most of this report's modelling rests. That help was
+substantial, and it is worth saying that none of it was his own task. The move-or-stay
+framing, separating the steps where a user really goes somewhere from the
+steps where nothing happens, is Tiphain and Benjamin's, and it is the idea
 behind the filtering of Chapter~\ref{ch:data} and behind reporting in-window and
 out-of-window accuracy separately. The record-levelling technique tested in
-Chapter~\ref{ch:scale} is Tiphain's. Her prompting approach --- obtaining
-predictions from a frozen model through better instructions --- is the
+Chapter~\ref{ch:scale} is Tiphain's. Her prompting approach, obtaining
+predictions from a frozen model through better instructions, is the
 complementary branch of the same problem, and I did not take it: this internship
 is the fine-tuning branch, and the two answer different questions rather than
 competing.
@@ -177,9 +179,9 @@ Table~\ref{tab:tools} collects every tool with its verdict.
 
 \section{What I did next, and why}
 
-With the instrument fixed --- QLoRA adapters on a small base model, a
+With the instrument fixed, QLoRA adapters on a small base model, a
 Hugging Face training loop I could modify, dedicated tokens for cells and hours,
-and best-checkpoint selection --- the first real experiments could run. The
+and best-checkpoint selection, the first real experiments could run. The
 question they had to answer was the crudest possible version of the project's
 question: does a fine-tuned model beat ``repeat the last cell'' at all? The
 answer, for four iterations, was no.
@@ -190,7 +192,7 @@ answer, for four iterations, was no.
 The change I would highlight from this chapter is not a modelling idea at all.
 Evaluating the \emph{best} checkpoint instead of the last one was one of the
 first things I put in place, and it was worth $+15.7\pt$ of test top-1 on its
-own --- more than anything that came after it. Doing it early was the right
+own, more than anything that came after it. Doing it early was the right
 call, and not only for the points it bought: from that moment on, every number
 in the project is the best score the training actually reached, rather than an
 artefact of wherever the run happened to stop. Two runs are always compared at

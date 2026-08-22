@@ -19,40 +19,40 @@ eleven iterations, not the state of the art.}
 \bottomrule
 \endlastfoot
 \multicolumn{4}{@{}l}{\textit{How much of the model to move}}\\
-Full fine-tuning & Update every weight; the highest ceiling & Evaluated on paper only & \textbf{Rejected} --- VRAM out of reach on a free GPU \\
-LoRA & Small trainable adapters, base frozen & The training mechanism of every run from the second iteration on & \textbf{Kept} --- 2\,\% of the model ever changed \\
+Full fine-tuning & Update every weight; the highest ceiling & Evaluated on paper only & \textbf{Rejected}, VRAM out of reach on a free GPU \\
+LoRA & Small trainable adapters, base frozen & The training mechanism of every run from the second iteration on & \textbf{Kept}, 2\,\% of the model ever changed \\
 QLoRA (4-bit) & LoRA on a quantised base & The only way to load Mistral-7B at all & \textbf{Kept}, then made irrelevant by the choice of a 0.5B base \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{Libraries}}\\
 HF Transformers & Models, tokenizers, training loop & Everything & \textbf{Kept} \\
-PEFT & LoRA adapters, and training only the new token embeddings & Adapters plus the 369 cell and 24 hour embeddings & \textbf{Kept} --- essential \\
+PEFT & LoRA adapters, and training only the new token embeddings & Adapters plus the 369 cell and 24 hour embeddings & \textbf{Kept}, essential \\
 TRL & Conversational supervised fine-tuning & Its ChatML data format shaped every data file & \textbf{Format kept}, trainer not: the loss had to be weighted per position \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{Base models}}\\
-Mistral-7B-v0.1 & 7B general-purpose model & First real run & \textbf{Abandoned} --- $\approx$5.5\,h for a best validation of 41.1\,\% and no gain \\
-Qwen2.5-0.5B-In\-struct & 0.5B model, $14\times$ smaller & Every run after the second iteration & \textbf{Kept} --- $\approx$29 min, and the task needs no world knowledge \\
+Mistral-7B-v0.1 & 7B general-purpose model & First real run & \textbf{Abandoned}, $\approx$5.5\,h for a best validation of 41.1\,\% and no gain \\
+Qwen2.5-0.5B-In\-struct & 0.5B model, $14\times$ smaller & Every run after the second iteration & \textbf{Kept}, $\approx$29 min, and the task needs no world knowledge \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{Representation}}\\
-Dedicated cell tokens & One \cid{cell\_id} = one token & 369 added to the vocabulary & \textbf{Kept} --- turns the prediction into an argmax over the cells \\
-Dedicated hour tokens & One hour = one token & \cid{<H00>}\dots\cid{<H23>}, one per event & \textbf{Kept} --- 1 token per event leaves the context window for history \\
+Dedicated cell tokens & One \cid{cell\_id} = one token & 369 added to the vocabulary & \textbf{Kept}, turns the prediction into an argmax over the cells \\
+Dedicated hour tokens & One hour = one token & \cid{<H00>}\dots\cid{<H23>}, one per event & \textbf{Kept}, 1 token per event leaves the context window for history \\
 Behavioural group token & Condition the whole sequence & Prepended, then replaced by adapter routing & \textbf{Kept, but only once routed} (Chapter~\ref{ch:groups}) \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{Training discipline}}\\
-Weighted loss & Make some positions matter more & Transition-window targets & \textbf{Kept} --- works, but only where the window is right \\
-Weighted sampler ($\times3$) & Draw hard windows more often & Windows containing a transition & \textbf{Kept, with a cost} --- wins in-window, loses outside \\
+Weighted loss & Make some positions matter more & Transition-window targets & \textbf{Kept}, works, but only where the window is right \\
+Weighted sampler ($\times3$) & Draw hard windows more often & Windows containing a transition & \textbf{Kept, with a cost}, wins in-window, loses outside \\
 Gradient accumulation & Fit an effective batch on a T4 & All runs & \textbf{Kept} \\
-Early stopping + best checkpoint & Keep the peak, not the last epoch & All runs & \textbf{Kept} --- the single largest one-step gain of the internship \\
+Early stopping + best checkpoint & Keep the peak, not the last epoch & All runs & \textbf{Kept}, the single largest one-step gain of the internship \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{Compute and analysis}}\\
 Google Colab (T4 / L4) & Cloud GPU & Every reported run & \textbf{Kept}, under a daily free quota \\
-Local Apple MPS & Laptop GPU & Smoke tests only & \textbf{Kept for smoke tests} --- full training swaps to a crawl \\
+Local Apple MPS & Laptop GPU & Smoke tests only & \textbf{Kept for smoke tests}, full training swaps to a crawl \\
 pandas, scikit-learn & Sampling and the stratified user split & Split stratified on record count & \textbf{Kept} \\
 scipy & Length-balance check between train and test & Mann--Whitney test on the split & \textbf{Kept} \\
-Paired bootstrap & Is a difference real? & 2{,}000 resamples over the test users & \textbf{Kept} --- decisive in Chapter~\ref{ch:scale} \\
+Paired bootstrap & Is a difference real? & 2{,}000 resamples over the test users & \textbf{Kept}, decisive in Chapter~\ref{ch:scale} \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{Reused from colleagues}}\\
-Nino's per-day exports & Cleaned, mobile-user day-files & \smob, \stwok, \seleven & \textbf{Reused as-is} \\
+Nino's extracts & Mobile-user day-files, pulled with his own analysis tooling & \smob, \stwok, \seleven & \textbf{Used as delivered} \\
 Tiphain \& Benjamin's move-or-stay dataset & Separate the steps that are decisions & Motivated the filtering behind \sfilt and \smob & \textbf{Reused as an idea} \\
-Tiphain's prompting approach & Predict with a frozen model & Not taken --- the complementary branch & \textbf{Not adopted}, and rightly so: different tool, different question \\
+Tiphain's prompting approach & Predict with a frozen model & Not taken, the complementary branch & \textbf{Not adopted}, and rightly so: different tool, different question \\
 Tiphain's 200-record resampling & Give every user equal weight & Tested as \slev & \textbf{Diagnosis right, remedy harmful} (Chapter~\ref{ch:scale}) \\
 \end{longtable}}

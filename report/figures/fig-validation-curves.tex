@@ -12,7 +12,7 @@
   no markers, title style={yshift=2pt},
 ]
 % ---------- (a) D1, unfiltered day, 500 users, 49 epochs ----------
-\nextgroupplot[title={\footnotesize (a) \sraw --- 49 epochs},
+\nextgroupplot[title={\footnotesize (a) \sraw, 49 epochs},
                xmin=0, xmax=50, xtick={1,10,20,30,40,49}]
 \addplot[clbase,dashed,thick,domain=0:50,samples=2]{69.2};
 \addplot[clmodel,thick,mark=*,mark size=0.8pt] coordinates {
@@ -26,7 +26,7 @@
 \node[font=\scriptsize,anchor=south east,text=clbase] at (axis cs:49,70) {baseline 69.2\,\%};
 
 % ---------- (b) D2, filtered, 14 epochs ----------
-\nextgroupplot[title={\footnotesize (b) \sfilt --- 14 epochs},
+\nextgroupplot[title={\footnotesize (b) \sfilt, 14 epochs},
                xmin=0, xmax=15, xtick={1,4,...,14}]
 \addplot[clbase,dashed,thick,domain=0:15,samples=2]{79.0};
 \addplot[clmodel,thick,mark=*,mark size=1pt] coordinates {
@@ -37,7 +37,7 @@
 \node[font=\scriptsize,anchor=south east,text=clbase] at (axis cs:14.5,80) {79.0\,\%};
 
 % ---------- (c) D3, mobile users, 9 epochs ----------
-\nextgroupplot[title={\footnotesize (c) \smob --- 9 epochs},
+\nextgroupplot[title={\footnotesize (c) \smob, 9 epochs},
                xmin=0, xmax=10, xtick={1,3,...,9}]
 \addplot[clbase,dashed,thick,domain=0:10,samples=2]{43.5};
 \addplot[clmodel,thick,mark=*,mark size=1pt] coordinates {
@@ -47,7 +47,7 @@
 \node[font=\scriptsize,anchor=north east,text=clbase] at (axis cs:9.7,41.5) {43.5\,\%};
 
 % ---------- (d) D3 + hour tokens, 11 epochs ----------
-\nextgroupplot[title={\footnotesize (d) \smob + hour tokens --- 11 epochs},
+\nextgroupplot[title={\footnotesize (d) \smob + hour tokens, 11 epochs},
                xmin=0, xmax=12, xtick={1,3,...,11}]
 \addplot[clbase,dashed,thick,domain=0:12,samples=2]{45.5};
 \addplot[clmodel,thick,mark=*,mark size=1pt] coordinates {
@@ -59,7 +59,7 @@
 \end{tikzpicture}}
 \caption[Validation accuracy per epoch on four datasets]{The same shape, four
 times, on four different datasets: validation top-1 climbs for a handful of
-epochs, peaks (star), then decays --- and the plateau sits \emph{below} the
+epochs, peaks (star), then decays, and the plateau sits \emph{below} the
 dashed persistence baseline of that dataset. Note that the baseline is a
 property of the data, not of the run: it is 69.2\,\% on the unfiltered day and
 43.5\,\% once the corpus is restricted to mobile users, because the users

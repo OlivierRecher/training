@@ -14,20 +14,20 @@ Base model        & Mistral-7B-v0.1 & Qwen2.5-0.5B-Instruct & Qwen2.5-0.5B-Instr
 Loading           & 4-bit (QLoRA)   & bf16 / fp32           & bf16 / fp32           & bf16 / fp32 \\
 LoRA rank $r$     & 16              & 16                    & 16                    & 16 \\
 LoRA $\alpha$     & 32              & 32                    & 32                    & 32 \\
-LoRA dropout      & ---             & 0.1                   & 0.1                   & 0.1 \\
+LoRA dropout      &,             & 0.1                   & 0.1                   & 0.1 \\
 Learning rate     & default         & $1.5\times10^{-4}$    & $1.5\times10^{-4}$    & $1.5\times10^{-4}$ \\
-Weight decay      & ---             & 0.01                  & 0.01                  & 0.01 \\
+Weight decay      &,             & 0.01                  & 0.01                  & 0.01 \\
 Max epochs        & 100 steps       & 20                    & 20                    & 20 (cosine horizon) \\
-Early stopping    & ---             & patience 8, then 4    & patience 4            & 4 evaluations \\
-Eval.\ sequence length & ---        & 512 tokens            & 512 tokens            & 512 tokens \\
-Training window   & ---             & 128 events, stride 64 & 128 events, stride 64 & 128 events, stride 64 \\
-Context fraction  & ---             & 0.8                   & 0.8                   & 0.8 \\
+Early stopping    &,             & patience 8, then 4    & patience 4            & 4 evaluations \\
+Eval.\ sequence length &,        & 512 tokens            & 512 tokens            & 512 tokens \\
+Training window   &,             & 128 events, stride 64 & 128 events, stride 64 & 128 events, stride 64 \\
+Context fraction  &,             & 0.8                   & 0.8                   & 0.8 \\
 Added tokens      & cell ids        & 369 cells             & 369 cells + 24 hours  & 369 cells + 24 hours \\
-Transition sampler & ---            & --- / $\times3$       & $\times3$             & $\times3$ \\
-Loss windows      & ---             & global (4--6, 18--20) & per behavioural group & per behavioural group \\
-Behavioural groups & ---            & ---                   & 4, detected from prefix & 4, refitted per tier \\
+Transition sampler &,            &, / $\times3$       & $\times3$             & $\times3$ \\
+Loss windows      &,             & global (4--6, 18--20) & per behavioural group & per behavioural group \\
+Behavioural groups &,            &,                   & 4, detected from prefix & 4, refitted per tier \\
 Stopping protocol & fixed steps     & epochs                & epochs                & 1{,}000 optimiser steps \\
-Seed              & ---             & 42                    & 42                    & 42 \\
+Seed              &,             & 42                    & 42                    & 42 \\
 Hardware          & Colab T4        & Colab T4              & Colab T4 / L4         & Colab GPU, 42 min/tier \\
 \bottomrule
 \end{tabular}

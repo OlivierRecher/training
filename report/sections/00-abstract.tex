@@ -4,8 +4,8 @@
 
 This report asks whether a large language model, fine-tuned on anonymised
 2G/3G mobile-network traces, can predict a user's next \cid{cell\_id} better than
-the rule ``repeat the last cell seen''. That rule --- the \emph{persistence
-baseline} --- is the yardstick for every claim made here, and it is a hard one: on
+the rule ``repeat the last cell seen''. That rule, the \emph{persistence
+baseline}, is the yardstick for every claim made here, and it is a hard one: on
 a raw day of records it is correct 69.2\,\% of the time, and for five of the
 eleven weekly iterations of this internship nothing I trained beat it.
 
@@ -13,14 +13,14 @@ The work was carried out on fifteen daily exports covering the Karlovy Vary
 study area, 369 radio cells over 113 physical base stations, one day per user and
 no user appearing in two days. Three results came out of it. First, a fine-tuned
 Qwen2.5-0.5B with LoRA adapters clears the baseline by \textbf{+4.3 points} of
-top-1 accuracy, reproducibly and on two independent held-out test sets --- and
+top-1 accuracy, reproducibly and on two independent held-out test sets, and
 what made the difference was neither model capacity nor data volume but
 conditioning on \emph{who the user is}: grouping users by the hours at which
 their physical site actually changes, and routing each group to its own weights.
 Second, the value of population size is exhausted early: the edge grows from
 $+0.6$ to $+4.2$ points between 400 and 1{,}900 training users, and a further
 ten-fold increase to 21{,}000 users buys $+0.1$ point, with zero inside every
-paired-bootstrap confidence interval. One mechanism fits the timing --- the
+paired-bootstrap confidence interval. One mechanism fits the timing, the
 smallest of the four behavioural profiles crosses roughly a hundred members
 exactly there. Third, and most robustly, difficulty lives in the user rather than
 in the dataset: 22 points separate the most sedentary behavioural profile from

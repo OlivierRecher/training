@@ -19,13 +19,13 @@ they change cell, how concentrated their visits are on one dominant cell, how
 many distinct cells they visit, how irregular the switches are, how many records
 they have. Correlating each of them against that user's own accuracy gives
 Figure~\ref{fig:concentration}(b), and the ranking is not close. The
-\textbf{cell-switch rate} --- the share of consecutive steps at which the cell
-changes --- reaches $r = -0.971$ on the 1{,}173 evaluated users of \Drawbig
+\textbf{cell-switch rate}, the share of consecutive steps at which the cell
+changes, reaches $r = -0.971$ on the 1{,}173 evaluated users of \Drawbig
 and is confirmed at $r = -0.773$ on the 100 held-out users of \Dmob, a
 different corpus with a different baseline. Normalised entropy of the visited
 cells ($-0.811$) and concentration on a dominant cell ($+0.696$) are the same
-information seen from other angles. Everything else --- the number of distinct
-cells, the number of predictions, the raw sequence length --- is below $0.24$ in
+information seen from other angles. Everything else, the number of distinct
+cells, the number of predictions, the raw sequence length, is below $0.24$ in
 absolute value.
 
 \input{figures/fig-concentration}
@@ -33,14 +33,14 @@ absolute value.
 Figure~\ref{fig:switch-rate} shows what that correlation looks like when the
 users are simply sorted by it. Splitting them into five equal groups by
 switch rate, the fifth of users who \emph{never} change cell are predicted at
-100\,\% --- by the model and by the baseline alike, because for them the task is
+100\,\%, by the model and by the baseline alike, because for them the task is
 to notice that nothing is happening. At the other end, the most volatile fifth
 plateaus at 34.4\,\%. That is a 65-point spread produced entirely by who the
 users are, on a single trained model, with no hyperparameter involved.
 
 \input{figures/fig-switch-rate}
 
-\section{Where the model does add something --- and why it does not show}
+\section{Where the model does add something, and why it does not show}
 
 The same figure carries the second half of the finding, and it is the more
 useful half. In the three easiest groups the model and the baseline are
@@ -50,8 +50,8 @@ pulls ahead, by $+3.7\pt$ and then by $+7.8\pt$. The model's contribution is
 real, it is consistent, and it lives exactly where repetition stops working.
 
 It also lives exactly where the evaluation volume is not. Those two groups hold
-18.5\,\% of the scored predictions, and the most volatile group alone --- the one
-where the model gains $7.8\pt$ --- holds 5.6\,\%. A gain of eight points on one
+18.5\,\% of the scored predictions, and the most volatile group alone, the one
+where the model gains $7.8\pt$, holds 5.6\,\%. A gain of eight points on one
 twentieth of the volume moves the aggregate by less than half a point. The
 consequence is a reporting rule rather than a modelling one, and it is applied
 from this chapter onward: an aggregate accuracy on this task is a weighted
@@ -62,7 +62,7 @@ Panel~(b) of Figure~\ref{fig:switch-rate} makes the same point on a second,
 independent corpus, and makes it less comfortably: on the 100 held-out users of
 \Dmob the model \emph{loses} to the baseline in the three easier quartiles
 ($-7.1$, $-5.3$, $-3.4\pt$) and only draws level in the most volatile one
-($+0.6\pt$). Same ordering, same mechanism, and a net negative aggregate ---
+($+0.6\pt$). Same ordering, same mechanism, and a net negative aggregate,
 which is precisely how a model can be genuinely useful on hard users and still
 be worse than a one-line rule overall.
 
@@ -70,13 +70,13 @@ be worse than a one-line rule overall.
 
 If accuracy varies that much between users, the weights matter. They are
 extremely uneven. Splitting the same 1{,}173 users into five equal groups by how
-many predictions each contributes --- Figure~\ref{fig:concentration}(a) --- the
+many predictions each contributes, Figure~\ref{fig:concentration}(a), the
 median user contributes eleven predictions while the most active tenth, 117
 people, carries \textbf{58.6\,\%} of the 54{,}173 scored predictions. Any
 aggregate on this corpus is, to a first approximation, the score of those 117
 people.
 
-The tempting conclusion --- that more records make a user more predictable ---
+The tempting conclusion, that more records make a user more predictable,
 is not supported. Accuracy is almost flat across the five volume groups, and the
 raw correlation between volume and accuracy is $r = +0.154$. What actually
 happens is that high-volume users tend to switch cell \emph{less} often
@@ -97,8 +97,8 @@ situations.
 \input{tables/tab-worst-users}
 
 The one that mattered for the rest of the internship is the last pair. Those
-users oscillate between near-twin cells of the \emph{same} antenna ---
-\cid{UKVCHE102} and \cid{UKVCHE104}, for instance --- so plain repetition scores
+users oscillate between near-twin cells of the \emph{same} antenna,
+\cid{UKVCHE102} and \cid{UKVCHE104}, for instance, so plain repetition scores
 50--67\,\% on them while the model, which tries to choose between the two names,
 scores nothing. It is being penalised for failing a distinction that carries no
 mobility whatsoever.
@@ -108,7 +108,7 @@ because it looks like an oversight and is not one. Movement, for every
 behavioural quantity in this report, is measured on the site root: that is what
 makes the profiles of Chapter~\ref{ch:groups} meaningful. The
 \emph{prediction target}, however, remains the raw \cid{cell\_id}. Two reasons.
-It is the question that was actually asked --- an operator wants to know which
+It is the question that was actually asked, an operator wants to know which
 cell will serve the user, not merely which mast. And coarsening the target to
 the site root partway through the internship would have made every number
 measured before that point incomparable with every number measured after it,
@@ -129,7 +129,7 @@ Three statements survive this chapter, and they constrain everything after it.
         minority, and that minority owns a small share of the evaluation volume,
         so the aggregate can barely move even when the contribution is real.
   \item A known share of the residual error is the model being marked wrong for
-        a distinction between two names of the same physical place --- a cost
+        a distinction between two names of the same physical place, a cost
         accepted deliberately, so that results stay comparable across the whole
         internship.
 \end{enumerate}
@@ -142,7 +142,7 @@ specifically \emph{when a user is about to move}.
 \section{What I did next, and why}
 
 The per-user diagnosis pointed at one. Scoring the same trained model with
-progressively more context, a group of users does not merely fail to improve ---
+progressively more context, a group of users does not merely fail to improve,
 it collapses, from thirty or forty per cent down to zero, precisely when the
 scored positions are the last ones of the day. A model that predicts a user
 correctly in the morning and not at all in the evening is not short of capacity;
@@ -165,7 +165,7 @@ What the measurement genuinely established is the \emph{distribution}, not the
 correlation. One fifth of the users are predicted perfectly by doing nothing at
 all; one fifth plateau at 34.4\,\%; and the aggregate is a weighted average of
 the two, with the weights concentrated in 117 people out of 1{,}173. That is the
-result that changed what I did next --- it is why every chapter after this one
+result that changed what I did next, it is why every chapter after this one
 reports per-segment numbers rather than a single accuracy, and why the search
 moved towards a signal that would help specifically at the positions where a
 user is about to move. The correlation was the headline; the histogram was the

@@ -12,7 +12,7 @@
 ]
 % ---- (a) volume quintiles ----
 \nextgroupplot[repbar, height=4.6cm,
-  title={(a) \srawbig --- five equal groups by predictions per user},
+  title={(a) \srawbig, five equal groups by predictions per user},
   symbolic x coords={va,vb,vc,vd,ve}, xtick=data,
   xticklabels={1--2,2--6,6--17,17--58,58--1{,}533},
   x tick label style={font=\scriptsize},
@@ -41,12 +41,12 @@
 \end{tikzpicture}}
 \caption[Concentration of the evaluation signal and per-user correlations]{(a)~The
 evaluation signal is extremely concentrated: the median user contributes 11
-predictions, while the most active tenth --- 117 people --- carries 58.6\,\% of
+predictions, while the most active tenth, 117 people, carries 58.6\,\% of
 the 54{,}173 predictions. Accuracy nevertheless barely moves across the groups,
 and the raw correlation with volume is weak ($r = +0.15$), so this is not a
 volume effect: heavy users simply happen to switch cell less often
 ($r = -0.15$). (b)~Ranked by strength, the only feature that really explains
-per-user accuracy is how often the user changes cell --- $r = -0.971$ on the
+per-user accuracy is how often the user changes cell, $r = -0.971$ on the
 1{,}173-user set, confirmed at $r = -0.773$ on the 100 held-out users of a
 different dataset. Features with a single bar were computed on one dataset only. Group sizes in
 panel~(a), left to right: 324, 234, 234, 234 and 117 users, carrying 353, 948,

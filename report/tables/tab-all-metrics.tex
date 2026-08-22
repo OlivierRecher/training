@@ -4,7 +4,7 @@
 \caption[Every other metric gives the same verdict]{Nothing hides behind the
 average: not the depth of the ranking, not the hard decile of users, not the
 cold-start regime. All four tiers of \seleven are scored on the same 1{,}000
-held-out users. The 2{,}000-user column is a reference point from \stwok{} --- a
+held-out users. The 2{,}000-user column is a reference point from \stwok{}, a
 ten times smaller test set whose baseline is 48.2\,\% instead of 50.2\,\%; it is
 not a fifth tier, and the spread column covers the four \seleven{} tiers only.}
 \label{tab:all-metrics}
@@ -16,8 +16,8 @@ Top-1                       & 52.4\,\% & 54.5\,\% & 54.6\,\% & 54.9\,\% & 54.5\,
 Top-3                       & 71.4\,\% & 72.0\,\% & 72.1\,\% & 72.1\,\% & 72.2\,\% & 0.2\pt \\
 Top-5                       & 78.6\,\% & 78.9\,\% & 78.9\,\% & 78.9\,\% & 79.3\,\% & 0.4\pt \\
 Top-1 with only 30\,\% of the history & 51.4\,\% & 52.3\,\% & 52.6\,\% & 52.3\,\% & 52.1\,\% & 0.5\pt \\
-Median user                 & ---      & 49.1\,\% & 49.2\,\% & 49.2\,\% & 50.3\,\% & 1.2\pt \\
-Bottom decile of users      & ---      & 14.4\,\% & 13.1\,\% & 14.4\,\% & 13.1\,\% & 1.3\pt \\
+Median user                 &,      & 49.1\,\% & 49.2\,\% & 49.2\,\% & 50.3\,\% & 1.2\pt \\
+Bottom decile of users      &,      & 14.4\,\% & 13.1\,\% & 14.4\,\% & 13.1\,\% & 1.3\pt \\
 \bottomrule
 \end{tabular}
 
@@ -25,7 +25,7 @@ Bottom decile of users      & ---      & 14.4\,\% & 13.1\,\% & 14.4\,\% & 13.1\,
 \begin{minipage}{\textwidth}\footnotesize
 $^{\dagger}$ Measured on \stwok, not \seleven. With only 30\,\% of the history
 in context the model beats its baseline by $+4.6\pt$ against $+4.3\pt$ at
-80\,\% --- its edge is largest on cold users, and that edge too is the same at
+80\,\%, its edge is largest on cold users, and that edge too is the same at
 every training-set size.
 \end{minipage}
 \end{table}

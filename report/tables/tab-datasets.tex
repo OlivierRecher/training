@@ -12,9 +12,9 @@ each time a new approach required data the previous files did not carry.}
 \toprule
 & \textbf{What it is} & \textbf{Train} & \textbf{Test} & \textbf{Records/user} & \textbf{Base.} \\
 \midrule
-\sraw  & one day-file taken as it comes (12 March 2014) & 400 & 100 & --- & 69.2\,\% \\
-\srawbig & the same day, ten times more users & 5{,}000 & 1{,}173 & --- & 81.6\,\% \\
-\sfilt  & the same day, filtered: more than 10 records and no 4-hour hole in the activity period & 400 & 100 & --- & 79.0\,\% \\
+\sraw  & one day-file taken as it comes (12 March 2014) & 400 & 100 &, & 69.2\,\% \\
+\srawbig & the same day, ten times more users & 5{,}000 & 1{,}173 &, & 81.6\,\% \\
+\sfilt  & the same day, filtered: more than 10 records and no 4-hour hole in the activity period & 400 & 100 &, & 79.0\,\% \\
 \smob  & mobile, non-absent users of one day & 400 & 100 & 19--200, mean 86.0 & 45.5 / 43.1\,\% \\
 \slev & the same users, every sequence levelled to 200 records & 400 & 100 & 200 exactly & 76.5\,\% \\
 \stwok  & a day-file sampled to 2{,}000 users & 900 / 1{,}900 & 100 & 12--200, mean 77.1 & 48.2\,\% \\
@@ -27,7 +27,7 @@ each time a new approach required data the previous files did not carry.}
 \textbf{Events.} \sraw: $\approx$31{,}000 records over the 500 users.
 \srawbig: 54{,}173 scored predictions.
 \smob: 34{,}408 training and 8{,}725 test events.
-\slev: 80{,}000 and 20{,}000 --- exactly $2.33\times$ more, all of it copies.
+\slev: 80{,}000 and 20{,}000, exactly $2.33\times$ more, all of it copies.
 \stwok: 69{,}379 (900 users) or 146{,}713 (1{,}900 users) training events,
 7{,}845 test events giving 7{,}745 predictions.
 \seleven: 369{,}451 events at the 5{,}000-user tier rising to 1{,}538{,}379 at
@@ -37,7 +37,7 @@ each test sequence; 43.1\,\% is measured on the whole sequence, position by
 position, after the evaluation was widened in the sixth iteration. Every
 \smob result is compared with the one that matches its own protocol.\\[2pt]
 \textbf{Users are never shared.} Train and test users are disjoint inside every
-regime, and the day-files share no users with each other at all --- so no user
+regime, and the day-files share no users with each other at all, so no user
 appears in two regimes by construction, and absolute scores from two regimes
 are not comparable.
 \end{minipage}

@@ -17,14 +17,14 @@
 \fill[clmodel!22] (0,0) rectangle (11.1,0.62);
 \fill[clink!25]  (11.1,0) rectangle (13.9,0.62);
 \draw[clrule] (0,0) rectangle (13.9,0.62);
-\node[font=\footnotesize] at (5.55,0.31) {\textbf{CONTEXT} --- 80\,\% of the events, given to the model};
-\node[font=\footnotesize] at (12.5,0.31) {\textbf{TARGET} --- 20\,\%};
+\node[font=\footnotesize] at (5.55,0.31) {\textbf{CONTEXT}, 80\,\% of the events, given to the model};
+\node[font=\footnotesize] at (12.5,0.31) {\textbf{TARGET}, 20\,\%};
 \node[font=\scriptsize,anchor=north,text=clrule] at (6.95,-0.08)
   {the \emph{context fraction} is the position of this cut; it is swept from 30\,\% to 90\,\% in several experiments};
 
 % ---- (b) teacher forcing ------------------------------------------------
 \node[anchor=west,font=\footnotesize\bfseries] at (0,-1.15)
-  {(b) Scoring, one position at a time --- the model never sees the future, nor its own mistakes};
+  {(b) Scoring, one position at a time, the model never sees the future, nor its own mistakes};
 \begin{scope}[yshift=-1.55cm]
   \node[ctx] (b0) at (2.4,-0.35)  {given $c_0$};
   \node[prd] (p0) at (5.4,-0.35)  {predict $c_1$};
@@ -57,7 +57,7 @@
 across the report. (a)~Each user's day is cut once into a context prefix and a
 target suffix; the model is trained on the prefix only. (b)~At scoring time the
 model predicts position $i$ from positions $0\ldots i-1$ of the \emph{real}
-history, so it can neither see the future nor drift on its own errors --- and
+history, so it can neither see the future nor drift on its own errors, and
 the baseline is scored on the very same positions. (c)~The same ranked output
 gives top-1, top-3 and top-5; the example is the one used in the weekly
 presentations.}
