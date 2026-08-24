@@ -1,0 +1,60 @@
+% F5b -- Full fine-tuning, LoRA and QLoRA, drawn side by side.
+\begin{figure}[t]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  big/.style={draw=clrule,fill=clnonsig!30,minimum width=2.5cm,minimum height=2.5cm},
+  small/.style={draw=clgain,fill=clgain!25,minimum width=2.5cm,minimum height=0.42cm},
+  smallv/.style={draw=clgain,fill=clgain!25,minimum width=0.42cm,minimum height=2.5cm},
+  q/.style={draw=clmodel,fill=clmodel!18,minimum width=2.5cm,minimum height=2.5cm},
+  lbl/.style={font=\scriptsize,text=clrule,align=center},
+]
+% ---------------- (a) full fine-tuning ----------------
+\node[big,fill=clloss!25,draw=clloss] (fa) at (0,0) {};
+\node[lbl,above=3pt of fa] {\textbf{(a) Full fine-tuning}};
+\node[lbl,below=3pt of fa,align=center] {every weight is updated\\ \textcolor{clloss}{100\,\% trainable}\\ does not fit on a free GPU};
+\node[font=\scriptsize,text=clloss] at (fa) {$W$};
+
+% ---------------- (b) LoRA ----------------
+\node[big] (fb) at (4.6,0) {};
+\node[font=\scriptsize,text=clrule] at (fb) {$W$ \emph{frozen}};
+\node[smallv] (bA) at (6.35,0.55) {};
+\node[small]  (bB) at (6.35,-1.0) {};
+\node[font=\scriptsize] at (bA) {$A$};
+\node[font=\scriptsize] at (bB) {$B$};
+\node[lbl,above=3pt of fb] {\textbf{(b) LoRA}};
+\node[lbl,below=17pt of fb,align=center,xshift=0.9cm]
+  {the frozen matrix is left alone; only the two\\ thin \textcolor{clgain}{$A$} and
+   \textcolor{clgain}{$B$} matrices are trained\\ \textcolor{clgain}{$\approx$2\,\% trainable}};
+
+% ---------------- (c) QLoRA ----------------
+\node[q] (fc) at (10.4,0) {};
+\node[font=\scriptsize,text=clmodel,align=center] at (fc) {$W$ \emph{frozen}\\ \emph{and 4-bit}};
+\node[smallv] (cA) at (12.15,0.55) {};
+\node[small]  (cB) at (12.15,-1.0) {};
+\node[font=\scriptsize] at (cA) {$A$};
+\node[font=\scriptsize] at (cB) {$B$};
+\node[lbl,above=3pt of fc] {\textbf{(c) QLoRA}, used here};
+\node[lbl,below=17pt of fc,align=center,xshift=0.9cm]
+  {same, plus the frozen matrix is stored\\ at 4 bits per number instead of 16\\
+   \textcolor{clmodel}{$\approx$1/4 of the frozen memory}};
+\end{tikzpicture}}
+
+\caption{What LoRA and QLoRA do}
+\label{fig:lora}
+\figtext{%
+A language model is a stack of large weight matrices, and adapting one can be
+done at three very different costs. (a)~The obvious way is to update every
+number in them, which means holding the weights, a gradient for each of them
+and two optimiser statistics for each of them in GPU memory at once, several
+times the size of the model. (b)~LoRA \cite{hu2022lora} leaves the big matrix
+untouched and adds two thin matrices beside it, whose product has the same
+shape; only those are trained. ``Low-rank'' means exactly that, a large change
+approximated by the product of two narrow matrices, and here it amounts to
+about 2\,\% of the parameters. (c)~QLoRA \cite{dettmers2023qlora}, the regime
+used throughout this report, additionally stores the frozen matrix at 4 bits
+per number rather than 16, which quarters what the frozen part occupies; the
+adapters themselves are still trained at full precision. The consequence is
+the one that mattered in practice: a training run fits in half an hour on a
+free cloud GPU, so eleven weeks buy thirty experiments rather than two.}
+\end{figure}

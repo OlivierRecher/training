@@ -2,30 +2,52 @@
 \addcontentsline{toc}{chapter}{Abstract}
 \thispagestyle{plain}
 
-This report asks whether a large language model, fine-tuned on anonymised
-2G/3G mobile-network traces, can predict a user's next \cid{cell\_id} better than
-the rule ``repeat the last cell seen''. That rule, the \emph{persistence
+This report asks whether a large language model,\footnote{\textbf{LLM}:
+\emph{large language model}. A neural network trained to predict the next symbol
+of a sequence. Nothing in that definition is specific to language, which is why
+one can be pointed at a trajectory; see Chapter~\ref{ch:intro}.} fine-tuned on
+anonymised 2G/3G\footnote{\textbf{2G}, \textbf{3G}: the second and third generations of mobile radio.
+Both appear in this corpus, and which one served a handset is readable from
+the cell identifier. \textbf{Fine-tuning}: changing a model's internal
+numbers with task-specific data, rather than leaving them frozen and only
+rewriting its instructions.} mobile-network traces, can
+predict a user's next \cid{cell\_id}\footnote{\cid{cell\_id}: the identifier
+of one radio cell, e.g.\ \cid{BSOCHO1}. It is a structured string, not an opaque
+token: see Figure~\ref{fig:cellid-anatomy}.} better than the rule ``repeat the
+last cell seen''. That rule, the \emph{persistence
 baseline}, is the yardstick for every claim made here, and it is a hard one: on
 a raw day of records it is correct 69.2\,\% of the time, and for five of the
 eleven weekly iterations of this internship nothing I trained beat it.
 
 The work was carried out on fifteen daily exports covering the Karlovy Vary
-study area, 369 radio cells over 113 physical base stations, one day per user and
-no user appearing in two days. Three results came out of it. First, a fine-tuned
-Qwen2.5-0.5B with LoRA adapters clears the baseline by \textbf{+4.3 points} of
-top-1 accuracy, reproducibly and on two independent held-out test sets, and
+study area, 369 radio cells over 113 physical base stations, with one day of
+records per user. Three results came out of it. First, a fine-tuned
+Qwen2.5-0.5B with LoRA\footnote{\textbf{LoRA}: \emph{Low-Rank Adaptation}, and \textbf{QLoRA} its 4-bit
+variant: fine-tuning methods that freeze the original model and train a small
+set of extra numbers, an \emph{adapter}, beside it. Figure~\ref{fig:lora}
+draws the mechanism.} adapters clears the baseline by
+\textbf{+4.3 points}\footnote{\textbf{Point} means \emph{percentage point} throughout: 43.1\,\% to 46.8\,\%
+is $+3.7$ points, not $+3.7$ percent. Every result here is a difference of two
+accuracies.} of top-1
+accuracy,\footnote{\textbf{Top-1 accuracy}: the share of predictions whose highest-ranked
+candidate is the correct \cid{cell\_id}. \textbf{Top-3} and \textbf{top-5} ask
+whether it is among the three or five highest-ranked: the same predictions
+read at three depths.} reproducibly and on two independent held-out test sets, and
 what made the difference was neither model capacity nor data volume but
 conditioning on \emph{who the user is}: grouping users by the hours at which
 their physical site actually changes, and routing each group to its own weights.
 Second, the value of population size is exhausted early: the edge grows from
 $+0.6$ to $+4.2$ points between 400 and 1{,}900 training users, and a further
-ten-fold increase to 21{,}000 users buys $+0.1$ point, with zero inside every
-paired-bootstrap confidence interval. One mechanism fits the timing, the
+ten-fold increase to 21{,}000 users buys $+0.1$ point, with zero inside every paired-bootstrap confidence
+interval.\footnote{\textbf{Paired bootstrap}: a significance test that resamples the
+\emph{same} test users for both models compared, so the luck of the draw
+cancels. An interval containing zero means the two cannot be told apart.
+Detailed in Chapter~\ref{ch:tools}.} One mechanism fits the timing, the
 smallest of the four behavioural profiles crosses roughly a hundred members
 exactly there. Third, and most robustly, difficulty lives in the user rather than
 in the dataset: 22 points separate the most sedentary behavioural profile from
-the most mobile one and 42 points separate the shortest histories from the
-longest, against three tenths of a point across the entire training-size ladder.
+the most mobile one, against three tenths of a point across the entire
+training-size ladder.
 
 A secondary finding concerns measurement rather than modelling. The three largest
 single improvements of the internship were reading the best checkpoint instead of
@@ -36,5 +58,8 @@ one-line heuristic, the measurement deserves to be audited before the
 architecture is.
 
 \vspace{1em}
-\noindent\textbf{Keywords:} human mobility prediction, call detail records, next-cell
-prediction, large language models, LoRA, QLoRA, behavioural clustering, scaling.
+\noindent\textbf{Keywords:} human mobility prediction, call detail
+records,\footnote{\textbf{CDR}: \emph{call detail record}. The row an operator
+writes whenever a handset and the network interact: a pseudonymous identifier, a
+timestamp, and the serving cell. No content of any kind.} next-cell prediction,
+large language models, LoRA, QLoRA, behavioural clustering, scaling.

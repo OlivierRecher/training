@@ -27,9 +27,12 @@
   \node[wk,anchor=west] at (0.3,-\i*1.95) {\body};
 }
 \end{tikzpicture}}
-\caption[Timeline of the eleven iterations]{The eleven weekly iterations, with
-the question each one asked and the number it produced. Read the gaps to the
-baseline, never the absolute accuracies: the corpus changed four times over the
-period, and with it the difficulty of the test users.}
+\caption{Timeline of the eleven iterations}
 \label{fig:timeline}
+\figtext{%
+The eleven weekly iterations, with the question each one asked and the number
+it produced. Read the gaps to the baseline, never the absolute accuracies: the
+corpus changed four times over the period, and with it the difficulty of the
+test users.}
+\figsource{\nbllm}{train\_cellid\_llm.ipynb}{iterations 1--8; iterations 9--11 come from \href{\repourl/\nbfinal}{\texttt{train\_cellid\_final.ipynb}} and \href{\repourl/\nbweek}{\texttt{train\_cellid\_week.ipynb}}, and every number is traced in Table~\ref{tab:provenance}}
 \end{figure}

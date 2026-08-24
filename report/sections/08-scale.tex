@@ -12,11 +12,10 @@ population size. Hence the question of this chapter: \emph{how many users does a
 model need before the population itself is described, and what happens after
 that point?}
 
-The question is unusually well posed on this corpus, for the reason established
-in Chapter~\ref{ch:data}: a user is exactly one day, and the day-files share no
-users. There is no way to give the model more \emph{history per person}. The only
-scaling axis available is more \emph{people}, which means this chapter measures
-the value of a population prior and nothing else.
+The question is unusually well posed on this corpus. Since the unit is one day
+per user (Chapter~\ref{ch:data}), the only scaling axis available is more
+\emph{people}, never more history per person, so this chapter measures the value
+of a population prior and nothing else.
 
 \section{First, a wrong way to ask it}
 
@@ -45,13 +44,17 @@ were measured, from 400 training users up to 21{,}000.
 
 The largest tiers required a corpus built for the purpose: eleven day-files of
 2{,}000 users each, concatenated into 22{,}000 user-days, of which 1{,}000 users
-are held out and never trained on. Because no user appears in two day-files, that
-concatenation is exactly what it looks like, more people, each observed for
-one day. The tiers are nested, so that a larger tier is strictly \emph{more}
-data and never \emph{other} data: the 21{,}000-user set is the 5{,}000-user set
-plus sixteen thousand more. Over those tiers the number of events grows from
-369{,}451 to 1{,}538{,}379 and the number of available training windows from
-5{,}379 to 22{,}522, for a total of two hours fifty-one minutes of GPU time,
+are held out and never trained on. That concatenation is exactly what it looks
+like, more people, each observed for one day. The tiers are nested,\footnote{\textbf{Nested tiers}: each larger training set strictly contains every
+smaller one. Without that, a difference between two tiers could be caused by
+\emph{which} users were drawn rather than by how many.} so that a larger tier is
+strictly \emph{more} data and never \emph{other} data: the 21{,}000-user set is
+the 5{,}000-user set plus sixteen thousand more. Over those tiers the number of
+events grows from 369{,}451 to 1{,}538{,}379 and the number of available training
+windows\footnote{\textbf{Training window}: one contiguous slice of a user's day, at most the
+context length, used as a single training example. A long user yields several
+and a short one just one, which is why the window count grows more slowly than
+the user count.} from 5{,}379 to 22{,}522, for a total of two hours fifty-one minutes of GPU time,
 forty-two minutes per tier.
 
 Figure~\ref{fig:scaling-ladder} is the result, and it has three distinct
@@ -86,7 +89,13 @@ the difference between the two models. Table~\ref{tab:bootstrap} gives it.
 
 Every interval contains zero, each individual step, and the interval spanning
 the entire ladder from 5{,}000 to 21{,}000 users, whose point estimate is
-$+0.04\pt$. Fitting a scaling law to the same points gives a slope of
+$+0.04\pt$. Fitting a scaling law\footnote{\textbf{Scaling law}: the observation, in the pre-training literature
+\cite{kaplan2020scaling}, that error falls as a straight line when both axes
+are plotted logarithmically. Fitting one here asks how many points the edge
+gains each time the user count is multiplied by ten. A slope of $+0.18$ means
+2{,}000 to 20{,}000 users would buy $0.18$ points, and the $R^2 = 0.12$ says
+the fitted line explains almost none of the eight measured points: the ``law''
+is fitting noise.} to the same points gives a slope of
 $+0.18\pt$ per ten-fold increase in users with $R^2 = 0.12$; at that slope, one
 additional point of accuracy would require on the order of 1.5 billion users.
 The correct statement is therefore not ``the gain is small'' but ``no gain was
@@ -95,8 +104,11 @@ measured''.
 Nor does anything hide behind the aggregate. Table~\ref{tab:all-metrics} takes
 the same four tiers through six different metrics, top-1, top-3, top-5, the
 cold-start regime with only 30\,\% of the history, the median user, and the
-bottom decile of users, and the spread across the whole ladder is between
-$0.2$ and $1.3\pt$ on every line. Depth of ranking is flat. The hard decile is
+bottom decile\footnote{\textbf{Bottom decile}: the tenth of users on whom the
+model scores worst. Reporting it separately is a guard against a model that lifts
+the average while abandoning the users it already served badly.} of users, and
+the spread across the whole ladder is between $0.2$ and $1.3\pt$ on every
+line. Depth of ranking is flat. The hard decile is
 flat. Cold start is flat.
 
 \input{tables/tab-all-metrics}
@@ -116,19 +128,8 @@ of how much history it is handed.
 
 \section{What does move the score}
 
-Two things, and both of them are properties of the user rather than of the
-dataset.
-
-The first is how much history that user has.
-Table~\ref{tab:record-count} cuts the 1{,}000 held-out users into six equal
-groups by record count. The persistence baseline is right 17.8\,\% of the time on
-a user with fewer than thirty records and 59.8\,\% of the time on a user with
-more than a hundred and twenty, a spread of \textbf{42.0 points}, against
-$0.3\pt$ for the entire training-size ladder.
-
-\input{tables/tab-record-count}
-
-The second is which behavioural profile they belong to. Evaluated with the
+One thing does, and it is a property of the user rather than of the dataset:
+which behavioural profile they belong to. Evaluated with the
 21{,}000-user model on the same held-out users, the four groups score 62.8\,\%
 (sedentary, 22\,\% of users), 53.6\,\% (regular, 37\,\%), 43.0\,\%
 (afternoon-mobile, 22\,\%) and 40.4\,\% (morning-mobile, 18\,\%): a spread of
@@ -137,8 +138,8 @@ every tier, which is itself a scaling result, 5{,}000 users already describe
 this population completely, so there is nothing left for the next sixteen
 thousand to add.
 
-Put side by side: who the user is outweighs how much data was used to train, by
-a factor of roughly seventy.
+Put side by side, 22.4 points against 0.3: who the user is outweighs how much
+data was used to train, by a factor of roughly seventy.
 
 \section{Why it climbs and then stops}
 
@@ -201,14 +202,21 @@ for why it does not work here.
 
 The idea, adapted from a colleague's work, is that a few very long users dominate
 training: with natural sequence lengths, the top quarter of users carries
-44.3\,\% of the training positions, so a fine-tune spends most of its budget
+44.3\,\% of the training positions,\footnote{\textbf{Training position}: one scored \cid{cell\_id} in the training data.
+A user with 200 events contributes about 200 of them and a user with 20
+contributes 20, so long users dominate the gradient simply by being long.} so a fine-tune spends most of its budget
 learning the habits of the heaviest users. The remedy is to stretch every
 sequence to exactly 200 records by repeating each existing record a few times,
 spread evenly along the sequence rather than piled up at one end.
 
 \paragraph{What it delivers is exactly what it promises.} Measured on the 400
 training users: the ratio between longest and shortest user goes from 200:19 to
-1:1; the Gini coefficient of per-user weight goes from 0.294 to \textbf{0}; the
+1:1; the Gini coefficient\footnote{\textbf{Gini coefficient}: a measure of inequality borrowed from economics,
+from 0 (everyone equal) to 1 (one member holds everything), applied here to
+how many training positions each user contributes. Four users contributing
+$25, 25, 25, 25$ give 0; $10, 20, 30, 40$ give 0.25; $1, 1, 1, 97$ give
+roughly 0.72. The measured 0.294 says the corpus is moderately unequal.} of per-user weight
+goes from 0.294 to \textbf{0}; the
 top decile's share of training positions falls from 21.0\,\% to 10.0\,\% and the
 top quartile's from 44.3\,\% to 25.0\,\%; and the number of training positions
 rises from 34{,}408 to 80{,}000. Every user now contributes exactly 0.25\,\% of
@@ -245,9 +253,12 @@ had the least.
 \paragraph{Why it is not conclusive, and why it could not be.} The deeper reason
 is that copying destroys the very signal the behavioural profiles are cut on. A
 copied step never changes site, by construction. So on the training users the
-average site-change rate falls from 0.508 to 0.189; the standard deviation
-\emph{between} users, which is what the four profiles are carved out of,
-falls from 0.183 to 0.079, a factor of $2.3$; and the most mobile user in the
+average site-change rate falls from 0.508 to 0.189; the standard
+deviation\footnote{\textbf{Standard deviation}: the typical distance of a value from its
+population's average, in the same units. It matters here because clustering
+can only separate users who differ: at $0.079$ instead of $0.183$, the four
+profiles overlap.} \emph{between} users, which is what the four profiles are
+carved out of, falls from 0.183 to 0.079, a factor of $2.3$; and the most mobile user in the
 corpus, who changed site at every step, drops from 1.00 to 0.56. The whole range
 compresses from $0.17$--$1.00$ to $0.08$--$0.56$: every user drifts towards the
 homebody profile.
@@ -264,21 +275,18 @@ information than it redistributes.
 
 The chapter settles three things. Data volume is a real lever over one narrow
 stretch, roughly 500 to 2{,}000 users, and is worth nothing above it, at
-constant compute. What difficulty there is lives in the user: 42 points across
-history lengths and 22 points across behavioural profiles, against 0.3 points
-across the whole training ladder. And levelling the amount of data per user, an
+constant compute. What difficulty there is lives in the user: 22 points across
+behavioural profiles, against 0.3 points across the whole training ladder. And levelling the amount of data per user, an
 otherwise sound idea, cannot be applied here without destroying the behavioural
 signal that makes the model work.
 
 \section{What I did next, and why}
 
-What remains open after this is no longer a question of volume. Every
-experiment in this report predicts the end of one day from its beginning, for
-people never seen before and never seen again. The natural next step is the one
-the corpus cannot express with a single day per user: predicting day $N+1$ from
-days $1 \ldots N$ for the same person. A seven-day experiment was set up for
-exactly that and did not finish, the session crashed after five hours with
-none of the seven trainings complete, which is where the work stands.
+What remains open after this is no longer a question of volume. Having settled
+how many users a within-day model needs, the natural next step is to ask whether
+the day of the week changes anything. A seven-day experiment was set up for
+exactly that and did not finish, the session crashed after five hours with none
+of the seven trainings complete, which is where the work stands.
 
 \section{Retrospective}
 \label{sec:retro-scale}

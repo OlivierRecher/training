@@ -20,7 +20,7 @@
 \addplot[fill=clmodel,draw=none] coordinates {(nat,46.8)(lev,74.9)};
 \node[font=\small,text=clgain,anchor=south] at (axis cs:nat,60) {$+3.7\pt$};
 \node[font=\small,text=clloss,anchor=south] at (axis cs:lev,102) {$-1.6\pt$};
-
+%
 % ---- (b) the arithmetic of copying ----
 \nextgroupplot[title={(b) what the 4{,}000 scored positions are},
   symbolic x coords={cop,real},
@@ -33,17 +33,28 @@
 \node[font=\scriptsize,text=clloss,anchor=south,xshift=-11pt] at (axis cs:real,58) {$-3.7\pt$};
 \end{groupplot}
 \end{tikzpicture}}
-\caption[Levelling every user to 200 records]{Stretching every sequence to
-exactly 200 records makes the score look spectacular and the gap turn negative.
-(a)~74.9\,\% is 28 points above the natural-length run, but the persistence
-baseline on the same levelled sequences reaches 76.5\,\%: the gap changes sign,
-from $+3.7\pt$ to $-1.6\pt$. (b)~The reason is arithmetic, not modelling,
-56.5\,\% of the 4{,}000 scored positions (100 users $\times$ the last 40 of
-their 200 records) ask for a record copied from the one before, and any rule
-that repeats is right on all of them by construction. On the positions that are
-real decisions the model sits $-3.7\pt$ under the baseline. The model bar in
-panel~(b) is derived from the reported 74.9\,\%, not re-measured: it assumes the
-model never misses a copy, and rises to 44.8\,\% if it misses 2\,\% of them,
-both ends stay below the baseline.}
+\caption{Levelling every user to 200 records}
 \label{fig:resampling}
+\figtext{%
+Stretching every sequence to exactly 200 records makes the score look
+spectacular and turns the gap negative. (a)~Each run against \emph{its own}
+persistence baseline, natural lengths on the left and levelled sequences on
+the right; only the comparison inside a pair means anything. The levelled
+model reaches 74.9\,\%, twenty-eight points above the natural-length run and
+by a wide margin the highest absolute accuracy in the whole project, but the
+baseline on those same sequences reaches 76.5\,\% and the gap changes sign,
+from $+3.7\pt$ to $-1.6\pt$. (b)~The reason is arithmetic rather than
+modelling. Of the 4{,}000 scored positions (100 users $\times$ the last 40 of
+their 200 records), 2{,}262 ask for a record copied from the one before, and
+any rule that repeats is right on all of them by construction; both the model
+and the baseline are handed those free answers, which is why both rose by
+about thirty points. On the 1{,}738 positions that are real decisions the
+baseline scores 45.9\,\% against the model's 42.2\,\%. The technique does
+deliver what it promises, the longest-to-shortest ratio falling from 200:19 to
+1:1 and the Gini coefficient of per-user weight to zero, but a copied step
+never changes site, so levelling compresses the between-user spread in site-change rate by a factor of $2.3$ and drags every user towards the homebody
+profile, which disables the group detection the project's only real gain
+depends on. The model bar in panel~(b) is derived from the reported 74.9\,\%,
+not re-measured: it assumes the model never misses a copy, and rises to
+44.8\,\% if it misses 2\,\% of them, both ends staying below the baseline.}
 \end{figure}

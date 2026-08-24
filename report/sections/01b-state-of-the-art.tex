@@ -1,0 +1,72 @@
+\chapter{State of the art}
+\label{ch:sota}
+
+\section{The one published result this report leans on}
+\label{sec:sota-ceiling}
+
+Predicting where a person goes next is not a new question, and the literature on
+it is large. What follows is deliberately not a survey of it, for two reasons.
+The internship had eleven weeks and no access to a comparable corpus, so no
+published number here could have been reproduced or contradicted; and the
+argument the following chapters make does not need a survey. It needs one idea, stated once.
+
+The idea is the one established by Song et al.\ \cite{song2010limits}: how well a
+person's next location can be predicted is mostly a property of \emph{that
+person}, not of the predictor. A user whose day is spent in one or two cells is
+almost perfectly predictable; a user who moves between many is not, and no model
+removes that difference. Predictability, in other words, is bounded per
+individual by how spread out that individual's own history is.
+
+Everything else this chapter says is measured on the corpus of
+Chapter~\ref{ch:data}, not taken from anywhere.
+
+\section{Why that makes the trivial rule the real competitor}
+
+If predictability comes from repetition, then the rule \emph{``predict that the
+next cell is the last one seen''}, one line of code, no parameters, no
+training, is already right most of the time. On a raw day of this corpus it is
+right \textbf{69.2\,\%} of the time (Chapter~\ref{ch:data}). That rule is the
+\textbf{persistence baseline}, and it is the only yardstick used in this report.
+
+Two conventions follow from it, and they are used everywhere after this page.
+
+\paragraph{Every result is a gap, never an absolute.} The same trivial rule
+scores 69.2\,\% on one of the files used here and 43.1\,\% on another, because
+the users in them differ (Table~\ref{tab:datasets}). An absolute accuracy
+therefore describes the test set more than it describes the model. Only the
+distance to the baseline measured on the same positions survives that, so that
+is what every number in this report is.
+
+\paragraph{The interesting quantity is per segment, not on average.} If
+predictability is a property of the user, a population average hides the thing
+worth reporting. Chapters~\ref{ch:user} and~\ref{ch:groups} measure the spread
+directly: 22 points between behavioural profiles, against three tenths of a
+point across an entire training-size ladder.
+That decomposition is this report's main claim.
+
+\section{What is left open, and this report asks}
+
+Four things separate the result above from the task actually taken on here, and
+they are the questions the remaining chapters answer.
+
+\begin{enumerate}
+  \item \textbf{A cell, not a place.} Published mobility work predicts the next
+        \emph{place}: a home, a workplace, a clustered stay point. The target
+        here is the next \cid{cell\_id}, which is noisier: 12.4\,\% of
+        consecutive records change cell without anyone moving, because the
+        handset re-attached to another cell of the same antenna
+        (Chapter~\ref{ch:data}).
+  \item \textbf{A population, not an individual.} A per-individual bound is
+        estimated from a long history per person, whereas the question here is a
+        within-day one on a corpus of single days, so what can be learned is a
+        \emph{population} prior. How far that goes is measured in
+        Chapter~\ref{ch:user}.
+  \item \textbf{A language model rather than a purpose-built one.} Whether a
+        general next-symbol predictor, fine-tuned, is worth its cost on this
+        task is the question of Chapter~\ref{ch:tools} onward. Two colleagues
+        were testing the other branch on the same corpus by prompting a frozen
+        model (Chapter~\ref{ch:intro}); this report takes the fine-tuning one.
+  \item \textbf{Where the difficulty lives.} Not the aggregate score but its
+        decomposition across users, hours and behavioural profiles, in
+        Chapters~\ref{ch:user} to~\ref{ch:groups}.
+\end{enumerate}

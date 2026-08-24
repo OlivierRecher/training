@@ -20,13 +20,22 @@
 \node[font=\scriptsize,text=clloss,anchor=south] at (axis cs:wd,51.5) {$-2.6\pt$};
 \end{axis}
 \end{tikzpicture}}
-\caption[Targeted transition sampling]{The first time in the project that the
-model beat ``repeat the last cell'' anywhere, and the price. Oversampling
-training windows that contain a transition-window event, and weighting
-$18$--$20$h four times instead of twice, buys $+2.6\pt$ at $18$--$20$h and
-$+2.3\pt$ over the two windows combined, but costs $-2.6\pt$ on the
-7{,}893 predictions that fall outside them. \smob, 100 held-out users, full
-sequence. The $04$--$06$h result rests on 128 predictions and should be read as
-``not worse'' rather than as a win.}
+\caption{Targeted transition sampling}
 \label{fig:targeted-sampling}
+\figtext{%
+The first time in the project that the model beat ``repeat the last cell''
+anywhere, and the price. Four groups of scored positions from one run on the
+same 100 held-out users, with the number of predictions printed under each
+label; the persistence baseline is in grey-blue and the model in dark blue,
+and the gap is annotated above each pair. Oversampling training windows that
+contain a transition-window event, and weighting $18$--$20$h four times
+instead of twice, buys $+2.6\pt$ at $18$--$20$h and $+2.3\pt$ over the two
+windows combined. It costs $-2.6\pt$ on the 7{,}893 predictions falling
+outside them, more than ten times the in-window volume, so the aggregate is
+clearly negative. Weighting a chosen set of positions buys accuracy there and
+spends it elsewhere, which is what it is designed to do; whether the trade is
+worth making depends on the emphasised hours being the hard ones, and
+Table~\ref{tab:group-windows} shows they were not. \smob{}, 100 held-out
+users, full sequence. The $04$--$06$h result rests on 128 predictions and
+should be read as ``not worse'' rather than as a win.}
 \end{figure}

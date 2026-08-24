@@ -17,13 +17,26 @@ the population it happened. This chapter establishes that it is the second.
 The candidate features are all derivable from a user's own sequence: how often
 they change cell, how concentrated their visits are on one dominant cell, how
 many distinct cells they visit, how irregular the switches are, how many records
-they have. Correlating each of them against that user's own accuracy gives
+they have. Correlating\footnote{\textbf{Pearson correlation} $r$: how tightly two quantities move together
+across a population, between $-1$ and $+1$: \[ r \;=\; \frac{\sum_i
+(x_i-\bar{x})(y_i-\bar{y})} {\sqrt{\sum_i (x_i-\bar{x})^2}\;\sqrt{\sum_i
+(y_i-\bar{y})^2}}, \] with $x_i$ a feature of user $i$, $y_i$ that user's
+accuracy and $\bar{x},\bar{y}$ the averages. $+1$ is perfect lockstep, $-1$
+perfect opposition, $0$ no relation at all. Three users with switch rates
+$0.1, 0.5, 0.9$ and accuracies $90, 50, 10\,\%$ give $r = -1$ exactly; real
+data is never that clean, and $-0.971$ means it is close.} each of them against that user's own accuracy gives
 Figure~\ref{fig:concentration}(b), and the ranking is not close. The
 \textbf{cell-switch rate}, the share of consecutive steps at which the cell
-changes, reaches $r = -0.971$ on the 1{,}173 evaluated users of \Drawbig
+changes, reaches $r = -0.971$ on the 1{,}173 evaluated users of \Drawbig{}
 and is confirmed at $r = -0.773$ on the 100 held-out users of \Dmob, a
-different corpus with a different baseline. Normalised entropy of the visited
-cells ($-0.811$) and concentration on a dominant cell ($+0.696$) are the same
+different corpus with a different baseline. Normalised entropy\footnote{\textbf{Normalised entropy}: how spread out a user's time is over the cells
+they visit, rescaled to sit between 0 and 1. With $p_c$ the share of that
+user's events in cell $c$ and $C$ the number of distinct cells they visited,
+\[ H \;=\; \frac{-\sum_c p_c \log_2 p_c}{\log_2 C}. \] A user split evenly
+between two cells has $H = 1$, maximally spread; one spending 90\,\% of their
+time in one of the two has $H = 0.47$, concentrated and therefore easy to
+predict; $H = 0$ means they never left one cell.} of the visited cells
+($-0.811$) and concentration on a dominant cell ($+0.696$) are the same
 information seen from other angles. Everything else, the number of distinct
 cells, the number of predictions, the raw sequence length, is below $0.24$ in
 absolute value.
@@ -31,9 +44,11 @@ absolute value.
 \input{figures/fig-concentration}
 
 Figure~\ref{fig:switch-rate} shows what that correlation looks like when the
-users are simply sorted by it. Splitting them into five equal groups by
-switch rate, the fifth of users who \emph{never} change cell are predicted at
-100\,\%, by the model and by the baseline alike, because for them the task is
+users are simply sorted by it. Splitting them into five equal groups\footnote{\textbf{Quintile}: one fifth of the population, obtained by sorting users
+on some quantity and cutting the sorted list into five equal parts;
+\textbf{quartile} and \textbf{decile} are the same with four and ten. ``The
+most volatile fifth'' is a quintile, not everyone above a fixed threshold.} by switch rate, the fifth of users who \emph{never} change cell are
+predicted at 100\,\%, by the model and by the baseline alike, because for them the task is
 to notice that nothing is happening. At the other end, the most volatile fifth
 plateaus at 34.4\,\%. That is a 65-point spread produced entirely by who the
 users are, on a single trained model, with no hyperparameter involved.
@@ -60,7 +75,7 @@ the only part of the result that is about the model.
 
 Panel~(b) of Figure~\ref{fig:switch-rate} makes the same point on a second,
 independent corpus, and makes it less comfortably: on the 100 held-out users of
-\Dmob the model \emph{loses} to the baseline in the three easier quartiles
+\Dmob{} the model \emph{loses} to the baseline in the three easier quartiles
 ($-7.1$, $-5.3$, $-3.4\pt$) and only draws level in the most volatile one
 ($+0.6\pt$). Same ordering, same mechanism, and a net negative aggregate,
 which is precisely how a model can be genuinely useful on hard users and still

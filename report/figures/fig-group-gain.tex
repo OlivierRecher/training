@@ -3,7 +3,7 @@
 \centering
 \replegend{\swatch{clbase}~persistence baseline \qquad
            \swatch{clmodel}~model, group routed to its own adapter}
-\fitwidth{%
+\plotlink{\nbllm}{\fitwidth{%
 \begin{tikzpicture}
 \begin{axis}[repbar, width=\linewidth, height=5.8cm,
   symbolic x coords={G0,G1,G2,G3,MEAN}, xtick=data,
@@ -21,15 +21,30 @@
 \node[font=\small,text=clgain,anchor=south] at (axis cs:G3,36) {$+6.4$};
 \node[font=\small,text=clgain,anchor=south] at (axis cs:MEAN,49.5) {$+3.7$};
 \end{axis}
-\end{tikzpicture}}
-\caption[Per-group gain after routing the group to its own adapter]{The gain
-ranks in exactly the reverse order of the baseline: G0 is already solved by
-repetition and has almost nothing left to win, while G3, where repetition is
-right less than one time in five, gains $+6.4\pt$. The correlation between
-how easy a group is and how much the model adds to it is $-0.99$ across the
-four groups. Weighted by how many users each group actually holds, the overall
-gain is $+3.3\pt$ rather than the $+3.7\pt$ of the unweighted mean, because
-28\,\% of the population sits in the group that needs no model. \smob,
-100 held-out users, full sequence.}
+\end{tikzpicture}}}
+\caption{Per-group gain after routing the group to its own adapter}
 \label{fig:group-gain}
+\figtext{%
+The gain ranks in exactly the reverse order of the baseline. One pair of bars
+per group, plus the unweighted mean of the four, with the persistence baseline
+in grey-blue and the model in dark blue, scored on the same positions of the
+same 100 held-out users over the full sequence. Nothing separates this run
+from the one that scored $-1.8\pt$ except which weights were allowed to answer
+(Figure~\ref{fig:adapter-routing}). G0, whom repetition already predicts
+56.0\,\% of the time, gains $+0.8\pt$ and has almost nothing left to win; G3,
+whom repetition predicts less than one time in five, gains $+6.4\pt$. Across
+the four groups the correlation between how easy a group is and how much the
+model adds to it is $-0.99$. Read against Chapter~\ref{ch:user} this is the
+same finding arriving from the other direction: difficulty lives in the user,
+and a model earns its cost precisely where the trivial rule fails. Two
+qualifications belong with the headline. The $+3.7\pt$ is the unweighted mean
+over four profiles counted once each; weighted by how many users each actually
+holds it is $+3.3\pt$, which is the figure an operator would experience,
+because 28\,\% of the population sits in the group that needed no model. And
+the whole mechanism depends on the group being detectable, which
+Figure~\ref{fig:group-difficulty}(b) shows collapsing below roughly 60\,\% of
+a day of history. A third qualification, that four adapters are also four
+times the trainable capacity and the control was never run, is in
+Section~\ref{sec:retro-groups}.}
+\figsource{\nbllm}{train\_cellid\_llm.ipynb}{the per-group adapter-routing run}
 \end{figure}

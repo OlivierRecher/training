@@ -1,11 +1,7 @@
 % T6 -- What targeted transition sampling cost outside the windows (slide 46).
 \begin{table}[t]
 \centering\small
-\caption[The cost of targeted transition sampling]{The same test users and the
-same protocol, before and after the three targeted-sampling changes. The gap to
-the baseline widens at \emph{every} context fraction, and top-3/top-5 fall by
-$2.6$ to $4.8\pt$ everywhere. A single degraded row would be noise; seven
-consistent rows are a narrowed model. \smob, 100 held-out users.}
+\caption{The cost of targeted transition sampling}
 \label{tab:after-sampling}
 \begin{tabular}{@{}lrrrcc@{}}
 \toprule
@@ -21,4 +17,12 @@ consistent rows are a narrowed model. \smob, 100 held-out users.}
 90\,\% & $-2.1$ & $-2.8$ & $-0.7$ & 64.6\,\% $\rightarrow$ 60.6\,\% & 72.3\,\% $\rightarrow$ 67.7\,\% \\
 \bottomrule
 \end{tabular}
+
+\figtext{%
+The same test users and the same protocol, before and after the three
+targeted-sampling changes. The gap to the baseline widens at \emph{every}
+context fraction, and top-3/top-5 fall by $2.6$ to $4.8\pt$ everywhere. A
+single degraded row would be noise; seven consistent rows are a narrowed
+model. \smob, 100 held-out users.}
+\figsource{\nbllm}{train\_cellid\_llm.ipynb}{the targeted-sampling run, evaluated at seven cuts}
 \end{table}

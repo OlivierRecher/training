@@ -36,7 +36,7 @@
   x tick label style={font=\scriptsize,align=center},
   ymin=37, ymax=49.5, ytick={38,40,...,48}, /pgf/bar width=11pt]
 \addplot[fill=clmodel,draw=none] coordinates {(ha,44.7)(hb,41.7)(hc,44.0)(hd,45.2)};
-
+%
 % ---- (c) where the shift lands ----
 \nextgroupplot[title={\footnotesize (c) where the $+12$h shift lands},
   symbolic x coords={win,out},
@@ -47,17 +47,24 @@
 \addplot[fill=clnonsig,draw=none] coordinates {(win,39.7)(out,47.1)};
 \end{groupplot}
 \end{tikzpicture}}
-\caption[The hour-of-day ablation]{Does the model actually read the hour?
-(a)~Each event enters the sequence as a dedicated hour token followed by its
-\cid{cell\_id}, and the target's loss is multiplied inside the configured
-transition windows. (b)~Same test users, same cell sequence, only the hour
-token corrupted: destroying the \emph{ordering} of the hours costs
-$-3.0\pt$, four times the penalty of replacing every hour by a constant, so
-the token carries real information rather than merely occupying a position.
-(c)~Shifting every hour by $+12$h barely moves the aggregate but swaps the two
-halves of the day: accuracy inside the transition windows falls
-$42.7 \rightarrow 39.7\,\%$ while accuracy outside them rises
-$45.3 \rightarrow 47.1\,\%$. \smob, 80\,\% context, $n = 1{,}747$
-predictions.}
+\caption{The hour-of-day ablation}
 \label{fig:hour-ablation}
+\figtext{%
+Does the model actually read the hour? (a)~Each event enters the sequence as a
+dedicated hour token followed by its \cid{cell\_id}, and the number in a
+shaded box is the multiplier applied to the target's loss at that hour,
+$\times2$ at 04--05h and $\times4$ at 18--19h. Bounds are half-open, so ``04--06h'' means hours 4 and 5, and multiplying the loss duplicates no data: it
+only tells the optimiser that a mistake there costs more. (b)~The same trained
+checkpoint on the same test users, with the cell sequence untouched and only
+the hour token corrupted. The argument is the difference between two of the
+bars: replacing every hour by a constant costs $0.7\pt$, while shuffling the
+hours, so that the values are still real hours but in the wrong order, costs
+$3.0\pt$. If the token merely occupied a slot, destroying its \emph{ordering}
+could not cost more than removing it altogether; it costs four times more, so
+the model has learned which hour goes with which cell. (c)~Shifting every hour
+by twelve moves the aggregate by only $+0.5\pt$, and that near-zero hides a
+swap: accuracy inside the transition windows falls $42.7 \rightarrow 39.7\,\%$
+while accuracy outside them rises $45.3 \rightarrow 47.1\,\%$. The two halves
+of the day exchanged their difficulty along with their labels. \smob{}, 80\,\%
+context, $n = 1{,}747$ predictions.}
 \end{figure}

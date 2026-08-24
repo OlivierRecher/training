@@ -14,8 +14,12 @@ counter-intuitive at first sight.
 
 \section{The corpus}
 
-The material is a set of fifteen daily CSV exports of anonymised mobile-network
-signalling records, covering 12 to 26 March 2014 in the Karlovy Vary study area
+The material is a set of fifteen daily CSV\footnote{\textbf{CSV}:
+\emph{comma-separated values}, the simplest tabular text format: one row per
+line, fields separated by a delimiter. Here the delimiter is a semicolon and the
+rows are ragged, since each user contributes as many (cell, timestamp) pairs as
+they produced that day.} exports of anonymised mobile-network signalling
+records, covering 12 to 26 March 2014 in the Karlovy Vary study area
 of north-west Bohemia, the area referred to as \cid{cd\_142} in the working
 files, and the only one of the three available zones the team used. One row is
 one user for one day, from \texttt{00:00:00} to \texttt{23:59:59}. The number
@@ -28,7 +32,16 @@ cell'', an ``activity cell'' and the number of records that follow, and then
 alternates \cid{cell\_id} and timestamp for as many records as that user
 produced that day. The timestamp is expressed in seconds since local midnight
 and always \emph{follows} the \cid{cell\_id} it belongs to, so that
-$\lfloor \mathit{ts}/3600 \rfloor$ gives the hour of day of that event. Only
+\begin{equation}
+  h \;=\; \left\lfloor \frac{\mathit{ts}}{3600} \right\rfloor
+  \label{eq:hour}
+\end{equation}
+gives the hour of day of that event.\footnote{$\lfloor\,\cdot\,\rfloor$ is the \emph{floor}: round down to the whole number
+below. An event stamped $\mathit{ts} = 44{,}408$ seconds gives
+$44{,}408/3{,}600 = 12.34$, so $h = 12$, between 12:00 and 13:00, in fact
+at 12:20:08. The remaining minutes and seconds are discarded on purpose, for
+the reason given in Chapter~\ref{ch:tools}: twenty-four values are learnable
+and 86{,}400 are not.} Only
 the user identifier, the record count and the (\cid{cell\_id}, timestamp) pairs
 are used in this work; the remaining metadata carries known aberrations, ages
 of 1078, negative values, and is not needed for a next-cell prediction.
@@ -36,10 +49,14 @@ of 1078, negative values, and is not needed for a next-cell prediction.
 \subsection*{A record is not a movement}
 
 This is the single most important property of the corpus, and it is easy to
-miss. A record is produced whenever a handset and a base station communicate.
-That includes the case where nothing happens at all: a base station re-signals
-to the handsets attached to it on a regular cycle, typically every four hours
-on 2G and every two hours on 3G. A user who spends the whole day in one place
+miss. A record is produced whenever a handset\footnote{\textbf{Handset}: the
+telephone. \textbf{Re-signalling} (or \emph{periodic location update}): the
+network asking every attached handset to announce itself on a fixed cycle, so
+that it knows where to route an incoming call. It happens whether or not anyone
+touches the phone.} and a base station communicate. That includes the case where
+nothing happens at all: a base station re-signals to the handsets attached to it
+on a regular cycle, typically every four hours on 2G and every two hours on
+3G. A user who spends the whole day in one place
 therefore still produces records, at a rate set by the network rather than by
 the person. Two consequences follow immediately:
 
@@ -79,9 +96,12 @@ resist comparing an accuracy in one chapter with an accuracy in another.
 A \cid{cell\_id} such as \cid{BSOCHO1} looks like an opaque location token. It
 is not. It decomposes into three parts, shown in
 Figure~\ref{fig:cellid-anatomy}: a letter giving the radio technology
-(\cid{B} or \cid{D} for 2G, \cid{U} or \cid{V} for 3G), a \emph{site root}
-identifying the physical antenna, and trailing digits identifying the
-zone or sector of that antenna. The study area contains \textbf{369 distinct
+(\cid{B} or \cid{D} for 2G, \cid{U} or \cid{V} for 3G), a \emph{site
+root}\footnote{\textbf{Site root}: the middle letters of a \cid{cell\_id}, naming the
+physical mast: \cid{KVCHE} in \cid{UKVCHE102}. \textbf{Sector} (or
+\emph{zone}): the trailing digits, naming which antenna of that mast served
+the handset.} identifying the physical antenna, and
+trailing digits identifying the zone or sector of that antenna. The study area contains \textbf{369 distinct
 cells over 113 site roots}, 112 distinct coordinate pairs, split into 224
 2G cells and 145 3G cells. In other words, the same physical mast appears in the
 data under three or four different names.
@@ -121,9 +141,16 @@ later results should be read.
 
 \paragraph{The split is by user, and it is stratified.} Train and test users are
 disjoint: the model is graded only on people it has never seen. The assignment
-is stratified on the number of records per user rather than taken at random, so
-that the two groups have comparable sequence-length distributions, checked
-with a Mann--Whitney test on the two length distributions. Without that
+is stratified\footnote{\textbf{Stratified split}: instead of throwing users
+into train or test at random, they are first sorted into bands by sequence
+length and the split is made inside each band, which guarantees that both sides
+contain the same mix of short and long users.} on the number of records per user
+rather than taken at random, so that the two groups have comparable
+sequence-length distributions, checked with a Mann--Whitney
+test\footnote{\textbf{Mann--Whitney U test}: a rank-based check of whether two samples
+come from the same distribution, assuming nothing about its shape. Here a
+large $p$-value is the wanted outcome: train and test lengths cannot be told
+apart.} on the two length distributions. Without that
 precaution, a train/test split can silently hand the easier, longer users to one
 side.
 
@@ -160,35 +187,37 @@ is the direct consequence of the point above, that each new approach needed data
 the previous files did not carry. Adding the hour of day required regenerating
 the sequences with their timestamps preserved. Testing whether more users help
 required a day-file with more users. Testing whether \emph{many} more users help
-required concatenating eleven day-files. And because the day-files share no
-users at all, each regeneration produced a new set of test users, and
-therefore a new baseline.
+required concatenating\footnote{\textbf{Concatenating} day-files: stacking
+them end to end into one training file, which adds \emph{people} rather than
+adding days to the people already there.} eleven day-files. Each regeneration
+produced a new set of test users, and therefore a new baseline.
 
 \input{tables/tab-datasets}
 
 \section{What the data does not allow}
 
-Three limits follow from the corpus itself, and none of them can be fixed by
-better modelling.
+Two limits follow from the corpus itself, and neither can be fixed by better
+modelling.
 
-\paragraph{One user is one day.} The user identifiers are per day-file and the
-day-files share no users. There is no way to observe the same person on two
-days, and therefore no way to learn a personal habit. Everything a model can
-learn here is a regularity of the \emph{population}: what people who look like
-this tend to do next. This single fact sets the ceiling that
-Chapter~\ref{ch:scale} eventually runs into.
+\paragraph{The unit is one day.} The question posed at the start of this
+internship is a within-day one: predict the rest of a person's day from its
+beginning. The corpus is built for exactly that, one user is one day, and every
+experiment reported here answers that question. What it cannot answer is the
+other one, predicting tomorrow from the days before, since a user identifier is
+per day-file and cannot be followed from one file to the next. That is a
+different question rather than a flaw in this one, and it is the natural
+continuation of this work on a corpus that carries stable identifiers across
+days; Chapter~\ref{ch:critique} returns to it. In the meantime, what a model can
+learn here is a regularity of the \emph{population} rather than a personal
+habit.
 
 \paragraph{The world is small.} 369 cells over 113 sites, with a median user
-visiting on the order of twenty distinct cells. Test-set vocabulary coverage is
-already 98.9\,\% at the smallest training tier and reaches 100\,\% from 5{,}000
-users onward, so ``discovering cells it had never seen'' cannot be a source of
+visiting on the order of twenty distinct cells. Test-set vocabulary coverage\footnote{\textbf{Vocabulary coverage}: the share of cells appearing in the test
+users' days that also appeared in the training users'. At 100\,\% no remaining
+error can be blamed on a cell the model had never seen.} is already 98.9\,\% at the smallest training tier and reaches 100\,\%
+from 5{,}000 users onward, so ``discovering cells it had never seen'' cannot be a source of
 improvement beyond that point. Any remaining gain has to come from better
 estimates of the transitions between cells that are already known.
-
-\paragraph{The end of a day is not the next day.} Every experiment in this
-report predicts the end of a user's day from its beginning. That is a legitimate
-task, but it is not the task an operator would care most about, predicting
-tomorrow from the days before, and the data cannot express it.
 
 \section{What I did next, and why}
 

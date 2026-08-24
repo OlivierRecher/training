@@ -1,7 +1,7 @@
 % F14 -- The whole ladder: gap to each run's own baseline, against training-set size.
 \begin{figure}[t]
 \centering
-\fitwidth{%
+\plotlink{\nbfinal}{\fitwidth{%
 \begin{tikzpicture}
 \begin{axis}[rep, width=0.97\linewidth, height=6.4cm,
   xmode=log, log basis x=10,
@@ -25,11 +25,11 @@
   {\textbf{SATURATION}\\ every new user is a\\ behavioural duplicate\\ \textcolor{clbase}{$+0.1\pt$}};
 \node[font=\scriptsize,text=clrule,anchor=south,align=center,rotate=90] at (axis cs:428,1.2)
   {\textbf{IMITATION}};
-
+%
 \addplot[clmodel,thick,mark=*,mark size=1.8pt] coordinates {
 (500,0.6)(1000,2.8)(1500,3.5)(2000,4.2)(5000,4.3)(10000,4.4)(15000,4.7)(21000,4.3)};
 \addplot[clbase,dashed,thick,domain=380:30000,samples=2]{0};
-
+%
 \node[font=\scriptsize,anchor=west] at (axis cs:520,0.95) {$+0.6$};
 \node[font=\scriptsize,anchor=north] at (axis cs:1000,2.62) {$+2.8$};
 \node[font=\scriptsize,anchor=north] at (axis cs:1500,3.32) {$+3.5$};
@@ -40,16 +40,32 @@
 \node[font=\scriptsize,anchor=south] at (axis cs:21000,4.35) {$+4.3$};
 \node[font=\scriptsize,text=clbase,anchor=east] at (axis cs:28000,0.24) {the persistence baseline of each run};
 \end{axis}
-\end{tikzpicture}}
-\caption[The whole scaling ladder, in points over each run's own baseline]{Eight
-training-set sizes, each read against the persistence baseline measured on its
-\emph{own} test users, the only quantity that survives a change of test set.
-The 500 to 2{,}000-user tiers are scored on \stwok (100 test users, 48.2\,\%
-baseline; the 500-user point is the \smob run, 43.1\,\% baseline), the
-5{,}000 to 21{,}000-user tiers on \seleven (1{,}000 test users, 50.2\,\%
-baseline). A four-fold increase from 500 to 2{,}000 users buys $+3.6\pt$; the
-ten-fold increase that follows buys $+0.1\pt$, and none of the steps inside it
-is statistically distinguishable from zero (Table~\ref{tab:bootstrap}). The
-curve does not slow down, it stops.}
+\end{tikzpicture}}}
+\caption{The whole scaling ladder, in points over each run's own baseline}
 \label{fig:scaling-ladder}
+\figtext{%
+Eight training-set sizes, each read against the persistence baseline measured
+on its \emph{own} test users. The horizontal axis is logarithmic, so equal
+distances are equal multiples and 500 to 2{,}000 occupies the same width as
+5{,}000 to 20{,}000; the vertical axis is not accuracy but the gap to the
+baseline, the only quantity that survives a change of test set, so the dashed
+line at zero means ``indistinguishable from repeating the last cell''. At 500
+users the model gains $+0.6\pt$ and is barely distinguishable from the rule it
+is meant to beat. Between 500 and 2{,}000 the edge climbs $+0.6 \rightarrow
++2.8 \rightarrow +3.5 \rightarrow +4.2\pt$, a four-fold increase in population
+buying $+3.6\pt$, which is essentially the entire benefit the project ever
+obtained from data volume. The ten-fold increase that follows buys $+0.1\pt$,
+and not monotonically: the best tier (15{,}000) is followed by the worst
+(21{,}000), and none of the steps inside that stretch is statistically
+distinguishable from zero (Table~\ref{tab:bootstrap}). The curve does not slow
+down, it stops. Two things constrain how far that reads. The 500 to
+2{,}000-user tiers are scored on \stwok{} (100 test users, 48.2\,\% baseline;
+the 500-user point is the \smob{} run, 43.1\,\% baseline) and the 5{,}000 to
+21{,}000-user tiers on \seleven{} (1{,}000 test users, 50.2\,\% baseline),
+which is why the axis is a gap and why the small step across that boundary is
+not a measurement. And every tier received the same budget of optimiser steps,
+so at 21{,}000 users only 36\,\% of the available training windows were ever
+read: the defensible claim is that 2{,}000 users are enough at this training
+budget, not that more users can never help.}
+\figsource{\nbfinal}{train\_cellid\_final.ipynb}{the eight-tier scaling notebook}
 \end{figure}

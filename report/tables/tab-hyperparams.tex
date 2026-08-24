@@ -1,10 +1,7 @@
 % T12 -- Hyperparameters, per run family.
 \begin{table}[t]
 \centering\footnotesize
-\caption[Hyperparameters per run family]{Training configuration. The
-right-hand columns differ only where an experiment required it; everything
-else was held constant on purpose, so that a difference between two runs is a
-difference in the data and not in the recipe.}
+\caption{Hyperparameters per run family}
 \label{tab:hyperparams}
 \begin{tabular}{@{}l@{\hspace{6pt}}>{\raggedright\arraybackslash}p{2.6cm}@{\hspace{6pt}}>{\raggedright\arraybackslash}p{2.9cm}@{\hspace{6pt}}>{\raggedright\arraybackslash}p{2.9cm}@{\hspace{6pt}}>{\raggedright\arraybackslash}p{3.1cm}@{}}
 \toprule
@@ -31,4 +28,9 @@ Seed              &,             & 42                    & 42                   
 Hardware          & Colab T4        & Colab T4              & Colab T4 / L4         & Colab GPU, 42 min/tier \\
 \bottomrule
 \end{tabular}
+
+\figtext{%
+Training configuration. The right-hand columns differ only where an experiment
+required it; everything else was held constant on purpose, so that a
+difference between two runs is a difference in the data and not in the recipe.}
 \end{table}

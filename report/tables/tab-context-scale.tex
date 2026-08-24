@@ -1,11 +1,7 @@
 % T8 -- Context fraction at 1,000 and 2,000 users (slide 60).
 \begin{table}[t]
 \centering\small
-\caption[The gain does not come from a long context]{Top-1 against the baseline
-at every context fraction, for the 1{,}000- and 2{,}000-user tiers. The edge is
-already $+4.3\pt$ when only 30\,\% of the day has been seen, so what the model
-adds is largely independent of how much history it is handed. \stwok, with the
-same 100 held-out users for both tiers; gaps to the baseline in brackets.}
+\caption{The gain does not come from a long context}
 \label{tab:context-scale}
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
@@ -21,9 +17,17 @@ same 100 held-out users for both tiers; gaps to the baseline in brackets.}
 \bottomrule
 \end{tabular}
 
+\figtext{%
+Top-1 against the baseline at every context fraction, for the 1{,}000- and
+2{,}000-user tiers. The edge is already $+4.3\pt$ when only 30\,\% of the day
+has been seen, so what the model adds is largely independent of how much
+history it is handed. \stwok, with the same 100 held-out users for both tiers;
+gaps to the baseline in brackets.}
+
 \vspace{3pt}
 \begin{minipage}{\textwidth}\footnotesize
 On the full sequence ($n = 7{,}745$) the two tiers score 50.0\,\% and 51.0\,\%
 against a 46.8\,\% baseline.
 \end{minipage}
+\figsource{\nbfinal}{train\_cellid\_final.ipynb}{the context-fraction evaluation at the smaller tiers}
 \end{table}

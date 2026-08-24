@@ -1,12 +1,7 @@
 % T3 -- The context/target split swept on two datasets (slides 27 and 37).
 \begin{table}[t]
 \centering\small
-\caption[The context/target split, swept on two datasets]{Moving the cut
-between context and target, with everything else frozen. On \sfilt, exactly one
-split clears the baseline; on \smob, none does. The baseline changes from row to
-row because moving the cut changes which cell counts as ``the last one seen'', so
-each row must be read against the baseline on its own line, never against the
-accuracy above it. Qwen2.5-0.5B + QLoRA, 100 held-out users.}
+\caption{The context/target split, swept on two datasets}
 \label{tab:context-sweep}
 \begin{tabular}{@{}lrrrrrrc@{}}
 \toprule
@@ -30,6 +25,14 @@ accuracy above it. Qwen2.5-0.5B + QLoRA, 100 held-out users.}
 \bottomrule
 \end{tabular}
 
+\figtext{%
+Moving the cut between context and target, with everything else frozen. On
+\sfilt, exactly one split clears the baseline; on \smob, none does. The
+baseline changes from row to row because moving the cut changes which cell
+counts as ``the last one seen'', so each row must be read against the baseline
+on its own line, never against the accuracy above it. Qwen2.5-0.5B + QLoRA,
+100 held-out users.}
+
 \vspace{4pt}
 \begin{minipage}{\textwidth}\footnotesize
 Gaps are in points. Each \sfilt{} row is a separate training, early-stopped on
@@ -38,4 +41,5 @@ rows are one single trained model evaluated seven times, which is why their
 validation column is constant, so they measure \emph{robustness} to a context
 different from the one trained on, not which cut trains the better model.
 \end{minipage}
+\figsource{\nbllm}{train\_cellid\_llm.ipynb}{the context-fraction sweeps}
 \end{table}

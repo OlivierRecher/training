@@ -5,6 +5,7 @@
 % ---------------------------------------------------------------------------
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{amsmath}
 \usepackage{newtxtext,newtxmath}
 \usepackage[english]{babel}
 \usepackage[a4paper,top=2.6cm,bottom=2.6cm,left=2.7cm,right=2.7cm]{geometry}
@@ -29,6 +30,7 @@
 \captionsetup{font=small,labelfont=bf,width=0.94\textwidth}
 \usepackage{enumitem}
 \setlist{itemsep=2pt,topsep=3pt,parsep=0pt}
+\usepackage{listings}
 \usepackage[hidelinks]{hyperref}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -112,3 +114,47 @@
 \newcommand{\seleven}{\textsc{eleven-day set}}
 \newcommand{\supervisor}{Robert Best\'ak}
 \newcommand{\host}{Czech Technical University in Prague (\v{C}VUT)}
+
+
+% --- SOURCE LINKS: every figure or table that reports a result is clickable ---
+% Clicking the plot, or the "Produced by" line under its caption, opens the
+% notebook or the command that produced the numbers, on the project repository.
+\newcommand{\repourl}{https://github.com/OlivierRecher/training/blob/main}
+% File names contain underscores, which must reach \href with catcode 12.
+\begingroup\catcode`\_=12
+\gdef\nbllm{train_cellid_llm.ipynb}
+\gdef\nbfinal{train_cellid_final.ipynb}
+\gdef\nbweek{train_cellid_week.ipynb}
+\endgroup
+% \plotlink{<path in repo>}{<the tikzpicture / resizebox>} : makes the whole
+% graphic a hyperlink to the artefact that produced it.
+\newcommand{\plotlink}[2]{\href{\repourl/#1}{#2}}
+% Floats carry only their title in the caption; the explanation that goes with
+% them is set below, at footnote size, justified across the caption width.
+\newcommand{\figtext}[1]{%
+  \par\vspace{3pt}%
+  \begin{minipage}{0.94\textwidth}\footnotesize #1\end{minipage}\par}
+
+% \figsource{<path in repo>}{<display name>}{<what it produces there>} : the
+% visible, clickable provenance line placed just under the caption. A hidden
+% link would be undiscoverable, so the line is always printed.
+\newcommand{\figsource}[3]{%
+  \par\vspace{2pt}%
+  {\footnotesize\color{clrule}$\hookrightarrow$~Produced by
+   \href{\repourl/#1}{\color{clmodel}\texttt{#2}}, #3.\par}}
+
+% --- Code / data listings: shown so that a format can be seen, not read ------
+\definecolor{clkey}{RGB}{31,56,100}
+\definecolor{clstr}{RGB}{140,80,40}
+\lstdefinestyle{repjson}{
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{clsoft},
+  frame=single, rulecolor=\color{clrule}, framesep=5pt,
+  breaklines=true, breakindent=0pt, breakatwhitespace=false,
+  columns=fullflexible, keepspaces=true,
+  showstringspaces=false,
+  xleftmargin=4pt, xrightmargin=4pt,
+  aboveskip=6pt, belowskip=4pt,
+  literate={"}{{\textcolor{clstr}{"}}}1,
+}
+\lstset{style=repjson}

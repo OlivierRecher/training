@@ -24,8 +24,12 @@ morning (07h--12h), day (12h--18h) and evening (18h--22h). Four broad bands were
 used rather than five, six or eight because each band must keep enough events
 per user to be estimated at all; with finer bands a user with three night-time
 events gets a night-time rate of 0\,\% or 100\,\%, which is noise dressed as a
-profile. For the same reason each band is shrunk towards the user's global rate,
-so that a sparse band cannot dominate their profile.
+profile. For the same reason each band is shrunk\footnote{\textbf{Shrinkage}: pulling a noisy estimate towards a more reliable one,
+in proportion to how little evidence supports it. A user with 3 night-time
+events, 1 of them a site change, has a raw night rate of 33\,\%, which means
+little; shrunk towards their all-day rate of 50\,\% with a weight of 8 pseudo-observations it becomes $(3\times 0.33 + 8\times 0.50)/11 = 0.45$. A user with
+200 night-time events is barely moved.} towards the user's global rate, so that a sparse band
+cannot dominate their profile.
 
 Two properties of this definition matter more than the clustering itself.
 
@@ -58,8 +62,14 @@ worth nothing on a cold start.
 
 \section{The four profiles}
 
-Fitted on the 400 training users of \smob, the four groups are the ones shown in
-Figure~\ref{fig:group-profiles}, and they are shapes in time rather than levels.
+Fitted\footnote{\textbf{Clustering}: an automatic procedure that sorts items into groups by
+resemblance, with nobody labelling anything. Here the algorithm is given each
+user's four-band profile and asked for four \textbf{centroids}, average
+profiles, then assigns each user to the nearest. The number four was chosen,
+not discovered.} on the 400 training users of
+\smob, the four groups are the ones shown in
+Figure~\ref{fig:group-profiles}, and they are shapes in time rather than
+levels.
 
 \input{figures/fig-group-profiles}
 
@@ -90,10 +100,22 @@ would hope for and is worth verifying rather than assuming.
 
 \input{figures/fig-group-difficulty}
 
-Quantitatively, the group label explains 69\,\% of the variance in per-user
-predictability on the training users and 72\,\% on the held-out users, with the
-group centroids fitted on the training side only. One confound has to be
-acknowledged: sequence length also predicts predictability, and $\log n$ alone
+Quantitatively, the group label explains 69\,\% of the
+variance\footnote{\textbf{Variance explained}, written $R^2$: the share of the spread in a
+quantity that a predictor accounts for. With $y_i$ user $i$'s accuracy,
+$\hat{y}_i$ the prediction and $\bar{y}$ the overall average, \[ R^2 \;=\; 1 -
+\frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}. \] $R^2 = 0$ is
+no better than always guessing the average, $R^2 = 1$ exactly right for
+everyone. If four users score $10, 30, 70, 90\,\%$ and their group alone lets
+you say $20, 20, 80, 80\,\%$, the errors are $10$ each against deviations of
+$40, 20, 20, 40$ from the average, giving $R^2 = 1 - 400/4000 = 0.90$.} in
+per-user predictability on the training users and 72\,\% on the held-out users,
+with the group centroids fitted on the training side only. One confound has to
+be acknowledged: sequence length also predicts predictability, and $\log
+n$\footnote{$\log n$: the logarithm of a user's number of records. Using it rather than
+$n$ says that what matters is the \emph{order of magnitude} of a history: 10
+to 100 records counts the same as 100 to 1{,}000. Sequence lengths here span
+more than a decade.} alone
 explains 48\,\% of that variance. But the label still explains 38\,\% of what
 remains after removing $\log n$, and the scale-free part of the profile, the
 morning-minus-evening asymmetry of its shape, correlates with $\log n$ at only
@@ -130,9 +152,14 @@ least being aimed at the right places.
 
 Given all that, the first cross-training run was expected to work and did not.
 The group was encoded as a dedicated token prepended to the sequence, one
-shared \cid{<Gk>} symbol at the head, so that causal attention lets it condition
-every subsequent prediction, and the run scored 41.3\,\% against a baseline of
-43.1\,\%: $-1.8\pt$, no better than anything before it.
+shared \cid{<Gk>} symbol at the head, so that causal
+attention\footnote{\textbf{Attention}: the mechanism by which each position in a Transformer
+looks at other positions and decides how much weight to give each.
+\textbf{Causal} means it may look only backwards, never at the future, which
+is what makes the model a next-symbol predictor. Putting the group token first
+therefore exposes it to every later position, in principle.} lets it condition every subsequent
+prediction, and the run scored 41.3\,\% against a baseline of 43.1\,\%:
+$-1.8\pt$, no better than anything before it.
 
 The useful part is the ablation that followed, because it does not merely say
 ``it did not work'' but \emph{where} it did not work. Switching the group token
@@ -148,6 +175,10 @@ had shown the model does use. It was in the \emph{channel}. A single token at
 the head of a sequence of up to five hundred tokens is one symbol among many;
 attention is free to dilute it to nothing, and on this task it did, because
 ignoring it costs almost no training loss.
+Figure~\ref{fig:adapter-routing} contrasts that failed channel with the one that
+replaced it.
+
+\input{figures/fig-adapter-routing}
 
 \section{The fix, and which part of it was structural}
 
@@ -167,7 +198,8 @@ mechanism.
   \item \textbf{Route each group to its own adapter.} The base model stays
         frozen and four independent LoRA adapters are trained, one per group. The
         group is no longer text that attention may or may not attend to: it
-        physically decides which weights run. This is the structural change.
+        physically decides which weights run. This is the structural change, and
+        it is drawn in Figure~\ref{fig:adapter-routing}(b).
   \item \textbf{Keep the per-group windows.} The one component already measured
         to be correct was left untouched.
 \end{enumerate}

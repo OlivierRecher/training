@@ -21,7 +21,7 @@
 \addplot[fill=clmodel,draw=none] coordinates {(qa,100.0) (qb,87.6) (qc,71.6) (qd,56.5) (qe,34.4)};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qd,74) {$+3.7\pt$};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qe,52) {$+7.8\pt$};
-
+%
 \nextgroupplot[title={(b) \smob, four equal groups},
   symbolic x coords={pa,pb,pc,pd},
   xticklabels={0--25\%,25--50\%,50--75\%,75--100\%},
@@ -34,14 +34,28 @@
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:pd,61) {$+0.6\pt$};
 \end{groupplot}
 \end{tikzpicture}}
-\caption[Accuracy by cell-switch rate]{Accuracy is set by how repetitive the
-user already is, and the model's contribution runs the other way. (a)~On the
-unfiltered day, users who never change cell are predicted perfectly by both the
-baseline and the model, and the most volatile fifth plateaus at 34.4\,\%; the
-model only overtakes the baseline in the two hardest groups, which together
-hold 18.5\,\% of the predictions. (b)~The same ordering on the 100 held-out
-mobile users of \smob: the model \emph{loses} to the baseline everywhere
-except the most volatile quartile. Baselines are recomputed per user, on the
-same positions the model is scored on.}
+\caption{Accuracy by cell-switch rate}
 \label{fig:switch-rate}
+\figtext{%
+Accuracy is set by how repetitive the user already is, and the model's
+contribution runs the other way. In both panels the users are sorted by their
+cell-switch rate, the share of consecutive steps at which the cell changes,
+and cut into equal groups, five on the left and four on the right, so
+volatility increases towards the right; each group carries the persistence
+baseline in grey-blue and the model in dark blue, scored on identical
+positions, with the gap annotated above. (a)~On the unfiltered day the fifth
+of users who never change cell are predicted at 100\,\% by both, because for
+them the task is to notice that nothing is happening, and the most volatile
+fifth plateaus at 34.4\,\%. That is a 65-point spread produced entirely by who
+the users are, on a single trained model, with no hyperparameter involved. The
+model overtakes the baseline only in the two hardest groups, by $+3.7$ and
+$+7.8\pt$, and those two hold 18.5\,\% of the predictions between them, the
+most volatile one alone holding 5.6\,\%: eight points on one twentieth of the
+volume moves the aggregate by less than half a point. (b)~The same ordering on
+the 100 held-out mobile users of \smob{}, and less comfortably. The model
+\emph{loses} to the baseline in the three easier quartiles ($-7.1$, $-5.3$,
+$-3.4\pt$) and only draws level in the most volatile one ($+0.6\pt$), which is
+precisely how a model can be genuinely useful on hard users and still be worse
+than a one-line rule overall. Baselines are recomputed per user, on the same
+positions the model is scored on.}
 \end{figure}

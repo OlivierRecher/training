@@ -1,7 +1,7 @@
 % F6 -- Four runs, four datasets, the same shape: a plateau under the baseline.
 \begin{figure}[t]
 \centering
-\fitwidth{%
+\plotlink{\nbllm}{\fitwidth{%
 \begin{tikzpicture}
 \begin{groupplot}[
   group style={group size=2 by 2, horizontal sep=1.6cm, vertical sep=2.0cm,
@@ -24,7 +24,7 @@
 \node[star,star points=5,fill=clgain,draw=none,inner sep=1.6pt] at (axis cs:9,65.0) {};
 \node[font=\scriptsize,anchor=south west,text=clgain] at (axis cs:9,66) {peak, epoch 9};
 \node[font=\scriptsize,anchor=south east,text=clbase] at (axis cs:49,70) {baseline 69.2\,\%};
-
+%
 % ---------- (b) D2, filtered, 14 epochs ----------
 \nextgroupplot[title={\footnotesize (b) \sfilt, 14 epochs},
                xmin=0, xmax=15, xtick={1,4,...,14}]
@@ -35,7 +35,7 @@
 \node[star,star points=5,fill=clgain,draw=none,inner sep=1.6pt] at (axis cs:6,73.8) {};
 \node[font=\scriptsize,anchor=south,text=clgain] at (axis cs:6,75) {epoch 6};
 \node[font=\scriptsize,anchor=south east,text=clbase] at (axis cs:14.5,80) {79.0\,\%};
-
+%
 % ---------- (c) D3, mobile users, 9 epochs ----------
 \nextgroupplot[title={\footnotesize (c) \smob, 9 epochs},
                xmin=0, xmax=10, xtick={1,3,...,9}]
@@ -45,7 +45,7 @@
 \node[star,star points=5,fill=clgain,draw=none,inner sep=1.6pt] at (axis cs:5,43.0) {};
 \node[font=\scriptsize,anchor=south,text=clgain] at (axis cs:5,44.5) {epoch 5};
 \node[font=\scriptsize,anchor=north east,text=clbase] at (axis cs:9.7,41.5) {43.5\,\%};
-
+%
 % ---------- (d) D3 + hour tokens, 11 epochs ----------
 \nextgroupplot[title={\footnotesize (d) \smob + hour tokens, 11 epochs},
                xmin=0, xmax=12, xtick={1,3,...,11}]
@@ -56,17 +56,25 @@
 \node[font=\scriptsize,anchor=south,text=clgain] at (axis cs:5,43.6) {epoch 5};
 \node[font=\scriptsize,anchor=north east,text=clbase] at (axis cs:11.7,43.5) {45.5\,\%};
 \end{groupplot}
-\end{tikzpicture}}
-\caption[Validation accuracy per epoch on four datasets]{The same shape, four
-times, on four different datasets: validation top-1 climbs for a handful of
-epochs, peaks (star), then decays, and the plateau sits \emph{below} the
-dashed persistence baseline of that dataset. Note that the baseline is a
-property of the data, not of the run: it is 69.2\,\% on the unfiltered day and
-43.5\,\% once the corpus is restricted to mobile users, because the users
-themselves are different. Per-epoch values are recovered by digitising each
-run's own validation curve, with the vertical axis calibrated on the two
-values printed on that curve, so an individual point carries about
-$\pm1\pt$ of reading error; the figures quoted in the text are the reported
-ones. Qwen2.5-0.5B + QLoRA throughout.}
+\end{tikzpicture}}}
+\caption{Validation accuracy per epoch on four datasets}
 \label{fig:validation-curves}
+\figtext{%
+The same shape, four times, on four different datasets. In each panel the
+horizontal axis is the training epoch and the vertical axis is top-1 accuracy
+on validation users the run never trains on; the solid line is the model, the
+star its best epoch, the dashed line that dataset's persistence baseline.
+Validation climbs for four to nine epochs, peaks, then decays for tens of
+epochs while the training loss keeps falling. In panel~(a) the peak is
+65.0\,\% at epoch~9 against 48.1\,\% at the last epoch, so reading the end of
+a run instead of its best point costs sixteen points and forty epochs of GPU
+time. Note that the dashed line moves between panels, 69.2\,\% on the
+unfiltered day and 43.5\,\% once the corpus is restricted to mobile users,
+because the users themselves are different; the panels are comparable only on
+the distance between the two lines, and in all four that distance is negative.
+Per-epoch values are recovered by digitising each run's own validation curve,
+with the vertical axis calibrated on the two values printed on that curve, so
+an individual point carries about $\pm1\pt$ of reading error; the figures
+quoted in the text are the reported ones. Qwen2.5-0.5B + QLoRA throughout.}
+\figsource{\nbllm}{train\_cellid\_llm.ipynb}{the training loop whose per-epoch validation scores these curves are}
 \end{figure}

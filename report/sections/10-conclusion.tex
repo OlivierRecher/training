@@ -32,10 +32,9 @@ profile cannot be estimated and the model is right to ignore it.
 
 \paragraph{Difficulty lives in the user, not in the dataset.} This is the finding
 I would keep if I had to keep one. Twenty-two points separate the most sedentary
-behavioural profile from the most mobile one, and forty-two points separate the
-users with the shortest histories from those with the longest, against three
-tenths of a point across the whole training-size ladder. Per-user accuracy on
-this task ranges from zero to one hundred per cent, and what predicts it is how
+behavioural profile from the most mobile one, against three tenths of a point
+across the whole training-size ladder. Per-user accuracy on this task ranges
+from zero to one hundred per cent, and what predicts it is how
 repetitive that person's mobility already is. An aggregate accuracy on this
 problem is a weighted average over segments of wildly different difficulty, and
 quoting it alone hides the only part of the result that is about the model.
@@ -49,19 +48,18 @@ on which the trivial rule does not already score 69\,\% is what made the questio
 measurable at all. On a task whose honest yardstick is a one-line heuristic, the
 first place to look for points is the measurement.
 
-\paragraph{What it leaves open.} Everything that matters next needs different
-data rather than a better model. Every experiment here predicts the end of one
-day from its beginning, for people who are never seen again: the corpus contains
-one day per user and no user appears twice. The model can therefore only learn a
-population prior, and a population prior, on this study area, is fully bought
-by two thousand people. Predicting day $N{+}1$ from days $1 \ldots N$ for the
-same person, observing a home--activity transition several times for one
-individual, and anything that could be called personalisation all require
-multi-day identifiers that this corpus does not have. A seven-day comparison set
-up to probe part of that question crashed after five hours without completing a
-single training, and the report claims no day-of-week effect as a result.
+\paragraph{What it leaves open.} The question given to me was a within-day one,
+predict the rest of a person's day from its beginning, and that is the question
+this report answers. The obvious continuation is to widen it: predicting day
+$N{+}1$ from days $1 \ldots N$, observing a home--activity transition several
+times for the same individual, and anything that could be called
+personalisation. None of that is a matter of a better model; it needs a corpus
+whose identifiers are stable from one day to the next, and it is where I would
+take the work next. A seven-day comparison set up to probe part of that question
+crashed after five hours without completing a single training, and the report
+claims no day-of-week effect as a result.
 
 The honest summary of the nine weeks is therefore narrow and, I think, useful:
 on single-day cellular traces, the population prior is cheap, it is measurable,
 it is worth about four points over a trivial rule, and it is exhausted at two
-thousand users. What is left is not more people. It is more days.
+thousand users.

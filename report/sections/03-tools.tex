@@ -4,33 +4,54 @@
 \section{The question}
 
 The corpus was fixed; the instrument was not. Before any experiment could run,
-one purely practical question had to be settled: \emph{given a free cloud GPU
-and a few weeks, which fine-tuning regime, which software stack and which base
-model are actually feasible?} This chapter answers it, and states the verdict on
+one purely practical question had to be settled: \emph{given a free cloud
+GPU\footnote{\textbf{GPU}: \emph{graphics processing unit}. The chip that
+does the arithmetic of training. What limits a training run is almost never its
+speed but its \emph{memory}: everything the run needs must fit on the card at
+once, which is the whole subject of Section~\ref{sec:tools-peft}.} and a few
+weeks, which fine-tuning regime, which software stack and which base model are
+actually feasible?} This chapter answers it, and states the verdict on
 each choice with the benefit of eleven iterations of hindsight. It is worth
 saying at the outset that this toolchain was decided in the first week and did
 not change afterwards. What changed over the internship was the data and the
 training signal, never the instrument, which is what makes the later
 comparisons between runs meaningful.
 
-\section{How much of the model to move}
+\section{State of the art in practice: how much of the model to move}
+\label{sec:tools-peft}
 
-Adapting a pre-trained language model to a new task can be done at three very
-different costs, and the difference between them is not accuracy but memory.
+This section is where the fine-tuning regime is chosen, and why. Adapting a
+pre-trained
+language model\footnote{\textbf{Pre-trained}: already trained, by someone
+else, on a very large body of general text. Fine-tuning starts from those
+weights rather than from nothing, which is what makes it affordable at all.} to
+a new task can be done at three very different costs, and the difference between
+them is not accuracy but memory. Figure~\ref{fig:lora} draws all three.
+
+\input{figures/fig-lora}
 
 \begin{description}
-  \item[Full fine-tuning] updates all of the model's weights. It has the
-        highest ceiling in principle, and it requires holding the weights, their
-        gradients and the optimiser state in GPU memory at once, several times
-        the size of the model itself.
+  \item[Full fine-tuning] updates all of the model's
+        weights.\footnote{\textbf{Weights}: the numbers inside the model, several hundred million
+here, that turn an input into an output; training is the act of adjusting
+them. \textbf{Gradient}: for each weight, how much changing it would reduce
+the error, recomputed every step. \textbf{Optimiser state}: two further
+running statistics per weight. Full fine-tuning therefore holds about four
+numbers per weight in memory, not one.} It has the highest ceiling
+        in principle, and it requires holding the weights, their gradients and
+        the optimiser state in GPU memory at once, several times the size of the
+        model itself.
   \item[LoRA] (Low-Rank Adaptation, \cite{hu2022lora}) freezes the original
         weights entirely and inserts small trainable matrices alongside them.
         Only those matrices are updated, so the memory needed for gradients and
         optimiser state collapses by orders of magnitude. In the configuration
         used here roughly 2\,\% of the model was ever allowed to change.
   \item[QLoRA] (\cite{dettmers2023qlora}) additionally stores the frozen base
-        weights in 4-bit precision, which roughly quarters the memory the
-        \emph{frozen} part occupies, and trains LoRA adapters on top of that.
+        weights in 4-bit precision,\footnote{\textbf{4-bit precision}, or \emph{quantisation}: storing each weight with
+sixteen possible values instead of the usual five significant digits. Coarse,
+but these weights are frozen and never updated, so it costs a little accuracy
+rather than correctness; the adapters stay at full precision.} which roughly quarters the memory the \emph{frozen} part
+        occupies, and trains LoRA adapters on top of that.
 \end{description}
 
 The decision was QLoRA, and it was made on hardware grounds rather than on
@@ -47,12 +68,37 @@ routing of Chapter~\ref{ch:groups} cheap enough to try at all.
 
 \section{Which software stack}
 
-The stack is the Hugging Face ecosystem: Transformers \cite{wolf2020transformers}
-for the model and the training loop, PEFT \cite{peft2022} for the adapters and
-for training the embeddings of the tokens added to the vocabulary, and the
-conversational fine-tuning format of TRL \cite{trl2020} for the data files. It
-was chosen in the first week for one property above all others: complete freedom
-over the training configuration, including the loss function itself.
+The stack is the Hugging Face ecosystem,\footnote{\textbf{Hugging Face}: the
+company and open-source project that hosts most publicly available language
+models and publishes the standard Python libraries for using them. ``The Hugging
+Face ecosystem'' means those libraries, listed next, plus the online repository
+the base model is downloaded from.} four libraries with four jobs:
+
+\begin{itemize}
+  \item \textbf{Transformers} \cite{wolf2020transformers}: loads the base
+        model and runs the training loop.
+  \item \textbf{PEFT}\footnote{\textbf{PEFT}: \emph{Parameter-Efficient
+        Fine-Tuning}. The library implementing LoRA and QLoRA: it inserts the
+        small trainable matrices of Figure~\ref{fig:lora} into a frozen model and
+        keeps track of which parameters are allowed to move.} \cite{peft2022}:
+        the adapters, and the training of the embeddings of the tokens added to
+        the vocabulary.
+  \item \textbf{TRL}\footnote{\textbf{TRL}: the name expands to \emph{Transformer Reinforcement
+Learning}, which is misleading here: no reinforcement learning is used. Only
+the library's ordinary supervised path is, and what was taken from it is a
+\emph{file format}, see Figure~\ref{fig:training-example}(a).} \cite{trl2020}: the
+        conversational file format of the data files.
+  \item \textbf{bitsandbytes}: the 4-bit storage of the frozen weights.
+\end{itemize}
+
+\input{figures/fig-training-example}
+
+The stack was chosen in the first week for one property above all others:
+complete freedom over the training configuration, including the loss
+function\footnote{\textbf{Loss function}: the number training tries to make small. At each
+scored position it measures how surprised the model was by the correct answer.
+\emph{Weighting} the loss multiplies that number at chosen positions, so
+mistakes there count for more.} itself.
 
 That property is what made the second half of the internship possible. From the
 sixth iteration onward the work depends on \emph{modifying the loss},
@@ -62,15 +108,22 @@ according to the behavioural group of the user (Chapter~\ref{ch:groups}).
 Neither is expressible by configuration; both require reaching into the training
 step. The one piece of TRL that survived to the end is therefore its data
 format, each user-day stored as a short conversation, with a system message
-describing the task and an assistant message carrying the trajectory, while
-the training loop itself became a customised one.
+describing the task and an assistant message carrying the trajectory, exactly
+the record printed in Figure~\ref{fig:training-example}(a), while the training
+loop itself became a customised one.
 
 \section{Which base model}
 \label{sec:tools-model}
 
 The first real run used \textbf{Mistral-7B} \cite{jiang2023mistral}, a
-seven-billion-parameter general-purpose model, loaded in 4-bit. A first,
-deliberately small experiment, one hundred optimiser steps, about
+seven-billion-parameter\footnote{\textbf{Parameter}: a synonym for
+\emph{weight}, used when counting them. ``7B'' means seven billion of them;
+Qwen2.5-0.5B has five hundred million, fourteen times fewer. The count is the
+model's capacity, and also, directly, its memory footprint.} general-purpose
+model, loaded in 4-bit. A first, deliberately small experiment, one hundred
+optimiser steps,\footnote{\textbf{Optimiser step}: one adjustment of the
+weights, made after reading a small batch of examples. An \textbf{epoch} is one
+full pass over the whole training set, and therefore contains many steps.} about
 thirty minutes, covering 1.2\,\% of the training data, produced 16.87\,\%
 next-cell accuracy, with the training loss falling from 0.902 to 0.583. As a
 signal that the pipeline worked end to end this was encouraging. A Llama model
@@ -98,17 +151,28 @@ Three representation choices did most of the work, and each is a one-line
 statement with a large consequence.
 
 \paragraph{One cell, one token.} All 369 \cid{cell\_id} values were added to the
-tokenizer as dedicated tokens, so that a cell is a single symbol rather than a
-handful of sub-word fragments. Predicting the next cell then becomes a choice
+tokenizer\footnote{\textbf{Tokenizer}: the component that cuts an input into the symbols the
+model reads. Left alone it would split \cid{BSOCHO1} into four meaningless
+fragments, and the model would have to spell a cell correctly to be right;
+adding the 369 identifiers as symbols of their own removes that.} as dedicated tokens, so that a cell is a single symbol
+rather than a handful of sub-word fragments. Predicting the next cell then becomes a choice
 among 369 known symbols rather than the generation of a string that may or may
 not be a valid identifier, which is precisely the failure the Llama attempt
-exhibited. The embeddings of these new tokens are trained alongside the
+exhibited. The embeddings\footnote{\textbf{Embedding}: the vector of numbers the model associates with a
+token, its internal representation of that symbol. The 369 cell tokens start
+random and must learn theirs, which is why they are trained alongside the
+adapters.} of these new tokens are trained alongside the
 adapters.
 
 \paragraph{One hour, one token.} From the sixth iteration each event is preceded
 by a dedicated token for its hour of day, \cid{<H00>} to \cid{<H23>}. The
 alternative, writing the timestamp out in text, would have cost several
-tokens per event and eaten the context budget that the trajectory itself needs.
+tokens per event and eaten the context budget\footnote{\textbf{Context window}: the maximum number of tokens the model may look at
+in one go, 512 here. Each event already costs two, one hour and one cell, so
+writing a timestamp out at four or five tokens per event would have cut the
+visible history by roughly two thirds. Not the \emph{context fraction} of
+Chapter~\ref{ch:first}, which is a property of the measurement.} that the
+trajectory itself needs.
 Hour granularity, rather than minute or second, was chosen for that reason:
 twenty-four learnable symbols against an unlearnable vocabulary of 86{,}400.
 The hour is always \emph{given}, never predicted, which is legitimate both
@@ -116,16 +180,24 @@ offline and in production: the current time is always known when a prediction is
 requested.
 
 \paragraph{The loss looks only at the cells.} The prefix, the system message and
-the hour tokens are masked out of the loss. The model is scored, and trained,
+the hour tokens are masked out of the loss.\footnote{\textbf{Masking} a position
+means excluding it from the score: the model still \emph{reads} the token but is
+neither rewarded nor penalised for predicting it.
+Figure~\ref{fig:training-example}(b) shows which positions survive the mask.} The model is scored, and trained,
 only on the positions where a \cid{cell\_id} has to be produced.
 
 \section{Training discipline}
 
 Two mechanisms deserve to be named because later chapters depend on them.
 
-\paragraph{Best-checkpoint selection.} Validation accuracy on this task peaks
-early, typically between epoch four and epoch nine, and then declines for
-tens of epochs while the training loss keeps falling. Keeping the checkpoint
+\paragraph{Best-checkpoint selection.} Validation
+accuracy\footnote{\textbf{Validation set}: training users held back and used \emph{during}
+training to decide when to stop, as distinct from the \textbf{test set}, read
+once at the end. \textbf{Checkpoint}: a saved copy of the weights at the
+end of one epoch; a twenty-epoch run produces twenty of them, and which one is
+read is a decision.} on this task peaks early,
+typically between epoch four and epoch nine, and then declines for tens of
+epochs while the training loss keeps falling. Keeping the checkpoint
 with the best validation score, instead of the one at the end of training, was
 worth $+15.7\pt$ of test top-1 on its own and cut GPU time by 60\,\%
 (Chapter~\ref{ch:first}). It is the single largest one-step improvement of the
@@ -142,19 +214,30 @@ which is the subject of those chapters.
 
 \section{Compute, and analysis}
 
-All reported runs were trained on Google Colab, on a T4 or L4 GPU, under the
-constraint of a daily free quota, which is why the experiment schedule is
-organised as ``one training per iteration'' rather than as sweeps. A local
-Apple-silicon GPU was used for smoke tests only: a full training there swaps to
-a crawl, so it could validate that a notebook runs but never produce a number.
+All reported runs were trained on Google Colab,\footnote{\textbf{Google Colab}: a service that runs a Python notebook on a rented
+GPU in the browser, free for a few GPU-hours a day and liable to disconnect.
+\textbf{T4} and \textbf{L4} are the entry-level NVIDIA cards it hands out,
+with 16 and 24\,GB of memory: that figure is the constraint behind every
+choice in this chapter.} on a T4 or L4 GPU, under the constraint of
+a daily free quota, which is why the experiment schedule is organised as ``one
+training per iteration'' rather than as sweeps.
 
-On the analysis side, pandas and scikit-learn \cite{pedregosa2011scikit} produce
-the stratified user split, scipy checks that the two halves have comparable
-length distributions, and a \emph{paired} bootstrap over the test users
-\cite{efron1993bootstrap} is what eventually decided the central question of
-Chapter~\ref{ch:scale}: resampling the same users for two models, so that the
-luck of the test draw cancels and only the difference between the models
-remains.
+On the analysis side, pandas\footnote{\textbf{pandas}, \textbf{scikit-learn} and
+\textbf{scipy}: the three standard Python libraries for, respectively,
+manipulating tables of data, machine-learning utilities, and statistical tests.
+None of them does any modelling here; they prepare and check the data.} and
+scikit-learn \cite{pedregosa2011scikit} produce the stratified user split, scipy
+checks that the two halves have comparable length distributions, and a
+\emph{paired} bootstrap\footnote{\textbf{Bootstrap}: error bars without any distributional assumption. Draw
+100 users at random \emph{with replacement} from the 100 test users, score
+both models on that draw, note the difference; repeat two thousand times; the
+middle 95\,\% of those differences is the confidence interval. \emph{Paired}
+means both models always see the same draw, so a lucky sample of easy users
+cancels out. An interval containing zero means the two are indistinguishable.}
+over the test users \cite{efron1993bootstrap} is what eventually decided the
+central question of Chapter~\ref{ch:scale}: resampling the same users for two
+models, so that the luck of the test draw cancels and only the difference
+between the models remains.
 
 \section{What I reused from my colleagues}
 

@@ -1,12 +1,7 @@
 % T1 -- Every dataset and test set used, measured on the files themselves.
 \begin{table}[t]
 \centering\footnotesize
-\caption[The datasets and their baselines]{The six data regimes used over the
-internship, and the persistence baseline each one produces. Event counts and
-record ranges are measured on the files themselves; baselines are the values
-reported for the corresponding runs. \emph{The baseline is a property of the
-data, not of the model}: it moves whenever the test users move, which happened
-each time a new approach required data the previous files did not carry.}
+\caption{The datasets and their baselines}
 \label{tab:datasets}
 \begin{tabular}{@{}l@{\hspace{5pt}}>{\raggedright\arraybackslash}p{4.6cm}@{\hspace{5pt}}r@{\hspace{6pt}}r@{\hspace{6pt}}l@{\hspace{5pt}}l@{}}
 \toprule
@@ -22,6 +17,14 @@ each time a new approach required data the previous files did not carry.}
 \bottomrule
 \end{tabular}
 
+\figtext{%
+The six data regimes used over the internship, and the persistence baseline
+each one produces. Event counts and record ranges are measured on the files
+themselves; baselines are the values reported for the corresponding runs.
+\emph{The baseline is a property of the data, not of the model}: it moves
+whenever the test users move, which happened each time a new approach required
+data the previous files did not carry.}
+
 \vspace{4pt}
 \begin{minipage}{\textwidth}\footnotesize
 \textbf{Events.} \sraw: $\approx$31{,}000 records over the 500 users.
@@ -35,10 +38,10 @@ each time a new approach required data the previous files did not carry.}
 \textbf{Two baselines for \smob.} 45.5\,\% is measured on the last 20\,\% of
 each test sequence; 43.1\,\% is measured on the whole sequence, position by
 position, after the evaluation was widened in the sixth iteration. Every
-\smob result is compared with the one that matches its own protocol.\\[2pt]
-\textbf{Users are never shared.} Train and test users are disjoint inside every
-regime, and the day-files share no users with each other at all, so no user
-appears in two regimes by construction, and absolute scores from two regimes
-are not comparable.
+\smob{} result is compared with the one that matches its own protocol.\\[2pt]
+\textbf{Train and test users are disjoint} inside every regime, so nothing the
+model is graded on was ever trained on. Each regime also draws its test users
+afresh, which is why absolute scores from two regimes are not comparable and
+only the gap to each one's own baseline is.
 \end{minipage}
 \end{table}

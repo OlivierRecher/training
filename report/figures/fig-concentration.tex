@@ -20,7 +20,7 @@
   ymin=0, ymax=100, ytick={0,20,...,100}, /pgf/bar width=9pt]
 \addplot[fill=clbase,draw=none] coordinates {(va,66.3)(vb,61.9)(vc,62.2)(vd,66.6)(ve,78.1)};
 \addplot[fill=clmodel,draw=none] coordinates {(va,66.0)(vb,61.9)(vc,61.9)(vd,68.1)(ve,78.6)};
-
+%
 % ---- (b) correlations ----
 \nextgroupplot[rephbar, height=5.4cm,
   title={(b) Pearson correlation between a per-user feature and that user's accuracy},
@@ -39,17 +39,29 @@
 \addplot[fill=clink,draw=none]   coordinates {(-0.101,vol)(-0.232,uniq)(-0.140,irr)(0.285,dom)(-0.773,switch)};
 \end{groupplot}
 \end{tikzpicture}}
-\caption[Concentration of the evaluation signal and per-user correlations]{(a)~The
-evaluation signal is extremely concentrated: the median user contributes 11
-predictions, while the most active tenth, 117 people, carries 58.6\,\% of
-the 54{,}173 predictions. Accuracy nevertheless barely moves across the groups,
-and the raw correlation with volume is weak ($r = +0.15$), so this is not a
-volume effect: heavy users simply happen to switch cell less often
-($r = -0.15$). (b)~Ranked by strength, the only feature that really explains
-per-user accuracy is how often the user changes cell, $r = -0.971$ on the
-1{,}173-user set, confirmed at $r = -0.773$ on the 100 held-out users of a
-different dataset. Features with a single bar were computed on one dataset only. Group sizes in
-panel~(a), left to right: 324, 234, 234, 234 and 117 users, carrying 353, 948,
-2{,}601, 7{,}553 and 42{,}718 predictions.}
+\caption{Concentration of the evaluation signal and per-user correlations}
 \label{fig:concentration}
+\figtext{%
+(a)~The 1{,}173 evaluated users, sorted by how many predictions each
+contributes and cut into five equal groups, the axis labels giving the range
+of each; grey-blue is the persistence baseline and dark blue the model, both
+scored on the same positions. The evaluation signal is extremely concentrated:
+the median user contributes 11 predictions, while the most active tenth, 117
+people, carries 58.6\,\% of the 54{,}173 predictions, so any average on this
+corpus is essentially the score of those 117 people. Accuracy nevertheless
+barely moves across the groups, and the raw correlation with volume is weak
+($r = +0.15$), so this is not a volume effect: heavy users simply happen to
+switch cell less often ($r = -0.15$). (b)~One bar per candidate feature, its
+length being the Pearson correlation between that feature and the user's own
+accuracy; zero means the feature says nothing, $\pm1$ that it says everything.
+Dark blue bars are measured on the 1{,}173-user set and teal bars on the 100
+held-out users of a different dataset; features with a single bar were
+computed on one dataset only. The ranking is not close. The cell-switch rate
+reaches $r = -0.971$ and is confirmed at $-0.773$ on the second corpus, while
+normalised entropy ($-0.811$) and dominant-cell frequency ($+0.696$) are the
+same information seen from other angles and everything else stays below
+$0.24$. Section~\ref{sec:retro-user} argues that the $-0.971$ is close to a
+tautology and that the distribution, not the correlation, is the real finding.
+Group sizes in panel~(a), left to right: 324, 234, 234, 234 and 117 users,
+carrying 353, 948, 2{,}601, 7{,}553 and 42{,}718 predictions.}
 \end{figure}

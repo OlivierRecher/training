@@ -1,4 +1,4 @@
-% F3 -- From a raw day-file to training sequences, and the disjoint user split.
+% F3 -- From a raw day-file to training sequences.
 \begin{figure}[t]
 \centering
 \fitwidth{%
@@ -48,16 +48,15 @@
 
 \node[draw=clrule,fill=white,rounded corners=2pt,align=left,inner sep=6pt,
       text width=14.4cm,font=\footnotesize,below=0.75cm of neq]
-  {\textbf{What the split guarantees, and what it does not.} The model never
-   sees a single test user before being graded, so nothing it scores is
-   memorised. But a user is \emph{one day}, and the day-files share no users at
-   all: the model can only ever learn how a \emph{population} moves, never how
-   one person moves. This single fact explains most of the ceilings reported in
-   Chapters~\ref{ch:user} and~\ref{ch:scale}.};
+  {\textbf{What the split guarantees.} The model never sees a single test user
+   before being graded, so nothing it scores is memorised. Since the unit is one
+   day per user, what it learns is how a \emph{population} moves, which is the
+   quantity Chapters~\ref{ch:user} and~\ref{ch:scale} measure.};
 \end{tikzpicture}}
-\caption[From a raw day-file to training sequences]{How a raw daily export
-becomes training material. The 400/100 figures are those of the
-mobile-user day; the other tiers of Table~\ref{tab:datasets}
-follow the same four stages with different counts.}
+\caption{From a raw day-file to training sequences}
 \label{fig:data-flow}
+\figtext{%
+How a raw daily export becomes training material. The 400/100 figures are
+those of the mobile-user day; the other tiers of Table~\ref{tab:datasets}
+follow the same four stages with different counts.}
 \end{figure}

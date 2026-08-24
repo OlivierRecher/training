@@ -1,11 +1,7 @@
 % T4 -- The seven worst users, and what actually separates them (slide 28).
 \begin{table}[t]
 \centering\small
-\caption[The seven worst users]{Every user scoring at or below 12.5\,\% on
-\sfilt. ``Preds.'' is how many predictions that user contributes and
-``ceiling'' is the best score reachable given the cells present in that user's
-own history. Three distinct situations hide behind one bad number, and only
-the third is about the model.}
+\caption{The seven worst users}
 \label{tab:worst-users}
 \begin{tabular}{@{}lrrrrl@{}}
 \toprule
@@ -23,6 +19,12 @@ the third is about the model.}
 \bottomrule
 \end{tabular}
 
+\figtext{%
+Every user scoring at or below 12.5\,\% on \sfilt. ``Preds.'' is how many
+predictions that user contributes and ``ceiling'' is the best score reachable
+given the cells present in that user's own history. Three distinct situations
+hide behind one bad number, and only the third is about the model.}
+
 \vspace{4pt}
 \begin{minipage}{\textwidth}\footnotesize
 \textbf{A} (four users): between two and twelve predictions each, and a ceiling
@@ -35,4 +37,5 @@ the \emph{same} antenna, e.g.\ \cid{UKVCHE102} and \cid{UKVCHE104}, which is the
 observation that led to measuring mobility on the site root while keeping the
 raw \cid{cell\_id} as the prediction target.
 \end{minipage}
+\figsource{\nbllm}{train\_cellid\_llm.ipynb}{the per-user error listing}
 \end{table}

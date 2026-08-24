@@ -4,7 +4,7 @@
 \replegend{\swatch{clmove}~average site-change rate over the day \qquad
            \swatch{clbase}~persistence baseline \qquad
            \swatch{clmodel}~detection agreement}
-\fitwidth{%
+\plotlink{\nbllm}{\fitwidth{%
 \begin{tikzpicture}
 \begin{groupplot}[
   group style={group size=2 by 1, horizontal sep=2.1cm},
@@ -18,7 +18,7 @@
   ylabel={\%}, /pgf/bar width=10pt]
 \addplot[fill=clmove,draw=none] coordinates {(G0,33)(G1,42)(G2,51)(G3,52)};
 \addplot[fill=clbase,draw=none] coordinates {(G0,56.3)(G1,41.7)(G2,19.7)(G3,17.8)};
-
+%
 % ---- (b) detection from the context prefix ----
 \nextgroupplot[title={(b) group recovered from the past alone},
   symbolic x coords={ca,cb,cc,cd},
@@ -30,16 +30,28 @@
 \addplot[fill=clmodel,draw=none] coordinates {(cc,92)(cd,92)};
 \node[font=\scriptsize,text=clmodel,anchor=south,align=center] at (axis cs:cc,104) {reference protocol};
 \end{groupplot}
-\end{tikzpicture}}
-\caption[Group difficulty and group detectability]{(a)~The group label is not
-merely descriptive: it says in advance how hard a user will be. G0 changes site
-about a third of the time and ``repeat the last cell'' is already right 56.3\,\%
-of the time for them; G3 changes site half again as often and the same rule is
-right only 17.8\,\% of the time. (b)~At inference only a user's past exists, so
-the group must be computed from the context prefix and never from the target.
-At the reference 80\,\% context the pipeline recovers the right group 92 times
-out of 100 unaided; below roughly 60\,\% of the day there is not enough history
-to tell the profiles apart, which is what the two pale bars mean. \smob,
-400 train / 100 test users.}
+\end{tikzpicture}}}
+\caption{Group difficulty and group detectability}
 \label{fig:group-difficulty}
+\figtext{%
+(a)~The group label is not merely descriptive: it says in advance how hard a
+user will be. The orange bar is a group's average site-change rate over the
+day and the grey-blue bar its persistence baseline, read against each other
+rather than on a common scale. G0 changes site about a third of the time and
+``repeat the last cell'' is already right 56.3\,\% of the time for them; G3
+changes site half again as often and the same rule is right only 17.8\,\% of
+the time. The ranking of persistence is exactly the inverse of the ranking of
+mobility, which is worth verifying rather than assuming. (b)~At inference only
+a user's past exists, so the group must be computed from the context prefix
+and never from the target, or the whole idea is circular. The bars give how
+often the group detected from the prefix alone agrees with the group computed
+from the full sequence, at four context fractions. At the reference 80\,\%
+context the pipeline recovers the right group for 92 of the 100 held-out users
+unaided, and 90\,\% context gives the same figure; below roughly 60\,\% of the
+day it collapses, 61\,\% agreement at half a day and 44\,\% at 30\,\%, which
+is what the two pale bars mean. The mechanism is therefore worth using on a
+user with most of a day behind them and worth nothing on a cold start, which
+is exactly the case in which an operator has the least information and would
+most want a prediction. \smob{}, 400 train / 100 test users.}
+\figsource{\nbllm}{train\_cellid\_llm.ipynb}{the group-detection and per-group baseline cells}
 \end{figure}

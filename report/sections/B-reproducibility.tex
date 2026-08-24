@@ -22,7 +22,7 @@ described anywhere in this report, by design.
 
 \begin{table}[t]
 \centering\footnotesize
-\caption[Artefacts]{The artefacts, and what each one produces.}
+\caption{Artefacts}
 \label{tab:artefacts}
 \begin{tabular}{@{}ll>{\raggedright\arraybackslash}p{6.2cm}@{}}
 \toprule
@@ -31,11 +31,13 @@ described anywhere in this report, by design.
 \texttt{train\_cellid\_llm.ipynb}   & one training run   & iterations 1--8: all results up to $+3.7\pt$ \\
 \texttt{train\_cellid\_final.ipynb} & four nested tiers  & iterations 10--11: the scaling ladder and its bootstrap \\
 \texttt{train\_cellid\_week.ipynb}  & seven weekdays     & the day-of-week study, which did not complete \\
-\texttt{make data-train}            & data preparation   & the train/test JSONL files, timestamps kept as hours \\
-\texttt{make data-merge}            & data preparation   & \seleven: one merged training file, nested test sets \\
-\texttt{make groups}                & analysis           & the behavioural-group report of Chapter~\ref{ch:groups} \\
+Data-preparation pipeline           & data preparation   & the train/test JSONL files, timestamps kept as hours; \seleven{} as one merged training file with nested test sets \\
+Behavioural-group analysis          & analysis           & the four profiles and the derived windows of Chapter~\ref{ch:groups} \\
 \bottomrule
 \end{tabular}
+
+\figtext{%
+The artefacts, and what each one produces.}
 \end{table}
 
 \section{Configuration keys that carry a methodological decision}
@@ -46,8 +48,7 @@ which claim they are changing.
 
 \begin{table}[t]
 \centering\footnotesize
-\caption[Configuration keys carrying a decision]{Configuration values that
-encode a methodological choice rather than a tuning preference.}
+\caption{Configuration keys carrying a decision}
 \label{tab:config-keys}
 \begin{tabular}{@{}ll>{\raggedright\arraybackslash}p{6.7cm}@{}}
 \toprule
@@ -66,4 +67,8 @@ encode a methodological choice rather than a tuning preference.}
 \texttt{val\_subsample} (scaling)        & 250 fixed users& the same stopping rule at every tier \\
 \bottomrule
 \end{tabular}
+
+\figtext{%
+Configuration values that encode a methodological choice rather than a tuning
+preference.}
 \end{table}

@@ -2,9 +2,7 @@
 {\footnotesize
 \renewcommand{\arraystretch}{1.16}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.85cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{3.5cm}@{}}
-\caption[The toolchain and its verdicts]{The toolchain, fixed in the first week
-and unchanged for the rest of the internship. ``Verdict'' is my judgement after
-eleven iterations, not the state of the art.}
+\caption{The toolchain and its verdicts}
 \label{tab:tools}\\
 \toprule
 \textbf{Tool / technique} & \textbf{What it is for} & \textbf{What I used it for} & \textbf{Verdict} \\
@@ -45,14 +43,18 @@ Early stopping + best checkpoint & Keep the peak, not the last epoch & All runs 
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{Compute and analysis}}\\
 Google Colab (T4 / L4) & Cloud GPU & Every reported run & \textbf{Kept}, under a daily free quota \\
-Local Apple MPS & Laptop GPU & Smoke tests only & \textbf{Kept for smoke tests}, full training swaps to a crawl \\
 pandas, scikit-learn & Sampling and the stratified user split & Split stratified on record count & \textbf{Kept} \\
 scipy & Length-balance check between train and test & Mann--Whitney test on the split & \textbf{Kept} \\
 Paired bootstrap & Is a difference real? & 2{,}000 resamples over the test users & \textbf{Kept}, decisive in Chapter~\ref{ch:scale} \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{Reused from colleagues}}\\
 Nino's extracts & Mobile-user day-files, pulled with his own analysis tooling & \smob, \stwok, \seleven & \textbf{Used as delivered} \\
-Tiphain \& Benjamin's move-or-stay dataset & Separate the steps that are decisions & Motivated the filtering behind \sfilt and \smob & \textbf{Reused as an idea} \\
+Tiphain \& Benjamin's move-or-stay dataset & Separate the steps that are decisions & Motivated the filtering behind \sfilt{} and \smob & \textbf{Reused as an idea} \\
 Tiphain's prompting approach & Predict with a frozen model & Not taken, the complementary branch & \textbf{Not adopted}, and rightly so: different tool, different question \\
 Tiphain's 200-record resampling & Give every user equal weight & Tested as \slev & \textbf{Diagnosis right, remedy harmful} (Chapter~\ref{ch:scale}) \\
-\end{longtable}}
+\end{longtable}
+
+\figtext{%
+The toolchain, fixed in the first week and unchanged for the rest of the
+internship. ``Verdict'' is my judgement after eleven iterations, not the state
+of the art.}}

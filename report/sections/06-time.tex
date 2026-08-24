@@ -53,7 +53,11 @@ because only one of them survived the chapter.
         and of the event to predict, the model can learn that some cells are
         morning cells and others evening cells.
   \item[H2, some hours deserve more weight.] There are
-        \emph{transition windows}: hours at which a user has a higher chance of
+        \emph{transition windows}:\footnote{\textbf{Transition window}: a range of hours at which a user is judged more
+likely to move between home and activity area, and where the training loss is
+therefore multiplied. With a $\times4$ weight at 19h, a mistake at 19h counts
+four times as much as the same mistake at 14h, so training will trade four
+ordinary errors for one there. No data is duplicated.} hours at which a user has a higher chance of
         moving between their home area and their activity area. If the loss at
         those positions is multiplied, the optimiser is forced to get them right
         rather than to accept them as the price of a good average.
@@ -67,7 +71,11 @@ activity-cell classification already used: \textbf{04--06h} and
 \section{H1 holds: the hour is genuinely read}
 
 Whether a model uses an input is not something to assume; it is something to
-test by breaking the input. Three corruptions were applied to the same trained
+test by breaking the input. Three corruptions, an
+\emph{ablation},\footnote{\textbf{Ablation}: an experiment that removes or corrupts one component and
+measures what the score loses, which is how a useful input is told from a
+decorative one. Used three times here: on the hour tokens, and twice on the
+group token in Chapter~\ref{ch:groups}.} were applied to the same trained
 checkpoint and the same test users, changing \emph{only} the hour tokens and
 leaving the cell sequence untouched. Panel~(b) of
 Figure~\ref{fig:hour-ablation} gives the result.
@@ -102,8 +110,12 @@ were made together:
         same gradient on a well-populated window and on a sparse, noisy one, so
         $18$--$20$h was raised to $\times4$ while $04$--$06$h stayed at
         $\times2$.
-  \item \textbf{A weighted sampler.} Training windows containing at least one
-        in-window transition were drawn three times more often than the rest,
+  \item \textbf{A weighted sampler.}\footnote{\textbf{Sampler}: the component that chooses which slice of training data
+to show next; making it \emph{weighted} means some slices are drawn more
+often. Distinct from a weighted loss, which changes how much a mistake counts
+rather than how often the question is asked.} Training windows containing at least
+        one in-window transition were drawn three times more often than the
+        rest,
         which raised the share of training batches containing such a transition
         from 45.1\,\% to 71.2\,\%, without duplicating a single record.
   \item \textbf{Full-sequence evaluation.} Until then only the last 20\,\% of

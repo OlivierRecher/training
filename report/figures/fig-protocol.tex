@@ -53,13 +53,14 @@
   \node[font=\scriptsize,anchor=west] at (11.5,-0.30){\textbf{top-5} \ \textcolor{clgain}{right}};
 \end{scope}
 \end{tikzpicture}}
-\caption[The evaluation protocol]{The evaluation protocol, which never changes
-across the report. (a)~Each user's day is cut once into a context prefix and a
-target suffix; the model is trained on the prefix only. (b)~At scoring time the
-model predicts position $i$ from positions $0\ldots i-1$ of the \emph{real}
-history, so it can neither see the future nor drift on its own errors, and
-the baseline is scored on the very same positions. (c)~The same ranked output
-gives top-1, top-3 and top-5; the example is the one used in the weekly
-presentations.}
+\caption{The evaluation protocol}
 \label{fig:protocol}
+\figtext{%
+The evaluation protocol, which never changes across the report. (a)~Each
+user's day is cut once into a context prefix and a target suffix; the model is
+trained on the prefix only. (b)~At scoring time the model predicts position
+$i$ from positions $0\ldots i-1$ of the \emph{real} history, so it can neither
+see the future nor drift on its own errors, and the baseline is scored on the
+very same positions. (c)~The same ranked output gives top-1, top-3 and top-5;
+the example is the one used in the weekly presentations.}
 \end{figure}

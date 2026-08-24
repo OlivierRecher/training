@@ -1,12 +1,7 @@
 % T7 -- Per-group transition windows vs the single global guess (slides 51, 54).
 \begin{table}[t]
 \centering\small
-\caption[Per-group transition windows, and what they separate]{The windows are
-not chosen: they are derived from the training data as the contiguous hours
-where a group's own persistence falls furthest below its own average, that is,
-where ``repeat the last cell'' stops working \emph{for that profile}. A flat
-group legitimately receives no window at all. The lower block is the test that
-matters: whether a window actually lands on hard positions.}
+\caption{Per-group transition windows, and what they separate}
 \label{tab:group-windows}
 \begin{tabular}{@{}l>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{6.1cm}@{}}
 \toprule
@@ -23,6 +18,13 @@ G3 morning mover & 07--08h $\times2.0$, \ 10--13h $\times2.3$ & the mirror image
 \multicolumn{2}{@{}l}{Per-group windows}               & 19.0\,\% inside vs 46.4\,\% outside: \ $\mathbf{-27.4}$ \textbf{pp}, the hard hours \\
 \bottomrule
 \end{tabular}
+
+\figtext{%
+The windows are not chosen: they are derived from the training data as the
+contiguous hours where a group's own persistence falls furthest below its own
+average, that is, where ``repeat the last cell'' stops working \emph{for that
+profile}. A flat group legitimately receives no window at all. The lower block
+is the test that matters: whether a window actually lands on hard positions.}
 
 \vspace{4pt}
 \begin{minipage}{\textwidth}\footnotesize

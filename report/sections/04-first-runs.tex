@@ -18,15 +18,24 @@ Figure~\ref{fig:protocol}. Each user's day is cut once into a \emph{context}
 prefix and a \emph{target} suffix; the model is trained on the prefix and must
 produce the suffix, which it has never seen. At scoring time it predicts
 position $i$ from positions $0 \ldots i-1$ of the \emph{real} history, so it
-can neither see the future nor drift on its own earlier mistakes, and the
-persistence baseline answers the same questions at the same positions. The
-ranked output is then read at three depths: top-1, top-3 and top-5.
+can neither see the future nor drift on its own earlier
+mistakes,\footnote{\textbf{Teacher forcing}: scoring position $i$ from the true history rather
+than from what the model itself predicted earlier. If a user's real day is
+\cid{A},\,\cid{A},\,\cid{B},\,\cid{C} and the model answers \cid{A} for the
+third event, it is marked wrong but still handed the true prefix for the
+fourth. Otherwise one early mistake would poison every later answer.} and the persistence baseline answers
+the same questions at the same positions. The ranked output is then read at
+three depths: top-1, top-3 and top-5.
 
 \input{figures/fig-protocol}
 
 \section{Principle 1: the last epoch is never the model}
 
-A language model fine-tuned on a few hundred short sequences will memorise them.
+A language model fine-tuned on a few hundred short sequences will memorise
+them.\footnote{\textbf{Overfitting}: the point past which a model stops learning the
+regularity of the data and starts memorising the examples. The tell is in
+Figure~\ref{fig:validation-curves}: the training loss keeps falling while the
+score on unseen users turns and declines.}
 That is not a hypothesis; it is what the loss curve does. The clearest evidence
 in this project is a single run, deliberately allowed to continue to a hard
 ceiling of forty-nine epochs on \Draw: its training
@@ -43,7 +52,12 @@ how much it costs to ignore it. The checkpoint at the end of that run scored
 away sixteen points, and spends forty epochs of GPU time doing so. Acting on
 that, keeping the best checkpoint, stopping on a plateau, and adding mild
 anti-overfitting settings (adapter dropout 0.1, learning rate
-$1.5\times10^{-4}$, weight decay 0.01), moved test top-1 from 48.7\,\% to
+$1.5\times10^{-4}$, weight decay 0.01),\footnote{Three standard training knobs. \textbf{Dropout} 0.1: one tenth of the
+adapter's internal values are randomly zeroed at each step, so the model
+cannot lean on any single one. \textbf{Learning rate}: how big a step to take
+when adjusting the weights; $1.5\times10^{-4}$ is $0.00015$. \textbf{Weight
+decay} 0.01: a mild pull of every trainable number back towards zero.} moved test top-1 from 48.7\,\%
+to
 \textbf{64.4\,\%}, cut GPU time from seventy-two to twenty-nine minutes, and
 lifted top-3 from 76.2\,\% to 82.7\,\%.
 
@@ -58,15 +72,24 @@ stop.
 
 \section{Principle 2: the cut is part of the ruler, not of the model}
 
-The share of the day given as context, the \emph{context fraction}, looks
-like a hyperparameter of the experiment. It is not: it is part of the
+The share of the day given as context, the \emph{context
+fraction},\footnote{\textbf{Context fraction}: the share of a user's day handed to the model
+before it must predict the rest. For a user with 100 events, 80\,\% context
+means reading events 1--80 and being graded on 81--100. Distinct from the
+\emph{context window} of Chapter~\ref{ch:tools}, which is an architectural
+limit.} looks like a
+hyperparameter\footnote{\textbf{Hyperparameter}: a setting chosen by the
+experimenter before training, as opposed to a weight, which the training
+procedure discovers. Learning rate and number of epochs are hyperparameters; the
+whole point of this section is that the context fraction is \emph{not} one.} of
+the experiment. It is not: it is part of the
 measurement. Moving the cut changes which cell counts as ``the last one seen'',
 so it changes the persistence baseline too. A model evaluated at 90\,\% context
 is not a better model than the same model evaluated at 30\,\%; it is the same
 model measured against an easier ruler.
 
 Table~\ref{tab:context-sweep} is the evidence, and it contains the mistake this
-principle exists to prevent. On \Dfilt the model reaches
+principle exists to prevent. On \Dfilt{} the model reaches
 80.1\,\% at the reference 80/20 split, against a baseline of 79.0\,\%: a gap of
 $+1.1\pt$, and the first time in the project that a trained model cleared the
 one-line rule. Read on its own that looks like a result. Read across the three
@@ -76,7 +99,7 @@ three, it trails by $2.4\pt$. One split out of three passes.
 
 \input{tables/tab-context-sweep}
 
-The lower block of the same table settles it. On \Dmob
+The lower block of the same table settles it. On \Dmob{}
 a single trained model was evaluated at seven context fractions from 30\,\% to
 90\,\%: its accuracy rises monotonically from 41.5\,\% to 47.6\,\%, and the
 baseline rises with it, in lockstep, at every single value. No split beats the
@@ -86,8 +109,8 @@ by the same amount, so a rising accuracy curve across context fractions carries
 no information about the model at all.
 
 One clarification belongs here, because the two blocks of
-Table~\ref{tab:context-sweep} are not the same experiment. The \sfilt rows are
-three separate trainings, each with its own cut. The \smob rows are one
+Table~\ref{tab:context-sweep} are not the same experiment. The \sfilt{} rows are
+three separate trainings, each with its own cut. The \smob{} rows are one
 training at 80/20, evaluated seven times, so what they measure is
 \emph{robustness} to being given more or less history than the model was trained
 on, not which cut trains the best model. Both questions are legitimate; they are

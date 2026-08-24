@@ -1,0 +1,91 @@
+% F3b -- One training example: the JSONL record, and the same line as tokens.
+\begin{figure}[t]
+\centering
+
+{\footnotesize\textbf{(a) One user-day, as it is stored on disk.} One line of
+the training file \texttt{400\_users\_train.jsonl}, reformatted here over
+several lines for legibility. Nothing is a conversation in any real sense: the
+three roles are simply the slots the training library expects.\par}
+\vspace{3pt}
+
+\begin{lstlisting}
+{"conversations": [
+  {"role": "system",    "content": "You are an AI that generates a user's
+                                    cell-visit trajectory."},
+  {"role": "user",      "content": "Here is the sequence for this user."},
+  {"role": "assistant", "content": "User 2832452 | 200 events |
+                                    BSOCHO1 BSOCHO1 UKVCHE102 BSOCHO1 ..."}
+]}
+\end{lstlisting}
+
+\vspace{2pt}
+{\footnotesize
+\begin{tabular}{@{}p{1.8cm}p{11.15cm}@{}}
+\texttt{system} & The task description. Identical on every line of the file. \\
+\texttt{user}   & The request. Also identical everywhere: it is a placeholder,
+                  not a question. \\
+\texttt{assistant} & The answer the model must learn to produce, and the only
+                  part its mistakes are counted on. \\
+\end{tabular}\par}
+
+\vspace{0.55cm}
+\hrule height 0.4pt
+\vspace{0.45cm}
+
+{\footnotesize\textbf{(b) The same line, once the tokenizer has read it.} Each
+\cid{cell\_id} is one symbol, not a spelling; each event is preceded by its
+hour. Only the shaded positions contribute to the loss.\par}
+\vspace{5pt}
+
+\fitwidth{%
+\begin{tikzpicture}[font=\scriptsize,node distance=1.2pt,
+  tok/.style={draw=clrule,minimum height=0.55cm,inner xsep=3.5pt,inner ysep=0pt},
+  hr/.style={tok,draw=clmove,fill=clmove!20},
+  cl/.style={tok,draw=clmodel,fill=clmodel!18},
+  pfx/.style={tok,fill=clsoft,text=clrule},
+]
+\node[pfx] (t1) {\textless system\textgreater};
+\node[pfx,right=of t1] (t2) {\dots};
+\node[pfx,right=of t2] (t3) {User 2832452};
+\node[pfx,right=of t3] (t4) {\textbar};
+\node[hr,right=of t4]  (t5) {\textless H07\textgreater};
+\node[cl,right=of t5]  (t6) {BSOCHO1};
+\node[hr,right=of t6]  (t7) {\textless H09\textgreater};
+\node[cl,right=of t7]  (t8) {BSOCHO1};
+\node[hr,right=of t8]  (t9) {\textless H12\textgreater};
+\node[cl,right=of t9]  (t10) {UKVCHE102};
+\node[hr,right=of t10] (t11) {\textless H18\textgreater};
+\node[cl,right=of t11] (t12) {BSOCHO1};
+\node[pfx,right=of t12] (t13) {\dots};
+
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},clrule]
+  ($(t1.south west)+(0,-2pt)$) -- ($(t4.south east)+(0,-2pt)$)
+  node[midway,below=5pt,font=\scriptsize,text=clrule,align=center] {prefix\\ \emph{not scored}};
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},clmodel]
+  ($(t5.south west)+(0,-2pt)$) -- ($(t13.south east)+(0,-2pt)$)
+  node[midway,below=5pt,font=\scriptsize,text=clmodel,align=center]
+  {the trajectory: the model is scored on the 4 blue positions only};
+\end{tikzpicture}}
+
+\vspace{0.15cm}
+\vspace{-0.15cm}
+\replegend{\swatch{clsoft}~prefix: masked out of the loss \qquad
+           \swatch{clmove!20}~hour token: \emph{given}, never predicted \qquad
+           \swatch{clmodel!18}~\cid{cell\_id}: the only positions scored}
+
+\caption{What one training example looks like}
+\label{fig:training-example}
+\figtext{%
+``The conversational fine-tuning format of TRL'' means only this. (a)~Each
+user-day is written as a three-slot JSON record. The \texttt{system} and
+\texttt{user} slots are boilerplate, repeated identically on every line of the
+file, and the whole trajectory lives in the \texttt{assistant} slot; choosing
+that format buys nothing conceptually, it buys compatibility with a library
+that already knows how to read it. (b)~Reading the same line left to right is
+what the model actually sees: the prefix sets the scene and is masked out of
+the loss, each hour token is handed to the model for free because the current
+time is always known when a prediction is requested, and only the
+\cid{cell\_id} positions are ever scored. A trajectory of 200 events costs 400
+tokens plus a short prefix, which is why the hour is coded as one symbol
+rather than written out as a time.}
+\end{figure}

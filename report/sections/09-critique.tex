@@ -39,20 +39,15 @@ with this pipeline.
 
 \section{Limitations that bound the conclusions}
 
-\paragraph{One day per user, and users are never repeated.} This is the
-strongest limitation and it is a property of the corpus, not of the method. No
-user appears in two day-files, and each user is observed for exactly one day. The
-model can therefore only ever learn how a \emph{population} moves, never how one
-person moves. Every result here is a population prior, and the flatness of the
-scaling curve should be read in that light: what saturates is the description of
-a population, which is a much smaller object than the description of a person.
-Removing this limitation requires data that follows the same identifiers across
-days, not more people.
+\paragraph{What saturates is a population, not a person.} The unit of this work
+is one day per user, so what the model learns is how a \emph{population} moves.
+The flatness of the scaling curve should be read in that light: a population
+prior is a much smaller object than a personal habit, and it is unsurprising
+that it is bought early.
 
-\paragraph{Day-to-day and corpus-to-corpus comparisons are deltas only.} Because
-the day-files share no users, the test population changes whenever the corpus
-does, and with it the baseline. Two runs on two corpora cannot be compared on
-absolute accuracy at all. This is why every figure in this report is a gap, and
+\paragraph{Corpus-to-corpus comparisons are deltas only.} The test population
+changes whenever the corpus does, and with it the baseline, so two runs on two
+corpora cannot be compared on absolute accuracy at all. This is why every figure in this report is a gap, and
 why the two headline numbers of the last two iterations, $+3.7\pt$ on a
 100-user test set with a 43.1\,\% baseline, and $+4.2\pt$ on a different 100-user
 test set with a 48.2\,\% baseline, are reported as two separate
@@ -119,20 +114,10 @@ was measured, and the report claims none.
   \item \textbf{Repeat one tier with a different seed.} Half an hour, and it
         establishes the noise floor below which none of the small differences in
         this report should be read.
-  \item \textbf{Run the capacity control}, one adapter of four times the rank
-        against four adapters, to establish how much of the cross-training
-        gain is the grouping and how much is the extra capacity.
-  \item \textbf{Give the largest dataset the compute its size deserves}, and see
-        whether the flat half of the scaling curve is a property of the data or
-        of the budget.
-  \item \textbf{Encode the hour as a pair of sine and cosine features} rather
-        than as twenty-four independent tokens, so that neighbouring hours share
-        structure instead of being unrelated symbols. The ablation shows the
-        model already learns the ordering; this would give it for free.
-  \item \textbf{Obtain multi-day data for the same users.} This is the only item
-        on the list that changes what the problem \emph{is} rather than how well
-        it is measured, and everything the report leaves open depends on it:
-        home--activity transitions observed several times per person, day
-        $N{+}1$ predicted from days $1 \ldots N$, and any notion of
-        personalisation at all.
+  \item \textbf{Extend the question from one day to several}, on a corpus whose
+        identifiers are stable across days. This is the only item on the list
+        that changes what the problem \emph{is} rather than how well it is
+        measured, and it is the natural continuation of this work: predicting
+        day $N{+}1$ from days $1 \ldots N$, and with it any notion of
+        personalisation.
 \end{enumerate}

@@ -6,7 +6,10 @@
 This report covers a second-year engineering internship carried out from
 29 June to 28 August 2026 at the \host, under the supervision of \supervisor.
 The host laboratory holds a corpus of anonymised mobile-network signalling
-records donated by a Czech operator, and hosts a small group of interns
+records\footnote{\textbf{Signalling record}: a row written by the operator each time a
+handset and a base station exchange a message. It is produced by the network,
+not by the user, so an untouched phone still generates them: a record is not a
+movement.} donated by a Czech operator, and hosts a small group of interns
 analysing it from different angles.
 
 \section{The corpus, and the team around it}
@@ -15,7 +18,10 @@ The material is described in detail in Chapter~\ref{ch:data}; in one sentence, i
 is fifteen daily exports covering 12 to 26 March 2014 for the Karlovy Vary study
 area, holding between 80{,}217 and 99{,}504 users per day, where each row records
 one person's whole day as a list of (cell, timestamp) pairs. The area is served
-by 369 distinct radio cells mounted on 113 physical base stations.
+by 369 distinct radio \textbf{cells}\footnote{\textbf{Cell}: the area covered by one antenna pointing in one direction.
+\textbf{Base station} (or \emph{site}, \emph{mast}): the installation
+carrying several such antennas, typically three or four. A phone can therefore
+change cell without the person moving.} mounted on 113 physical base stations.
 
 Four colleagues were working on that same corpus when I arrived, with different
 instruments, and the division of labour is worth stating because it determines
@@ -26,10 +32,10 @@ are mobile and present in the recording area across the day. He had built
 tooling for that analysis, and he very kindly used it to produce the per-day
 extracts and the user selections I asked for, which was a considerable help and
 without which most of the experiments reported here would not have been
-practical. Tiphain and Benjamin had framed the problem as a binary one, namely
-whether a user moves or stays at the next record, and were pursuing the
-prediction side of it by \emph{prompting} a frozen language model, that is, by
-writing better instructions rather than changing any weights. Reda was working on the
+practical. Tiphain and Benjamin were pursuing the
+prediction side of it by \emph{prompting}\footnote{\textbf{Prompting}: getting an answer from a model by writing an
+instruction for it, leaving its internal numbers untouched. \textbf{Fine-tuning}, taken here, instead lets the data change them.} a frozen language model, that is, by writing
+better instructions rather than changing any weights. Reda was working on the
 same corpus alongside them.
 
 \input{figures/fig-team-context}
@@ -38,21 +44,27 @@ same corpus alongside them.
 
 My branch was the other one: \emph{can a large language model, fine-tuned on
 these traces, predict a user's next \cid{cell\_id}?} Fine-tuning means the
-model's weights are actually modified by the data, as opposed to prompting, where
-they are frozen and only the instructions change. The two approaches answer
+model's weights\footnote{\textbf{Weights}: the hundreds of millions of numbers inside the model that
+turn an input into an output. ``Frozen'' means left exactly as its original
+authors trained them.} are actually modified by the data, as opposed to prompting, where they
+are frozen and only the instructions change. The two approaches answer
 different questions and neither supersedes the other.
 
 Why a language model at all, for a problem with no language in it? Because the
 shapes match. A trajectory is an ordered sequence of symbols drawn from a small
-closed vocabulary, 369 cell identifiers, and next-symbol prediction over a
-sequence is precisely what these models are built to do. Adapting one to this
-task is mostly a matter of teaching it that a \cid{cell\_id} is a symbol rather
-than a string of characters, which Chapter~\ref{ch:tools} describes.
+closed vocabulary,\footnote{\textbf{Vocabulary}: the fixed set of symbols a
+language model can read and produce. For a general model that is tens of
+thousands of word fragments; here 369 cell identifiers are \emph{added} to it,
+so that each cell becomes one symbol of its own.} 369 cell identifiers, and
+next-symbol prediction over a sequence is precisely what these models are built
+to do. Adapting one to this task is mostly a matter of teaching it that a
+\cid{cell\_id} is a symbol rather than a string of characters, which
+Chapter~\ref{ch:tools} describes.
 
-What makes the question genuinely hard is not the model. It is the competitor. A
-person's phone re-attaches to the same cell over and over, so the rule
-\emph{``predict that the next cell is the last one seen''}, one line of code,
-no parameters, no training, is right most of the time. That rule is called the
+What makes the question genuinely hard is not the model. It is the competitor.
+The rule \emph{``predict that the next cell is the last one seen''}, one line of
+code, no parameters, no training, is right 69.2\,\% of the time on a raw day of
+this corpus (Chapter~\ref{ch:data}). That rule is called the
 \textbf{persistence baseline} throughout this report, and beating it is the only
 result that means anything. For five of the eleven weekly iterations, nothing I
 trained managed to.
@@ -83,17 +95,21 @@ reader can check every later claim against them.
 
 Read against those two ideas, the outcome of the nine weeks is a modest but
 solid one: a fine-tuned model that clears the persistence baseline by
-\textbf{+4.3 points}, reproducibly and on two independent held-out test sets;
+\textbf{+4.3 points}, reproducibly and on two independent held-out test
+sets;\footnote{\textbf{Held-out test set}: users set aside before training and
+never shown to the model, on which the reported score is measured. Here train and
+test users are always disjoint people, so the model is graded only on strangers.}
 an operating point of about \textbf{2{,}000 training users}, below which the model
 merely imitates the rule and above which a further ten-fold increase in data
 buys $+0.1\pt$ and no measurable gain; and a quantified statement of where the
-difficulty actually lives, 22 points between behavioural profiles and 42
-points between history lengths, against 0.3 points across the entire scaling
-ladder.
+difficulty actually lives, 22 points between behavioural profiles, against
+0.3 points across the entire scaling ladder.
 
 \section{How to read this report}
 
-The chapters are organised by \emph{question}, not by week. Chapter~\ref{ch:data}
+The chapters are organised by \emph{question}, not by week.
+Chapter~\ref{ch:sota} states the one published result the rest of the report
+leans on, and what it leaves open. Chapter~\ref{ch:data}
 establishes what the data is and what it permits. Chapter~\ref{ch:tools} settles
 the instrument, which fine-tuning regime, which model, which representation.
 Chapter~\ref{ch:first} sets out three measurement principles that cost more, in
@@ -112,6 +128,8 @@ what I did next and why, and closes with a short \emph{Retrospective} giving
 my own view of that step with hindsight. The week-by-week chronology, which the
 thematic organisation deliberately breaks, is preserved in
 Appendix~\ref{app:timeline}. Appendix~\ref{app:repro} gives the configuration of
-every run and the provenance of every headline number,
-Appendix~\ref{app:ethics} the data-protection and external-validity limits, and
+every run and the provenance of every headline number, and
 Appendix~\ref{app:glossary} a glossary of the terms and acronyms used here.
+Terms are also defined in a footnote where they first appear, and the figures
+and tables that report a measured result name, under their caption, the notebook
+or command the numbers come from.
