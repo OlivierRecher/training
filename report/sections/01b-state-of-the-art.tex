@@ -1,34 +1,89 @@
 \chapter{State of the art}
 \label{ch:sota}
 
-\section{The one published result this report leans on}
+Eight published works matter to this report, and this chapter says what each one
+gives it. Two set the frame every later result is read in, three place the
+instrument, two are the closest relatives of its one substantial gain, and one
+marks the boundary between the published task and the task actually taken on
+here.
+
+\section{How predictable a person is, and why that is the first question}
 \label{sec:sota-ceiling}
 
-Predicting where a person goes next is not a new question, and the literature on
-it is large. What follows is deliberately not a survey of it, for two reasons.
-The internship had eleven weeks and no access to a comparable corpus, so no
-published number here could have been reproduced or contradicted; and the
-argument the following chapters make does not need a survey. It needs one idea, stated once.
+The literature on predicting where someone goes next is large, and the part of
+it that matters most here is not the part that proposes predictors. It is the
+part that measures how much room a predictor has before it starts.
 
-The idea is the one established by Song et al.\ \cite{song2010limits}: how well a
-person's next location can be predicted is mostly a property of \emph{that
-person}, not of the predictor. A user whose day is spent in one or two cells is
-almost perfectly predictable; a user who moves between many is not, and no model
-removes that difference. Predictability, in other words, is bounded per
-individual by how spread out that individual's own history is.
+Song et al.\ measured exactly that \cite{song2010limits}. From three months of
+mobile-phone records for 45{,}000 people, they treated each person's sequence of
+visited towers as a source of symbols and asked how much of the next position is
+already implied by the order of everything that came before. From that quantity,
+an entropy,\footnote{\textbf{Entropy}: a measure of how spread out and how
+disordered a set of possibilities is. A user seen in two cells in a fixed
+alternation has low entropy; one seen in forty in no particular order has high
+entropy.} they derived a ceiling on the accuracy that \emph{any} predictor could
+ever reach on that person, whatever its sophistication, and found that ceiling
+narrowly peaked at 93\,\%.
 
-Everything else this chapter says is measured on the corpus of
-Chapter~\ref{ch:data}, not taken from anywhere.
+Three things in that paper matter to this report, and the 93\,\% is the least of
+them.
 
-\section{Why that makes the trivial rule the real competitor}
+The first is that the ceiling turned out to be uniform. The authors state their
+own expectation plainly, and it was wrong: they expected heavy travellers to be
+harder to predict than people who never leave their neighbourhood, and found
+instead that past a radius of ten kilometres the ceiling stops depending on
+distance travelled at all. Someone covering hundreds of kilometres a week is
+bounded no lower than someone whose whole life fits in a ten-kilometre circle.
+Whatever separates an easy user from a hard one, it is not how much ground that
+user covers.
 
-If predictability comes from repetition, then the rule \emph{``predict that the
-next cell is the last one seen''}, one line of code, no parameters, no
-training, is already right most of the time. On a raw day of this corpus it is
-right \textbf{69.2\,\%} of the time (Chapter~\ref{ch:data}). That rule is the
-\textbf{persistence baseline}, and it is the only yardstick used in this report.
+The second is that a uniform ceiling does not imply a uniform score. The same
+paper also computes what is predictable from a user's visit frequencies alone,
+ignoring the order in which places were visited, and reports that this quantity
+is spread very widely across the population and peaks near 30\,\%. The room is
+therefore the same for everyone while what a predictor extracts from it is not,
+and the variability lives in how much of the ceiling a given signal can reach.
+That is the quantity Chapters~\ref{ch:user} and~\ref{ch:groups} measure on this
+corpus, where it runs from 0 to 100\,\% depending on the user.
 
-Two conventions follow from it, and they are used everywhere after this page.
+The third is a curve the paper publishes almost in passing, and not having read
+it sooner cost me an iteration. Splitting the week into 168 hourly slots, they
+measure how often a user is found in their most-visited location for that hour
+of the week. The answer is about 70\,\% across the population, but close to
+90\,\% during the night, when people are reliably at home, with clear minima
+around midday and between six and seven in the evening. The hours at which
+people are hard to predict were published in 2010, they are not the small hours,
+and Chapter~\ref{ch:time} spends its length rediscovering that the expensive
+way.
+
+\section{The ceiling is mostly standing still}
+
+A ceiling of 93\,\% sounds like an invitation, and the most useful thing I read
+during the internship was the argument that it is not one.
+
+Ikanovic and Mollgaard make that argument precisely \cite{ikanovic2017alternative}.
+The quantity Song et al.\ bound answers the question \emph{``where will this
+person be during the next time slot''}. In most time slots the answer is
+``exactly where they are now'', because people do not move most of the time, so
+most of the apparent 93\,\% is not knowledge about anybody's habits. It is the
+fact that staying put is the normal case. The authors therefore re-ran the same
+machinery on the question a predictor is actually useful for, \emph{``where will
+this person go next''}, by removing the repetitions before measuring, and on GPS
+traces from 604 people the ceiling fell from above 90\,\% to \textbf{71\,\%}.
+Roughly a quarter of what looked like predictability was the passage of time
+rather than the behaviour of a person.
+
+This names my competitor, and it is why the whole report is written against one.
+If most of a high score is people staying where they are, then the rule
+\emph{``predict that the next cell is the last one seen''}, one line of code, no
+parameters, no training, already collects most of it. On a raw day of this corpus
+that rule is right \textbf{69.2\,\%} of the time (Chapter~\ref{ch:data}), which
+is roughly where Song et al.'s hourly regularity sits and well below the 93\,\%
+ceiling, and the distance between those two numbers is the entire working space
+of this report. The rule is the \textbf{persistence baseline}, and it is the only
+yardstick used here.
+
+Two conventions follow, and they are used everywhere after this page.
 
 \paragraph{Every result is a gap, never an absolute.} The same trivial rule
 scores 69.2\,\% on one of the files used here and 43.1\,\% on another, because
@@ -37,36 +92,130 @@ therefore describes the test set more than it describes the model. Only the
 distance to the baseline measured on the same positions survives that, so that
 is what every number in this report is.
 
-\paragraph{The interesting quantity is per segment, not on average.} If
-predictability is a property of the user, a population average hides the thing
+\paragraph{The interesting quantity is per segment, not on average.} If the
+ceiling is uniform but the score is not, a population average hides the thing
 worth reporting. Chapters~\ref{ch:user} and~\ref{ch:groups} measure the spread
-directly: 22 points between behavioural profiles, against three tenths of a
+directly: 22.4 points between behavioural profiles, against four tenths of a
 point across an entire training-size ladder.
 That decomposition is this report's main claim.
 
-\section{What is left open, and this report asks}
+\section{What has been used to predict, and the two ways of using a language model}
 
-Four things separate the result above from the task actually taken on here, and
-they are the questions the remaining chapters answer.
+The predictors themselves I take from one place. Luca et al.\ survey the whole
+deep-learning branch of human mobility, from recurrent
+networks\footnote{\textbf{Recurrent network}: a neural network that reads a
+sequence one element at a time while carrying a summary of what it has already
+read, so a prediction can depend on more than the last item.} that read a
+trajectory step by step to attention mechanisms that let a prediction reach back
+to a matching moment in an earlier day \cite{luca2021survey}. Two points in it
+bear on the chapters below. Giving a model the time of day alongside the
+location has been standard practice in that branch for years, so the mechanism
+of Chapter~\ref{ch:time} is not an idea of mine; what
+Chapters~\ref{ch:time} and~\ref{ch:groups} add is the finding that \emph{which}
+hours matter is a property of the user rather than of the corpus. And the
+attention that the better recurrent models had to be extended with is the native
+operation of the architecture behind current language
+models,\footnote{\textbf{Transformer}: the architecture behind current language
+models, in which every position of a sequence can attend directly to every
+earlier one.} which is one honest reason to reach for an existing language model
+here instead of building a predictor from scratch.
 
-\begin{enumerate}
-  \item \textbf{A cell, not a place.} Published mobility work predicts the next
-        \emph{place}: a home, a workplace, a clustered stay point. The target
-        here is the next \cid{cell\_id}, which is noisier: 12.4\,\% of
-        consecutive records change cell without anyone moving, because the
-        handset re-attached to another cell of the same antenna
-        (Chapter~\ref{ch:data}).
-  \item \textbf{A population, not an individual.} A per-individual bound is
-        estimated from a long history per person, whereas the question here is a
-        within-day one on a corpus of single days, so what can be learned is a
-        \emph{population} prior. How far that goes is measured in
-        Chapter~\ref{ch:user}.
-  \item \textbf{A language model rather than a purpose-built one.} Whether a
-        general next-symbol predictor, fine-tuned, is worth its cost on this
-        task is the question of Chapter~\ref{ch:tools} onward. Two colleagues
-        were testing the other branch on the same corpus by prompting a frozen
-        model (Chapter~\ref{ch:intro}); this report takes the fine-tuning one.
-  \item \textbf{Where the difficulty lives.} Not the aggregate score but its
-        decomposition across users, hours and behavioural profiles, in
-        Chapters~\ref{ch:user} to~\ref{ch:groups}.
-\end{enumerate}
+Since 2023 that is what the field has been doing, and it split into the same two
+branches the team I joined was split into (Chapter~\ref{ch:intro}).
+
+The first branch leaves the model's weights alone and writes a better
+instruction. Wang et al.\ turn a user's recent stays into a text prompt,
+separating the long-term history from the immediate context, and ask GPT-3.5 for
+the next location \cite{wang2023llmmob}. They get results competitive with
+purpose-built deep-learning predictors without training anything, and report
+that the design of the prompt, not the choice of model, is what moves the score.
+That is in substance the branch Tiphain and Benjamin were taking on this corpus.
+
+The second branch changes the weights, and it is mine. Qin et al.\ fine-tune a
+small open-source model with the same parameter-efficient method used here,
+across six mobility datasets, and argue that a model adapted this way transfers
+to a new corpus better than prompting a large commercial one does, at a fraction
+of the running cost \cite{qin2025mobllm}. It is the closest published analogue
+of what this report attempts, and worth reading against
+Chapter~\ref{ch:scale}: their case for fine-tuning rests on transfer between
+corpora, which is precisely the thing a single-day, single-area corpus cannot
+demonstrate.
+
+Two practitioner articles belong in this chapter too, because they are what the
+first week actually ran on. Heavybit's guide \cite{heavybit2025} walks the loop
+end to end: cleaning and tokenising a dataset of one's own, starting from a
+pre-trained base rather than from nothing, training only a subset of the
+parameters, renting a cloud GPU, and which hyperparameters to touch first, the
+learning rate, the batch size and the number of epochs. It is not a research
+paper and does not claim to be, and that was exactly its value: it fixed the
+vocabulary and the order of operations a week before I had any of my own.
+Tewari's walkthrough of fine-tuning a Llama model on a custom dataset
+\cite{tewari2025} supplied the concrete details of the same path.
+
+\section{A population, split into kinds of user}
+
+The step that produced this report's only substantial gain, grouping users by
+\emph{when} they move and letting each group inform its own members
+(Chapter~\ref{ch:groups}), has two ancestors I found only after the fact.
+
+Pappalardo et al.\ establish the observation \cite{pappalardo2015returners}.
+Looking at both mobile-phone and GPS data, they find that a population does not
+spread smoothly along a single axis of mobility but separates into two
+recognisable kinds of person: returners, who keep cycling between a small set of
+habitual locations however far they travel, and explorers, whose set of visited
+places keeps growing. The two behave differently enough that a phenomenon
+spreading through the population moves at a different speed depending on which
+kind carries it. The four behavioural profiles of Chapter~\ref{ch:groups} are a
+version of the same finding with the axis changed, since what separates mine is
+not how far a user travels but at which hours they change site.
+
+Jeong, Leconte and Prouti\`ere supply the mechanism \cite{jeong2016cluster}. Their
+argument is that any single user's history is too short to estimate that user's
+own transition behaviour from, so they cluster users and predict one user's next
+location partly from the trajectories of those who resemble them. The property
+that makes it more than a heuristic is that their method falls back to
+per-user prediction when the similarities are not really present in the training
+data, so clustering cannot make things worse. Chapter~\ref{ch:groups} does the
+same thing in a different place: the group is a single token prepended to the
+sequence, so one model serves every group and the grouping is a hint rather than
+a partition, and it has to be recoverable from the user's past alone, which is
+the constraint that chapter spends most of its length on.
+
+\section{Predicting cells rather than places}
+
+Everything above predicts a \emph{place}: a home, a workplace, a stay point
+obtained by clustering nearby records together. The target here is the next
+\cid{cell\_id}, which is a different object, and the work that predicts cells
+rather than places sits in the networking community and asks the question for a
+different purpose. Chen, M\'eriaux and Valentin predict which cell a handset will
+hand over\footnote{\textbf{Handover}: the moment the network moves an ongoing
+connection from one cell to another, normally because the new one now offers a
+better signal.} to, from radio measurements, so that the network can prepare the
+handover before it happens \cite{chen2013nextcell}. They have signal strengths
+this corpus does not carry, and they do not need to know where the person is
+going, only which antenna will serve them next.
+
+Predicting a cell from a trace of cells, with no radio measurements, sits
+between the two and inherits a drawback from each. 12.4\,\% of consecutive
+records in this corpus change cell without anyone moving, because the handset
+re-attached to another cell of the same antenna (Chapter~\ref{ch:data}), so part
+of what a model here is asked to predict is a network decision rather than a
+human one. And the human part of it is graded on cells rather than on places,
+which is a finer target than the published ceilings were ever estimated for.
+
+\section{What this chapter does not give me}
+
+None of the numbers above is a number this report can be scored against. The
+corpora differ, the spatial and temporal granularities differ, and above all the
+unit differs. A per-person ceiling is estimated from months of history for one
+individual, whereas this corpus holds one day per person and no person appears
+in two of its files, so what can be learned here is a regularity of the
+\emph{population} rather than of anybody in particular. Eleven weeks were not
+enough to obtain a comparable corpus, and no result in the chapters that follow
+is presented as beating or failing to beat a published one.
+
+What the literature did give me is the frame the whole report is written in.
+Predictability belongs to the user; most of it is the user standing still; and
+the honest measure of a model is therefore its distance from the rule that
+assumes the user never moves, computed on the same positions. Everything after
+this page is that measurement, taken apart.

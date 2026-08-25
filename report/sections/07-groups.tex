@@ -24,12 +24,11 @@ morning (07h--12h), day (12h--18h) and evening (18h--22h). Four broad bands were
 used rather than five, six or eight because each band must keep enough events
 per user to be estimated at all; with finer bands a user with three night-time
 events gets a night-time rate of 0\,\% or 100\,\%, which is noise dressed as a
-profile. For the same reason each band is shrunk\footnote{\textbf{Shrinkage}: pulling a noisy estimate towards a more reliable one,
-in proportion to how little evidence supports it. A user with 3 night-time
-events, 1 of them a site change, has a raw night rate of 33\,\%, which means
-little; shrunk towards their all-day rate of 50\,\% with a weight of 8 pseudo-observations it becomes $(3\times 0.33 + 8\times 0.50)/11 = 0.45$. A user with
-200 night-time events is barely moved.} towards the user's global rate, so that a sparse band
-cannot dominate their profile.
+profile. For the same reason each band is drawn towards the user's global
+rate: a band holding three events barely constrains anything, so it ends up
+most of the way towards that user's all-day rate, while a band holding two
+hundred is left almost untouched. A sparse band
+cannot dominate a profile that way.
 
 Two properties of this definition matter more than the clustering itself.
 
@@ -58,16 +57,18 @@ collapses, 61\,\% agreement at half a day, 44\,\% at 30\,\%, because there is
 simply not enough history to tell a morning mover from an evening mover. That is
 a real operational limit, and it is stated here rather than averaged away: the
 group mechanism is worth using on users with most of a day behind them, and is
-worth nothing on a cold start.
+worth nothing on a cold start, that is, on someone who has just appeared and
+offers an hour of history instead of a day.
 
 \section{The four profiles}
 
-Fitted\footnote{\textbf{Clustering}: an automatic procedure that sorts items into groups by
-resemblance, with nobody labelling anything. Here the algorithm is given each
-user's four-band profile and asked for four \textbf{centroids}, average
-profiles, then assigns each user to the nearest. The number four was chosen,
-not discovered.} on the 400 training users of
-\smob, the four groups are the ones shown in
+The grouping itself is done by clustering,\footnote{\textbf{Clustering}: an
+automatic procedure that sorts items into groups by resemblance, with nobody
+labelling anything. Each group is summarised by its average profile, and each
+item is assigned to the nearest one.} which is handed each user's four-band
+profile and asked for four average profiles. The number four was chosen rather than
+discovered, and it is the one arbitrary parameter of the whole mechanism.
+Fitted on the 400 training users of \smob, the groups are the ones shown in
 Figure~\ref{fig:group-profiles}, and they are shapes in time rather than
 levels.
 
@@ -100,23 +101,19 @@ would hope for and is worth verifying rather than assuming.
 
 \input{figures/fig-group-difficulty}
 
-Quantitatively, the group label explains 69\,\% of the
-variance\footnote{\textbf{Variance explained}, written $R^2$: the share of the spread in a
-quantity that a predictor accounts for. With $y_i$ user $i$'s accuracy,
-$\hat{y}_i$ the prediction and $\bar{y}$ the overall average, \[ R^2 \;=\; 1 -
-\frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}. \] $R^2 = 0$ is
-no better than always guessing the average, $R^2 = 1$ exactly right for
-everyone. If four users score $10, 30, 70, 90\,\%$ and their group alone lets
-you say $20, 20, 80, 80\,\%$, the errors are $10$ each against deviations of
-$40, 20, 20, 40$ from the average, giving $R^2 = 1 - 400/4000 = 0.90$.} in
-per-user predictability on the training users and 72\,\% on the held-out users,
-with the group centroids fitted on the training side only. One confound has to
-be acknowledged: sequence length also predicts predictability, and $\log
+Quantitatively, knowing nothing whatever about a user except which of the four
+profiles they fall into accounts for 69\,\% of the spread in per-user
+predictability on the training users and 72\,\% on the held-out ones, with the
+profiles fitted on the training side only. The scale runs from 0\,\%, where the
+label would tell you no more than always guessing the population average, to
+100\,\%, where it would tell you each user's score exactly. One rival
+explanation has to be acknowledged: sequence length also predicts
+predictability, and $\log
 n$\footnote{$\log n$: the logarithm of a user's number of records. Using it rather than
 $n$ says that what matters is the \emph{order of magnitude} of a history: 10
 to 100 records counts the same as 100 to 1{,}000. Sequence lengths here span
 more than a decade.} alone
-explains 48\,\% of that variance. But the label still explains 38\,\% of what
+explains 48\,\% of that spread. But the label still explains 38\,\% of what
 remains after removing $\log n$, and the scale-free part of the profile, the
 morning-minus-evening asymmetry of its shape, correlates with $\log n$ at only
 $-0.28$. The groups are therefore not merely a proxy for ``long users versus
@@ -150,15 +147,17 @@ least being aimed at the right places.
 
 \section{The first attempt failed, and the ablation says why}
 
-Given all that, the first cross-training run was expected to work and did not.
+Given all that, the first cross-training\footnote{\textbf{Cross-training}:
+training one set of weights on several users at once, so that users who behave
+alike inform each other instead of being learnt as independent
+sequences.} run was expected to work and did not.
 The group was encoded as a dedicated token prepended to the sequence, one
 shared \cid{<Gk>} symbol at the head, so that causal
-attention\footnote{\textbf{Attention}: the mechanism by which each position in a Transformer
-looks at other positions and decides how much weight to give each.
-\textbf{Causal} means it may look only backwards, never at the future, which
-is what makes the model a next-symbol predictor. Putting the group token first
-therefore exposes it to every later position, in principle.} lets it condition every subsequent
-prediction, and the run scored 41.3\,\% against a baseline of 43.1\,\%:
+attention\footnote{\textbf{Attention}: the mechanism by which each position of
+the model looks at the others and decides how much weight to give each.
+\textbf{Causal} means it may look only backwards, never at the future.} lets it
+condition every subsequent prediction, a token placed first being visible to
+every position that follows it, and the run scored 41.3\,\% against a baseline of 43.1\,\%:
 $-1.8\pt$, no better than anything before it.
 
 The useful part is the ablation that followed, because it does not merely say
@@ -198,8 +197,13 @@ mechanism.
   \item \textbf{Route each group to its own adapter.} The base model stays
         frozen and four independent LoRA adapters are trained, one per group. The
         group is no longer text that attention may or may not attend to: it
-        physically decides which weights run. This is the structural change, and
-        it is drawn in Figure~\ref{fig:adapter-routing}(b).
+        physically decides which weights run. Each adapter is trained on every
+        user of its group and on no one else, which is what turns four hundred
+        users into four cross-trained populations rather than four hundred
+        independent fits: people who move at the same hours now shape the same
+        weights, and a user with sixty events benefits from everyone whose day
+        has the same shape. This is the structural change, and it is drawn in
+        Figure~\ref{fig:adapter-routing}(b).
   \item \textbf{Keep the per-group windows.} The one component already measured
         to be correct was left untouched.
 \end{enumerate}
@@ -221,13 +225,16 @@ is the strongest single result in this report.
 
 \input{figures/fig-group-gain}
 
-The gain ranks in exactly the reverse order of the baseline. G0, whom repetition
-already predicts 56.0\,\% of the time, gains $+0.8\pt$. G3, whom repetition
-predicts 17.8\,\% of the time, gains $+6.4\pt$. Across the four groups the
-correlation between how easy a group is and how much the model adds to it is
-$-0.99$. Read against Chapter~\ref{ch:user}, this is the same finding arriving
-from the other direction: difficulty lives in the user, and a model earns its
-cost precisely where the trivial rule fails.
+The gain ranks in exactly the reverse order of the baseline, with no exception
+among the four. G0, whom repetition already predicts 56.0\,\% of the time, gains
+$+0.8\pt$; G3, whom repetition predicts 17.8\,\% of the time, gains $+6.4\pt$.
+The ordering is the result, and I state it as an ordering on purpose: a
+correlation coefficient over four points would land within a whisker of $-1$ for
+any inverse ranking whatsoever, so quoting one here would dress the same
+observation up as a stronger measurement than it is. Read against
+Chapter~\ref{ch:user}, this is that chapter's finding arriving from the other
+direction: difficulty lives in the user, and a model earns its cost precisely
+where the trivial rule fails.
 
 Two honest qualifications belong with that number. The $+3.7\pt$ is the
 unweighted mean over the four groups, each counted once. Weighted by how many
@@ -236,16 +243,12 @@ population sits in the group that needed no model. And the whole mechanism
 depends on the group being detectable, which Figure~\ref{fig:group-difficulty}(b)
 showed collapses below roughly 60\,\% of a day of history.
 
-\section{What I did next, and why}
-
-Two things followed directly. First, the three hard groups, 72\,\% of users,
-hold essentially all of the remaining headroom, so any further work should be
-aimed at them rather than at the average. Second, and more consequentially, a
-profile can only be estimated if enough users share it: with 400 training users,
-the smallest of the four groups contains a few dozen people. That raises a
-question that is not about architecture at all, \emph{how many users does a
-model need before the population itself is described?} Chapter~\ref{ch:scale}
-answers it, and the answer turned out to be smaller than expected.
+One thing this number is not is the report's headline. It is what the
+configuration is worth on four hundred training users, and the configuration
+itself, hour tokens plus one adapter per behavioural group, is carried unchanged
+into Chapter~\ref{ch:scale}, where the same architecture on larger populations
+measures $+4.2$ and $+4.3\pt$ against their own baselines. The mechanism is
+established here; its ceiling is measured there.
 
 \section{Retrospective}
 \label{sec:retro-groups}
@@ -265,12 +268,15 @@ mean over the four profiles, each counted once. Weighted by how many users each
 profile actually contains it is $+3.3\pt$, and that is the figure an operator
 would experience, because 28\,\% of the population sits in the group that needed
 no model at all. Given the choice again I would lead with $+3.3$ and mention
-$+3.7$ as the per-profile mean, not the other way round.
+$+3.7$ as the per-profile mean, not the other way round. Both are numbers about
+this iteration and this corpus of four hundred users, which is why neither is
+the figure quoted in the abstract.
 
 The second is a control I did not run. Four adapters is four times the trainable
 capacity of one, so part of the gain may be capacity rather than the group
-information itself. Training a single adapter of four times the rank, on the
-same data, would have separated the two, and I would run that comparison
+information itself. Training a single adapter carrying as many trainable
+numbers as the four together, on the same data, would have separated the two,
+and I would run that comparison
 first if I picked the work up again. My expectation is that most of the effect
 is the grouping, because the ablations of the failed run showed the model
 extracting nothing at all from the group when it arrived as a token rather than

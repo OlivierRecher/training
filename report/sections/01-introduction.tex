@@ -34,7 +34,7 @@ extracts and the user selections I asked for, which was a considerable help and
 without which most of the experiments reported here would not have been
 practical. Tiphain and Benjamin were pursuing the
 prediction side of it by \emph{prompting}\footnote{\textbf{Prompting}: getting an answer from a model by writing an
-instruction for it, leaving its internal numbers untouched. \textbf{Fine-tuning}, taken here, instead lets the data change them.} a frozen language model, that is, by writing
+instruction for it, leaving its internal numbers untouched. \textbf{Fine-tuning}, taken here, instead lets the data change them. Figure~\ref{fig:prompting} is one such instruction.} a frozen language model, that is, by writing
 better instructions rather than changing any weights. Reda was working on the
 same corpus alongside them.
 
@@ -42,8 +42,15 @@ same corpus alongside them.
 
 \section{The question I was given}
 
-My branch was the other one: \emph{can a large language model, fine-tuned on
-these traces, predict a user's next \cid{cell\_id}?} Fine-tuning means the
+My branch was the other one: \emph{can a large
+language model,\footnote{\textbf{LLM}, \emph{large language model}: a neural
+network trained to predict the next symbol of a sequence. Nothing in that
+definition is specific to language, which is why one can be pointed at a
+trajectory.} fine-tuned on
+these traces, predict a user's next \cid{cell\_id}\footnote{\cid{cell\_id}: the
+identifier of one radio cell, e.g.\ \cid{BSOCHO1}. It is a structured string
+rather than an opaque token, and Figure~\ref{fig:cellid-anatomy} takes it
+apart.}?} Fine-tuning means the
 model's weights\footnote{\textbf{Weights}: the hundreds of millions of numbers inside the model that
 turn an input into an output. ``Frozen'' means left exactly as its original
 authors trained them.} are actually modified by the data, as opposed to prompting, where they
@@ -66,8 +73,18 @@ The rule \emph{``predict that the next cell is the last one seen''}, one line of
 code, no parameters, no training, is right 69.2\,\% of the time on a raw day of
 this corpus (Chapter~\ref{ch:data}). That rule is called the
 \textbf{persistence baseline} throughout this report, and beating it is the only
-result that means anything. For five of the eleven weekly iterations, nothing I
+result that means anything. For five of the eleven iterations, nothing I
 trained managed to.
+
+Figure~\ref{fig:worked-example} is the whole task on two positions of one day,
+and it is worth looking at before anything else, because it shows where the
+competitor cannot be beaten and where it can. When a user stays where they are,
+repeating the last cell is correct and both predictors score the point for
+nothing. When a user leaves, the rule necessarily fails, and the answer has to
+come from somewhere else. Every point reported in this document is won on
+positions of that second kind.
+
+\input{figures/fig-worked-example}
 
 \section{The spine of this report}
 
@@ -76,13 +93,12 @@ reader can check every later claim against them.
 
 \begin{enumerate}
   \item \textbf{Every result is a gap to the persistence baseline, measured on
-        the same data.} An absolute accuracy on this task is close to
-        meaningless: the same trivial rule scores 69.2\,\% on one population and
-        43.1\,\% on another, because the populations differ. The corpus changed
-        four times over the internship, each time because a new approach
-        needed data the previous files did not carry, and with it the
-        difficulty of the test users. Only the distance to the matching baseline
-        survives that.
+        the same data.} The corpus changed four times over the internship, each
+        time because a new approach needed data the previous files did not
+        carry, and the difficulty of the test users changed with it. An absolute
+        accuracy therefore describes the population it was measured on more than
+        it describes the model; only the distance to the matching baseline
+        survives.
   \item \textbf{The score is set by the user; the model moves the residual.}
         Per-user accuracy on this task varies from 0\,\% to 100\,\%, and what
         explains it is how repetitive that person's mobility already is. The
@@ -94,22 +110,31 @@ reader can check every later claim against them.
 \end{enumerate}
 
 Read against those two ideas, the outcome of the nine weeks is a modest but
-solid one: a fine-tuned model that clears the persistence baseline by
-\textbf{+4.3 points}, reproducibly and on two independent held-out test
-sets;\footnote{\textbf{Held-out test set}: users set aside before training and
-never shown to the model, on which the reported score is measured. Here train and
-test users are always disjoint people, so the model is graded only on strangers.}
-an operating point of about \textbf{2{,}000 training users}, below which the model
-merely imitates the rule and above which a further ten-fold increase in data
-buys $+0.1\pt$ and no measurable gain; and a quantified statement of where the
-difficulty actually lives, 22 points between behavioural profiles, against
-0.3 points across the entire scaling ladder.
+solid one. A fine-tuned model clears the persistence baseline by \textbf{+4.3
+points}\footnote{\textbf{Point} means \emph{percentage point} throughout: an
+accuracy of 54.5\,\% against a baseline of 50.2\,\% is $+4.3$ points, not
+$+4.3$ percent. Every headline number in this report is a difference of two
+accuracies.} of top-1
+accuracy\footnote{\textbf{Top-1 accuracy}: the share of predictions whose
+highest-ranked candidate is the correct \cid{cell\_id}. \textbf{Top-3} and
+\textbf{top-5} ask whether it is among the three or five highest-ranked: the
+same predictions read at three depths.} on the largest corpus, and $+4.2$ points
+on a second, independent held-out test set.\footnote{\textbf{Held-out test set}:
+users set aside before training and never shown to the model, on which the
+reported score is measured. Here train and test users are always disjoint
+people, so the model is graded only on strangers.} The data needed for that is
+bounded: the edge grows from $+0.6$ to $+4.2$ points between 400 and 1{,}900
+training users, and a further ten-fold increase buys $+0.1\pt$ and no measurable
+gain. And the difficulty is not where I expected it to be, 22.4 points separate
+the behavioural profiles of the population against four tenths of a point across
+the entire scaling ladder.
 
 \section{How to read this report}
 
 The chapters are organised by \emph{question}, not by week.
-Chapter~\ref{ch:sota} states the one published result the rest of the report
-leans on, and what it leaves open. Chapter~\ref{ch:data}
+Chapter~\ref{ch:sota} sets out what is already
+known about how predictable a person is, what has been used to predict it, and
+what that leaves open at the point this work starts. Chapter~\ref{ch:data}
 establishes what the data is and what it permits. Chapter~\ref{ch:tools} settles
 the instrument, which fine-tuning regime, which model, which representation.
 Chapter~\ref{ch:first} sets out three measurement principles that cost more, in
@@ -122,14 +147,10 @@ the project's only substantial gain. Chapter~\ref{ch:scale} asks how many users
 that requires, and finds the answer sooner than expected.
 Chapters~\ref{ch:critique} and~\ref{ch:conclusion} consolidate.
 
-Each of Chapters~\ref{ch:data} to~\ref{ch:scale} follows the same internal
-shape, the question, what I did, what the numbers said, what I concluded, and
-what I did next and why, and closes with a short \emph{Retrospective} giving
-my own view of that step with hindsight. The week-by-week chronology, which the
-thematic organisation deliberately breaks, is preserved in
-Appendix~\ref{app:timeline}. Appendix~\ref{app:repro} gives the configuration of
+Each of Chapters~\ref{ch:data} to~\ref{ch:scale} closes with a short
+\emph{Retrospective} giving my own view of that step with hindsight. The
+chronology, which the thematic organisation deliberately breaks, is preserved in
+Appendix~\ref{app:timeline}; Appendix~\ref{app:repro} gives the configuration of
 every run and the provenance of every headline number, and
-Appendix~\ref{app:glossary} a glossary of the terms and acronyms used here.
-Terms are also defined in a footnote where they first appear, and the figures
-and tables that report a measured result name, under their caption, the notebook
-or command the numbers come from.
+Appendix~\ref{app:glossary} a short glossary of the terms that recur from
+chapter to chapter.

@@ -18,13 +18,9 @@ Figure~\ref{fig:protocol}. Each user's day is cut once into a \emph{context}
 prefix and a \emph{target} suffix; the model is trained on the prefix and must
 produce the suffix, which it has never seen. At scoring time it predicts
 position $i$ from positions $0 \ldots i-1$ of the \emph{real} history, so it
-can neither see the future nor drift on its own earlier
-mistakes,\footnote{\textbf{Teacher forcing}: scoring position $i$ from the true history rather
-than from what the model itself predicted earlier. If a user's real day is
-\cid{A},\,\cid{A},\,\cid{B},\,\cid{C} and the model answers \cid{A} for the
-third event, it is marked wrong but still handed the true prefix for the
-fourth. Otherwise one early mistake would poison every later answer.} and the persistence baseline answers
-the same questions at the same positions. The ranked output is then read at
+can neither see the future nor drift on its own earlier mistakes, which
+panel~(b) of Figure~\ref{fig:protocol} draws, and the persistence baseline
+answers the same questions at the same positions. The ranked output is then read at
 three depths: top-1, top-3 and top-5.
 
 \input{figures/fig-protocol}
@@ -49,17 +45,18 @@ The important part is not that overfitting happened, it was expected, but
 how much it costs to ignore it. The checkpoint at the end of that run scored
 48.7\,\% on the held-out users. The checkpoint at the validation peak scored
 64.2\,\%. Reading the end of training instead of its best point therefore throws
-away sixteen points, and spends forty epochs of GPU time doing so. Acting on
+away $15.5\pt$, and spends forty epochs of GPU time doing so. Acting on
 that, keeping the best checkpoint, stopping on a plateau, and adding mild
 anti-overfitting settings (adapter dropout 0.1, learning rate
-$1.5\times10^{-4}$, weight decay 0.01),\footnote{Three standard training knobs. \textbf{Dropout} 0.1: one tenth of the
-adapter's internal values are randomly zeroed at each step, so the model
-cannot lean on any single one. \textbf{Learning rate}: how big a step to take
-when adjusting the weights; $1.5\times10^{-4}$ is $0.00015$. \textbf{Weight
-decay} 0.01: a mild pull of every trainable number back towards zero.} moved test top-1 from 48.7\,\%
+$1.5\times10^{-4}$, weight decay 0.01),\footnote{Three standard knobs.
+\textbf{Dropout}: a tenth of the adapter's internal values are zeroed at random
+at each step, so the model cannot lean on any single one. \textbf{Learning
+rate}: how big a step to take when adjusting a weight. \textbf{Weight decay}: a
+mild pull of every trainable number back towards zero.} moved test top-1 from 48.7\,\%
 to
-\textbf{64.4\,\%}, cut GPU time from seventy-two to twenty-nine minutes, and
-lifted top-3 from 76.2\,\% to 82.7\,\%.
+\textbf{64.4\,\%}, which is $+15.7\pt$ for the checkpoint rule and the three
+settings together. It also cut GPU time from seventy-two to twenty-nine
+minutes, and lifted top-3 from 76.2\,\% to 82.7\,\%.
 
 Panels~(b), (c) and~(d) of Figure~\ref{fig:validation-curves} confirm that the
 shape is a property of the task rather than of one run: on three further
@@ -127,11 +124,9 @@ measured on a benchmark with no room in it.
 
 The same trained architecture, on three corpora with different populations,
 faces baselines of 69.2\,\%, 79.0\,\% and 45.5\,\%. Nothing about the rule
-changed between those three numbers; the users did. This is why every result in
-this report is a gap rather than an accuracy, and why a corpus decision, the
-move to mobile, non-absent users described in Chapter~\ref{ch:data}, was worth
-more than any hyperparameter: it is what created a benchmark on which the
-question could be measured at all.
+changed between those three numbers; the users did. That is why the corpus
+decision of Chapter~\ref{ch:data} was worth more than any hyperparameter: it is
+what created a benchmark on which the question could be measured at all.
 
 \section{What the three principles settled}
 
@@ -151,14 +146,6 @@ much to do with the outcome. A corollary experiment made the same point
 statistically: on a 100-user version of the corpus, per-user accuracy ranged from
 10\,\% to 100\,\% and the model never passed 42.1\,\%. One hundred users is not a
 population; it is a handful of anecdotes with an average printed underneath.
-
-\section{What I did next, and why}
-
-If the same trained model scores 100\,\% on one person and 0\,\% on another, then
-the average accuracy is the least interesting number available. The interesting
-quantity is what distinguishes those two people, and whether it is something a
-model can act on at all. Chapter~\ref{ch:user} measures that, and the answer was
-strong enough to reorganise the rest of the internship.
 
 \section{Retrospective}
 \label{sec:retro-first}

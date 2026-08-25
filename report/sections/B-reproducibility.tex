@@ -1,54 +1,23 @@
 \chapter{Reproducibility}
 \label{app:repro}
 
-This appendix records what would be needed to reproduce the results: the
-configuration of every run family, and the provenance of every headline number.
-The datasets themselves are described in Table~\ref{tab:datasets}, with counts
+This appendix records what would be needed to reproduce the results. Three
+tables cover it: the training configuration of every run family, the artefact
+behind every headline number quoted in the body, and the handful of
+configuration keys that encode a decision rather than a preference. The
+datasets themselves are described in Table~\ref{tab:datasets}, with counts
 measured on the files rather than quoted.
 
-\section{Hyperparameters}
-
+\bigskip
 \input{tables/tab-hyperparams}
 
-\section{Provenance of the headline numbers}
-
+\bigskip
 \input{tables/tab-provenance}
 
-\section{Artefacts}
-
-Three notebooks and a small data-preparation pipeline produce everything above.
-Table~\ref{tab:artefacts} lists them factually; none of their internals is
-described anywhere in this report, by design.
-
-\begin{table}[t]
+\bigskip
+\begin{minipage}{\textwidth}
 \centering\footnotesize
-\caption{Artefacts}
-\label{tab:artefacts}
-\begin{tabular}{@{}ll>{\raggedright\arraybackslash}p{6.2cm}@{}}
-\toprule
-\textbf{Artefact} & \textbf{Scope} & \textbf{Produces} \\
-\midrule
-\texttt{train\_cellid\_llm.ipynb}   & one training run   & iterations 1--8: all results up to $+3.7\pt$ \\
-\texttt{train\_cellid\_final.ipynb} & four nested tiers  & iterations 10--11: the scaling ladder and its bootstrap \\
-\texttt{train\_cellid\_week.ipynb}  & seven weekdays     & the day-of-week study, which did not complete \\
-Data-preparation pipeline           & data preparation   & the train/test JSONL files, timestamps kept as hours; \seleven{} as one merged training file with nested test sets \\
-Behavioural-group analysis          & analysis           & the four profiles and the derived windows of Chapter~\ref{ch:groups} \\
-\bottomrule
-\end{tabular}
-
-\figtext{%
-The artefacts, and what each one produces.}
-\end{table}
-
-\section{Configuration keys that carry a methodological decision}
-
-A handful of configuration values are not tuning knobs but encode a decision
-argued in the body. They are listed here so that a reader who changes one knows
-which claim they are changing.
-
-\begin{table}[t]
-\centering\footnotesize
-\caption{Configuration keys carrying a decision}
+\captionof{table}{Configuration keys carrying a decision}
 \label{tab:config-keys}
 \begin{tabular}{@{}ll>{\raggedright\arraybackslash}p{6.7cm}@{}}
 \toprule
@@ -69,6 +38,6 @@ which claim they are changing.
 \end{tabular}
 
 \figtext{%
-Configuration values that encode a methodological choice rather than a tuning
-preference.}
-\end{table}
+Values that are not tuning knobs but encode a decision argued in the body, so
+that a reader who changes one knows which claim they are changing.}
+\end{minipage}

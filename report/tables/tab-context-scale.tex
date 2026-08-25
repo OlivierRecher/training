@@ -5,7 +5,7 @@
 \label{tab:context-scale}
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
-\textbf{Context} & \textbf{Predictions} & \textbf{Baseline} & \textbf{1{,}000 users} & \textbf{2{,}000 users} & \textbf{$\Delta$} \\
+\textbf{Context} & \textbf{Predictions} & \textbf{Baseline} & \textbf{900 users} & \textbf{1{,}900 users} & \textbf{$\Delta$} \\
 \midrule
 30\,\% & 5{,}491 & 47.1\,\% & 50.0\,\% \ ($+2.9$) & 51.4\,\% \ ($+4.3$) & $+1.4$ \\
 40\,\% & 4{,}703 & 46.8\,\% & 49.9\,\% \ ($+3.1$) & 51.4\,\% \ ($+4.6$) & $+1.5$ \\
@@ -18,8 +18,9 @@
 \end{tabular}
 
 \figtext{%
-Top-1 against the baseline at every context fraction, for the 1{,}000- and
-2{,}000-user tiers. The edge is already $+4.3\pt$ when only 30\,\% of the day
+Top-1 against the baseline at every context fraction, for the 900- and
+1{,}900-user tiers, counted in training users drawn from a day-file of 2{,}000.
+The edge is already $+4.3\pt$ when only 30\,\% of the day
 has been seen, so what the model adds is largely independent of how much
 history it is handed. \stwok, with the same 100 held-out users for both tiers;
 gaps to the baseline in brackets.}

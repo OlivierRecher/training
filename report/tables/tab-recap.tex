@@ -1,0 +1,46 @@
+% T14 -- Every headline run of the internship on one axis, gap by gap.
+\begin{table}[t]
+\centering\footnotesize
+\caption{Every iteration, on one axis}
+\label{tab:recap}
+\begin{tabular}{@{}c@{\hspace{8pt}}l@{\hspace{8pt}}l@{\hspace{8pt}}l@{\hspace{8pt}}r@{\hspace{8pt}}r@{\hspace{9pt}}r@{}}
+\toprule
+\textbf{It.} & \textbf{Corpus} & \textbf{Lever of that iteration} & \textbf{Protocol} & \textbf{Base.} & \textbf{Model} & \textbf{Gap} \\
+\midrule
+1  & \sraw     & pipeline built    & last 20\,\% & 69.2\,\% & 16.9\,\% & $-52.3$ \\
+2  & \sraw     & harness fixes     & last 20\,\% & 69.2\,\% & 64.4\,\% & $-4.8$  \\
+3  & \srawbig  & ten times more users & last 20\,\% & 81.6\,\% & 76.0\,\% & $-5.6$  \\
+4  & \sfilt    & filtering         & last 20\,\% & 79.0\,\% & 80.1\,\% & $\mathbf{+1.1}$ \\
+5  & \smob     & a cleaner corpus  & last 20\,\% & 45.5\,\% & 44.6\,\% & $-0.9$  \\
+6  & \smob     & hour tokens       & last 20\,\% & 45.5\,\% & 44.2\,\% & $-1.3$  \\
+7  & \smob     & group token       & full seq.   & 43.1\,\% & 41.3\,\% & $-1.8$  \\
+8  & \smob     & adapter routing   & full seq.   & 43.1\,\% & 46.8\,\% & $\mathbf{+3.7}$ \\
+9  & \stwok    & 1{,}900 users     & last 20\,\% & 48.2\,\% & 52.4\,\% & $\mathbf{+4.2}$ \\
+9  & \slev     & levelled records  & last 20\,\% & 76.5\,\% & 74.9\,\% & $-1.6$  \\
+10 & \seleven  & 21{,}000 users    & last 20\,\% & 50.2\,\% & 54.5\,\% & $\mathbf{+4.3}$ \\
+11 & \seleven  & analysis only     & \multicolumn{4}{@{}l@{}}{\textit{no new training: why the ladder climbs, then stops}} \\
+\bottomrule
+\end{tabular}
+
+\figtext{%
+The eleven iterations reduced to the only quantity that is comparable between
+them, the gap in points between the model and the persistence baseline of its
+own test users. Reading down the \textbf{Gap} column is reading the whole
+internship: five iterations below the trivial rule, one accidental win at
+iteration~4, and a real one from iteration~8 onward. Reading down the
+\textbf{Base.} column shows why no other column may be compared vertically,
+since the corpus, and with it the difficulty of the test users, changed four
+times. What each iteration actually did is in
+Appendix~\ref{app:timeline}.}
+
+\vspace{4pt}
+\begin{minipage}{\textwidth}\footnotesize
+``Last 20\,\%'' scores the final fifth of each test sequence, ``full seq.''
+every position of it, one at a time, which is strictly harder and lowers the
+baseline on the very same users from 45.5\,\% to 43.1\,\%
+(Chapter~\ref{ch:time}). Iteration~6 is the row whose single number understates
+it: its targeted sampling won $+2.6\pt$ inside the two guessed windows and lost
+more than that outside them. Iteration~9 appears twice because two independent
+things were tried that week, more users and levelled records.
+\end{minipage}
+\end{table}

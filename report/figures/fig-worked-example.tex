@@ -1,0 +1,67 @@
+% F1 -- What a single prediction is, and when a model can possibly earn anything.
+\begin{figure}[t]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  ev/.style={draw=clrule,fill=clsoft,rounded corners=1.5pt,inner sep=2pt,
+             font=\scriptsize\ttfamily,minimum width=1.6cm,minimum height=0.5cm},
+  tgt/.style={ev,fill=white,draw=clmodel,thick},
+  hr/.style={font=\scriptsize,text=clrule},
+  lbl/.style={font=\scriptsize,anchor=west},
+  ttl/.style={font=\footnotesize\bfseries,anchor=west},
+  note/.style={font=\scriptsize,text=clrule,anchor=north west,text width=13.4cm},
+]
+% ============================ (a) the user stays =========================
+\node[ttl] at (0,1.0) {(a) The user stays put: the trivial rule is already right};
+\foreach \i/\h/\c in {0/07h/BKVCHE1, 1/09h/BKVCHE1, 2/11h/UKVCHE102, 3/12h/BKVCHE1}{
+  \node[hr] at (\i*1.75,0.62) {\h};
+  \node[ev] at (\i*1.75,0.15) {\c};
+}
+\draw[clmodel,dashed] (6.05,-0.22) -- (6.05,0.80);
+\node[hr] at (6.85,0.62) {13h};
+\node[tgt] at (6.85,0.15) {\textbf{?}};
+\node[lbl] at (7.95,0.60) {the cell actually visited: \cid{BKVCHE1}};
+\node[lbl] at (7.95,0.24) {persistence answers \cid{BKVCHE1}: \textcolor{clgain}{\textbf{right}}};
+\node[lbl] at (7.95,-0.12) {the model answers \cid{BKVCHE1}: \textcolor{clgain}{\textbf{right}}};
+\node[note] at (0,-0.55)
+  {Positions of this kind are the majority, and they are the whole reason the
+   trivial rule is right 69.2\,\% of the time on a raw day: both answers are
+   free, and neither is about the model. In passing, \cid{UKVCHE102} at 11h is
+   another radio cell of the \emph{same} antenna as \cid{BKVCHE1}, so even that
+   step is a change of name rather than a movement
+   (Figure~\ref{fig:cellid-anatomy}).};
+
+% ============================ (b) the user moves =========================
+\begin{scope}[yshift=-3.5cm]
+\node[ttl] at (0,1.0) {(b) The user goes somewhere: the only kind of position a model can win};
+\foreach \i/\h/\c in {0/07h/BKVCHE1, 1/09h/BKVCHE1, 2/11h/UKVCHE102, 3/12h/BKVCHE1}{
+  \node[hr] at (\i*1.75,0.62) {\h};
+  \node[ev] at (\i*1.75,0.15) {\c};
+}
+\draw[clmodel,dashed] (6.05,-0.22) -- (6.05,0.80);
+\node[hr] at (6.85,0.62) {18h};
+\node[tgt] at (6.85,0.15) {\textbf{?}};
+\node[lbl] at (7.95,0.60) {the cell actually visited: \cid{BKVPAN1}};
+\node[lbl] at (7.95,0.24) {persistence answers \cid{BKVCHE1}: \textcolor{clloss}{\textbf{wrong}}};
+\node[lbl] at (7.95,-0.12) {the model answers \cid{BKVPAN1}: \textcolor{clgain}{\textbf{right}}};
+\node[note] at (0,-0.55)
+  {What makes this position answerable at all is the hour: 18h is when this
+   user leaves. Every point the model gains anywhere in this report is won on
+   positions of this second kind, and Chapter~\ref{ch:user} measures how few of
+   them there are.};
+\end{scope}
+\end{tikzpicture}}
+\caption{What one prediction is, and where a model can gain}
+\label{fig:worked-example}
+\figtext{%
+The task, on two positions of one day. Everything to the left of the dashed line
+is history the model reads, one hour token and one \cid{cell\_id} per event; the
+boxed position is the one being scored, and the model is told its hour but not
+its cell. The two panels deliberately share the same history: what differs is
+the moment being predicted. In (a) the user has not moved, so answering ``the
+last cell again'' is correct and both predictors score the point for nothing; in
+(b) the user leaves, the trivial rule necessarily fails, and the answer has to
+come from somewhere else. The two cases are illustrations, with identifiers taken
+from the study area's own vocabulary; the measured share of each kind is in
+Chapter~\ref{ch:data}.}
+\end{figure}

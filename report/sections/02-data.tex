@@ -36,12 +36,8 @@ and always \emph{follows} the \cid{cell\_id} it belongs to, so that
   h \;=\; \left\lfloor \frac{\mathit{ts}}{3600} \right\rfloor
   \label{eq:hour}
 \end{equation}
-gives the hour of day of that event.\footnote{$\lfloor\,\cdot\,\rfloor$ is the \emph{floor}: round down to the whole number
-below. An event stamped $\mathit{ts} = 44{,}408$ seconds gives
-$44{,}408/3{,}600 = 12.34$, so $h = 12$, between 12:00 and 13:00, in fact
-at 12:20:08. The remaining minutes and seconds are discarded on purpose, for
-the reason given in Chapter~\ref{ch:tools}: twenty-four values are learnable
-and 86{,}400 are not.} Only
+gives the hour of day of that event. The minutes and seconds are
+discarded on purpose, for the reason given in Chapter~\ref{ch:tools}. Only
 the user identifier, the record count and the (\cid{cell\_id}, timestamp) pairs
 are used in this work; the remaining metadata carries known aberrations, ages
 of 1078, negative values, and is not needed for a next-cell prediction.
@@ -56,7 +52,10 @@ that it knows where to route an incoming call. It happens whether or not anyone
 touches the phone.} and a base station communicate. That includes the case where
 nothing happens at all: a base station re-signals to the handsets attached to it
 on a regular cycle, typically every four hours on 2G and every two hours on
-3G. A user who spends the whole day in one place
+3G.\footnote{\textbf{2G}, \textbf{3G}: the second and third generations of
+mobile radio. Both are present in this corpus, and which one served a handset is
+readable from the first letter of the cell identifier, as
+Figure~\ref{fig:cellid-anatomy} shows.} A user who spends the whole day in one place
 therefore still produces records, at a rate set by the network rather than by
 the person. Two consequences follow immediately:
 
@@ -145,14 +144,10 @@ is stratified\footnote{\textbf{Stratified split}: instead of throwing users
 into train or test at random, they are first sorted into bands by sequence
 length and the split is made inside each band, which guarantees that both sides
 contain the same mix of short and long users.} on the number of records per user
-rather than taken at random, so that the two groups have comparable
-sequence-length distributions, checked with a Mann--Whitney
-test\footnote{\textbf{Mann--Whitney U test}: a rank-based check of whether two samples
-come from the same distribution, assuming nothing about its shape. Here a
-large $p$-value is the wanted outcome: train and test lengths cannot be told
-apart.} on the two length distributions. Without that
-precaution, a train/test split can silently hand the easier, longer users to one
-side.
+rather than taken at random, and once the split is made the two sets of
+sequence lengths are compared to confirm that the two sides really are
+consistent with each other. Without that precaution, a train/test split can
+silently hand the easier, longer users to one side.
 
 \paragraph{Cleaning removes users, not events.} Three successive filtering
 decisions were made over the internship, each in response to a result rather
@@ -182,7 +177,7 @@ is exactly the point: a benchmark on which a one-line heuristic already scores
 
 Table~\ref{tab:datasets} lists every data regime used over the eleven
 iterations, with the counts measured on the files themselves and the baseline
-each one produces. Six regimes for one problem may look like indiscipline; it
+each one produces. Seven regimes for one problem may look like indiscipline; it
 is the direct consequence of the point above, that each new approach needed data
 the previous files did not carry. Adding the hour of day required regenerating
 the sequences with their timestamps preserved. Testing whether more users help
@@ -219,39 +214,19 @@ from 5{,}000 users onward, so ``discovering cells it had never seen'' cannot be 
 improvement beyond that point. Any remaining gain has to come from better
 estimates of the transitions between cells that are already known.
 
-\section{What I did next, and why}
-
-At this point the object of study was pinned down: sequences of
-(\cid{cell\_id}, hour) events, one day per user, with mobility measured on the
-site root, a model-free yardstick to beat, and an explicit rule that only gaps
-to that yardstick may be compared. Nothing had been trained yet. The next
-question was purely instrumental, and it had to be settled before any
-experiment could run at all: given a free cloud GPU and a few weeks, which
-fine-tuning regime, which library stack and which base model are even
-feasible? That is the subject of Chapter~\ref{ch:tools}.
-
 \section{Retrospective}
 \label{sec:retro-data}
 
 Looking back, the decision that mattered most in this chapter was not a
 modelling decision at all, it was accepting that the raw day-file could not
-support the question being asked. Taken as it came, a day puts the evaluation in
-a regime where a large share of users produce a handful of records from a single
-cell: there is no history to reason over, and a one-line heuristic is right
-69.2\,\% of the time. Nothing that happens downstream of that can be measured
-properly.
-
-Moving to the mobile, non-absent selection Nino extracted for me was
-therefore the first real lever of the internship, and I would describe it as a
-data-quality result rather than a modelling one. It gave users with a decent
-number of records, present in the recording area across the day, that is,
+support the question being asked. Moving to the mobile, non-absent selection
+Nino extracted for me was the first real lever of the internship, and I would
+describe it as a data-quality result rather than a modelling one: it gave
 trajectories on which \emph{analysing the past in order to predict the rest} is
 a meaningful exercise at all. It cost the comfortable-looking accuracies of the
-early runs, since the baseline fell from 69.2\,\% to the mid-forties, and that
-is precisely what made every chapter after it measurable.
+early runs, and that is precisely what made every chapter after it measurable.
 
-The one thing I would sequence differently is the order in which I did those two
-things. I spent the first iterations improving the training harness on a corpus
-that could not answer the question, and only then changed the corpus. Settling
-the data regime first, and tuning the training afterwards, would have reached
-the same conclusions sooner.
+The one thing I would sequence differently is the order of those two steps. I
+spent the first iterations improving the training harness on a corpus that could
+not answer the question, and only then changed the corpus. Settling the data
+regime first would have reached the same conclusions sooner.

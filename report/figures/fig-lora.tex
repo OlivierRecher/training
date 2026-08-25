@@ -45,13 +45,12 @@
 \figtext{%
 A language model is a stack of large weight matrices, and adapting one can be
 done at three very different costs. (a)~The obvious way is to update every
-number in them, which means holding the weights, a gradient for each of them
-and two optimiser statistics for each of them in GPU memory at once, several
-times the size of the model. (b)~LoRA \cite{hu2022lora} leaves the big matrix
+number in them, which means keeping three further numbers in GPU memory beside
+each one for as long as the run lasts, several times the size of the model. (b)~LoRA \cite{hu2022lora} leaves the big matrix
 untouched and adds two thin matrices beside it, whose product has the same
-shape; only those are trained. ``Low-rank'' means exactly that, a large change
-approximated by the product of two narrow matrices, and here it amounts to
-about 2\,\% of the parameters. (c)~QLoRA \cite{dettmers2023qlora}, the regime
+shape; only those are trained. Two narrow matrices standing in for a change to
+a wide one is the whole of the idea, and here it amounts to about 2\,\% of the
+parameters. (c)~QLoRA \cite{dettmers2023qlora}, the regime
 used throughout this report, additionally stores the frozen matrix at 4 bits
 per number rather than 16, which quarters what the frozen part occupies; the
 adapters themselves are still trained at full precision. The consequence is

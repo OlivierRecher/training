@@ -16,12 +16,12 @@ that is otherwise always available to it: repeat the last cell.
 \section{The evidence that a temporal signal was missing}
 
 The pointer came from the per-user diagnosis. Scoring the same trained model
-with progressively more context, most users behave as
-Chapter~\ref{ch:user} predicts, their accuracy is a trait, roughly constant
-whatever the context ($r = 0.77$ between accuracy at 30\,\% and at 80\,\%
-context). But one group does something else entirely, shown in the lower rows of
-Table~\ref{tab:context-collapse}: given \emph{more} history, their accuracy
-falls off a cliff, from thirty or forty per cent down to zero.
+with progressively more context, most users behave as Chapter~\ref{ch:user}
+predicts: their accuracy is a trait, roughly constant whatever the context, and
+Table~\ref{tab:context-collapse} is the pass on which the $r = 0.77$ quoted
+there is measured. But one group does something else entirely, shown in the
+lower rows of that table: given \emph{more} history, their accuracy falls off a
+cliff, from thirty or forty per cent down to zero.
 
 \input{tables/tab-context-collapse}
 
@@ -36,14 +36,10 @@ not the middle of it.
 
 \section{How the clock enters, and the two hypotheses it carries}
 
-Time was added in the cheapest form that a language model can actually learn.
-Each event became a pair of tokens, a dedicated hour token followed by its
-\cid{cell\_id}, so that a timestamp of 44{,}408 seconds becomes \cid{<H12>}
-and costs exactly one token, leaving the rest of the context window for the
-trajectory itself. The hour is always given and never predicted, which is
-legitimate offline and in production alike: the current time is known whenever a
-prediction is requested. Panel~(a) of Figure~\ref{fig:hour-ablation} shows the
-resulting weight map.
+Time enters in the form fixed in Chapter~\ref{ch:tools}: one dedicated hour
+token before each event, costing one token per event, always given and never
+predicted. Panel~(a) of Figure~\ref{fig:hour-ablation} shows the resulting
+weight map.
 
 Two distinct hypotheses were encoded at once, and it is worth separating them
 because only one of them survived the chapter.
@@ -53,11 +49,10 @@ because only one of them survived the chapter.
         and of the event to predict, the model can learn that some cells are
         morning cells and others evening cells.
   \item[H2, some hours deserve more weight.] There are
-        \emph{transition windows}:\footnote{\textbf{Transition window}: a range of hours at which a user is judged more
-likely to move between home and activity area, and where the training loss is
-therefore multiplied. With a $\times4$ weight at 19h, a mistake at 19h counts
-four times as much as the same mistake at 14h, so training will trade four
-ordinary errors for one there. No data is duplicated.} hours at which a user has a higher chance of
+        \emph{transition windows}:\footnote{\textbf{Transition window}: a range of
+hours where the training loss is multiplied, so that a mistake at 19h under a
+$\times4$ weight counts four times as much as the same mistake at 14h. No data
+is duplicated.} hours at which a user has a higher chance of
         moving between their home area and their activity area. If the loss at
         those positions is multiplied, the optimiser is forced to get them right
         rather than to accept them as the price of a good average.
@@ -106,8 +101,9 @@ were made together:
 \begin{itemize}
   \item \textbf{An asymmetric weight.} The two windows are not comparable in
         size: $18$--$20$h carries four times as many records as $04$--$06$h and
-        touches 58\,\% of users against 39\,\%. Weighting them equally spends the
-        same gradient on a well-populated window and on a sparse, noisy one, so
+        touches 58\,\% of users against 39\,\%. Weighting them equally asks the
+        optimiser to work as hard on the sparse, noisy window as on the
+        well-populated one, so
         $18$--$20$h was raised to $\times4$ while $04$--$06$h stayed at
         $\times2$.
   \item \textbf{A weighted sampler.}\footnote{\textbf{Sampler}: the component that chooses which slice of training data
@@ -163,26 +159,19 @@ them: a difference of $0.2$ percentage points. In other words the global window
 $04$--$06$h / $18$--$20$h does not separate easy positions from hard positions at
 all. Worse, broken down by behavioural profile, $04$--$06$h turns out to be
 \emph{easier} than average for every single profile, persistence between 49
-and 64\,\% inside it, against 20 to 57\,\% on average. Doubling the loss there
-pushed gradient at positions where the baseline is already right, which is the
-most expensive thing one can do on a task like this.
+and 64\,\% inside it, against 20 to 57\,\% on average. Song et al.\ had
+published that much in 2010: their hourly regularity curve is at its highest
+during the night and dips around midday and in the early evening
+\cite{song2010limits}, so the window I guessed was the one hour band the
+literature already marked as easy. Doubling the loss there
+spent the training effort on positions the baseline already gets right, which
+is the most expensive thing one can do on a task like this.
 
 The honest summary of the iteration is therefore: the machinery worked, and I
 pointed it at the wrong hours. The $+2.6\pt$ at $18$--$20$h was real because
 $18$--$20$h happens to be genuinely difficult for one of the four profiles; the
 loss on everything else was the cost of upweighting hours that were difficult
 for nobody.
-
-\section{What I did next, and why}
-
-That failure is specific enough to be actionable, and it contains its own
-remedy. If a window is supposed to mark the hours where repetition stops
-working, then it must be \emph{derived from the data} rather than guessed, and
-it cannot be a single window for everybody, because the hours at which a person
-is likely to move are obviously not the same for a commuter and for someone who
-stays home. The next question was therefore not ``which hours?'' but ``whose
-hours?''. Answering it requires grouping users by \emph{when} they move, which
-is the subject of Chapter~\ref{ch:groups}.
 
 \section{Retrospective}
 \label{sec:retro-time}

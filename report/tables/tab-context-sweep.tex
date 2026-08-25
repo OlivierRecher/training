@@ -36,10 +36,9 @@ on its own line, never against the accuracy above it. Qwen2.5-0.5B + QLoRA,
 \vspace{4pt}
 \begin{minipage}{\textwidth}\footnotesize
 Gaps are in points. Each \sfilt{} row is a separate training, early-stopped on
-its own plateau (best validation at epoch 5, 6 and 4 respectively). The \smob{}
-rows are one single trained model evaluated seven times, which is why their
-validation column is constant, so they measure \emph{robustness} to a context
-different from the one trained on, not which cut trains the better model.
+its own plateau (best validation at epoch 5, 6 and 4 respectively); the constant
+validation column of the \smob{} block is the tell that its seven rows are one
+trained model read seven times.
 \end{minipage}
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the context-fraction sweeps}
 \end{table}

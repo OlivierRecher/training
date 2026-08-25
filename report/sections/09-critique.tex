@@ -6,18 +6,26 @@ consolidates what the work can and cannot be said to establish, and what would
 have to be done to remove each limitation. The order is from the limitations that
 bound the conclusions most tightly to those that bound them least.
 
+Table~\ref{tab:recap} first puts every iteration on the one axis that survives a
+change of corpus, the gap to the persistence baseline of its own test users. It
+is the shortest complete account of the work in this document, and what follows
+is a judgement about how much weight each of its rows can carry.
+
+\input{tables/tab-recap}
+
 \section{What the work establishes, and with what confidence}
 
 \paragraph{Solid.} A fine-tuned model beats the persistence baseline by
 $+3.7\pt$ on the mobile-user corpus and by $+4.2$ to $+4.7\pt$ on the two larger
 corpora, five independent training runs, two different held-out test sets,
-each measured against its own baseline. The effect is larger than any plausible
-noise floor and is reproduced across corpora. The mechanism is identified: the
-gain is concentrated in the behavioural profiles where repetition fails, and the
-correlation between how easy a profile is and how much the model adds to it is
-$-0.99$.
+each measured against its own baseline. The $+4.3\pt$ quoted in the abstract is
+one of those measurements, the largest corpus at its largest tier, 54.5\,\%
+against 50.2\,\%. The effect is larger than the difference two identical runs
+would plausibly show, and it is reproduced across corpora. The mechanism is identified: the
+gain is concentrated in the behavioural profiles where repetition fails, and it
+ranks in exact inverse order of the baseline across all four of them.
 
-\paragraph{Solid, and negative.} From roughly 2{,}000 to 21{,}000 training users
+\paragraph{Solid, and negative.} From 1{,}900 to 21{,}000 training users
 the edge over the baseline does not grow. This is not an absence of evidence but
 a measured null: four tiers, a paired bootstrap over 1{,}000 held-out users with
 2{,}000 resamples, and every confidence interval containing zero, including
@@ -41,48 +49,58 @@ with this pipeline.
 
 \paragraph{What saturates is a population, not a person.} The unit of this work
 is one day per user, so what the model learns is how a \emph{population} moves.
-The flatness of the scaling curve should be read in that light: a population
-prior is a much smaller object than a personal habit, and it is unsurprising
-that it is bought early.
+The flatness of the scaling curve should be read in that light: what a
+population has in common is a much smaller object than a personal habit, and it
+is unsurprising that it is bought early.
 
 \paragraph{Corpus-to-corpus comparisons are deltas only.} The test population
-changes whenever the corpus does, and with it the baseline, so two runs on two
-corpora cannot be compared on absolute accuracy at all. This is why every figure in this report is a gap, and
-why the two headline numbers of the last two iterations, $+3.7\pt$ on a
-100-user test set with a 43.1\,\% baseline, and $+4.2\pt$ on a different 100-user
-test set with a 48.2\,\% baseline, are reported as two separate
-measurements of the same effect rather than as a progression. The clean fix is
-cheap and was not done: re-scoring the earlier checkpoint on the later test file
-is a single evaluation pass, no retraining, and it would place all the tiers on
-one axis.
+changes whenever the corpus does, and with it the baseline, which is why the
+$+3.7\pt$ of iteration 8 and the $+4.2\pt$ of iteration 9 are two separate
+measurements of the same effect rather than a progression. The clean fix is cheap
+and was not done: re-scoring the earlier checkpoint on the later test file is a
+single evaluation pass, no retraining, and it would put every row of
+Table~\ref{tab:recap} on one axis.
 
 \paragraph{The scaling null holds at constant compute.} Every tier read 8{,}000
 training examples regardless of how many were available, so at 21{,}000 users
 14{,}522 of 22{,}522 windows were never read once. The defensible claim is
-``with this training budget, 2{,}000 users are enough'', and the experiment that
+``with this training budget, 1{,}900 users are enough'', and the experiment that
 would separate it from ``more users never help'', giving the largest tier the
 compute its size deserves, was not run.
 
-\paragraph{One seed per run.} The paired bootstrap covers the sampling of the
-test users; it does not cover the variance of training itself. Differences of a
-few tenths of a point between tiers, and the $+0.8\pt$ measured on the easiest
-behavioural profile, therefore sit on an unknown noise floor. A single tier
-repeated with a different seed would establish it, at a cost of about half an
-hour.
+\paragraph{Each configuration was trained once.} The paired bootstrap covers
+the luck of which test users are drawn. It does not cover the other source of
+chance, that training has a random component of its own, so that the same
+configuration run twice does not land on exactly the same score. Differences of
+a few tenths of a point between tiers, and the $+0.8\pt$ measured on the
+easiest behavioural profile, therefore sit on a floor nobody measured.
+Repeating one tier from a different random start would establish that floor, at
+a cost of about half an hour.
 
 \paragraph{Part of the gain may be capacity rather than grouping.} Routing four
 behavioural groups to four adapters multiplies the trainable parameters by four.
-The control, one adapter of four times the rank, same data, was not run.
+The control, a single adapter carrying as many trainable numbers as the four
+together, same data, was not run.
 The ablations of the failed run argue that the grouping carries most of the
 effect, since the model extracted nothing from the group when it arrived as a
 token, but that is an argument and not a measurement.
 
-\paragraph{Group detection fails exactly where help is most valuable.} The
-behavioural group is recovered from the context prefix with 92\,\% agreement at
-the reference protocol, and with 61\,\% and 44\,\% agreement when only half or
-30\,\% of the day is available. The mechanism therefore does not work on a cold
-start, the case in which an operator has the least information and would most
-want a prediction.
+\paragraph{The mechanism is weakest where it would be worth most.} This is the
+limitation I would put first if someone asked what the work is good for. The
+model's edge is largest on users about whom little is known, $+4.6\pt$ with only
+30\,\% of a day in context against $+4.3\pt$ with 80\,\%
+(Chapter~\ref{ch:scale}), and that cold start is exactly the case an operator
+cares about: predicting the rest of the day for a user who has just appeared is
+worth more than confirming that a well-known one is still at home. But the group
+a user belongs to is recovered from their context prefix with 92\,\% agreement at
+the reference protocol and only 61\,\% and 44\,\% when half a day or 30\,\% of it
+is available (Figure~\ref{fig:group-difficulty}(b)), so the very conditioning
+that produces the edge decays as the history shortens. The two effects pull
+against each other, and this report measures each separately without measuring
+their combination. The defensible operating envelope for what is described here
+is therefore a user with most of a day already recorded, and lifting that means
+building a group detector that works on a short prefix, which is a smaller and
+better-posed problem than the one I spent the internship on.
 
 \paragraph{The metric deliberately penalises a non-movement.} The prediction
 target is the raw \cid{cell\_id}, so a handset re-attaching to another cell of
@@ -111,9 +129,18 @@ was measured, and the report claims none.
         evaluation pass, no training. It is the cheapest possible improvement to
         the report's internal consistency and it removes the only caveat that
         affects the headline numbers.
-  \item \textbf{Repeat one tier with a different seed.} Half an hour, and it
-        establishes the noise floor below which none of the small differences in
-        this report should be read.
+  \item \textbf{Re-measure the switch-rate correlation on the final model.} Also
+        one evaluation pass. The $r = -0.971$ of Chapter~\ref{ch:user} was
+        measured on a model that was imitating the trivial rule, and a model that
+        genuinely helps the volatile minority has to break the lockstep between a
+        user's switch rate and that user's score, so the coefficient should come
+        down in absolute value. It is the cheapest independent test of this
+        report's main claim, taken on a thousand test users rather than on four
+        profiles, and it would say whether the mechanism reaches individual users
+        or only shows up once they are averaged into groups.
+  \item \textbf{Repeat one tier from a different random start.} Half an hour,
+        and it establishes the floor below which none of the small differences
+        in this report should be read.
   \item \textbf{Extend the question from one day to several}, on a corpus whose
         identifiers are stable across days. This is the only item on the list
         that changes what the problem \emph{is} rather than how well it is

@@ -1,0 +1,43 @@
+% F5c -- The other branch: one prompt sent to a frozen model.
+\begin{figure}[t]
+\centering
+
+{\footnotesize\textbf{One of the prompts of the prompting branch,} as it is sent
+to a frozen model. Quoted from Tiphain and Benjamin's work and shortened at the
+two ellipses; nothing else is altered.\par}
+\vspace{3pt}
+
+\begin{lstlisting}
+User's day started at 00:00 at station VSOYRO. [...] They stayed at BSOROT
+until 05:34, then left for station VOYQZ, arriving at 06:15. [...] It is now
+07:45 and the user is at VSOYRO.
+Predict the station the user will visit next. Rely only on their movement
+pattern and the stations around them. Possible stations include: BKVOR4,
+BKVOF2, BKVS2D, BSOROT, BSVOLOK, DRVOAN, DSXVOP, LKVTSE. Which station are
+they most likely to go to next?
+Look at the user's daily flow (loops, pauses, commuting, travel habits).
+Explain your choice in a few natural sentences, then end with the station in
+this format:
+FINAL ANSWER: [STATION]
+\end{lstlisting}
+
+\caption{What one prompt looks like}
+\label{fig:prompting}
+\figtext{%
+The same problem, asked the other way. Three differences with the training
+record of Figure~\ref{fig:training-example} are worth seeing, because they are
+what makes the two branches answer different questions. The day is narrated in
+English, stop by stop and with clock times, so one event costs a whole clause
+where the fine-tuned model reads two symbols, and a long user stops fitting in
+the model's window long before a short one does. The candidate cells are handed
+over inside the prompt, eight of them here, and the answer comes back as free
+text that has to be parsed, which is what the \texttt{FINAL ANSWER} convention
+is for; the fine-tuned model instead chooses among 369 symbols it already
+carries in its vocabulary. And since no weight ever moves, nothing learned
+about one user is available for the next: everything the model is to know about
+this population has to be restated in every prompt, whereas the whole point of
+the branch this report takes is that the population is what the weights end up
+holding. Neither is a better instrument. Asking a general model what it already
+knows about a day described in words, and asking what can be learned from the
+population itself, are two questions, and the second is this report's.}
+\end{figure}

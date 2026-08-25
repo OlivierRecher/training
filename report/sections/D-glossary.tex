@@ -1,219 +1,61 @@
 \chapter{Glossary}
 \label{app:glossary}
 
-\begin{description}[leftmargin=!,labelwidth=3.6cm,style=nextline]
+The terms that recur from chapter to chapter.
 
-\item[Ablation] An experiment that deliberately removes or corrupts one input or
-  component and measures what the score loses, in order to establish that the
-  component was doing something. Used three times in this report: on the hour
-  tokens (Ch.~\ref{ch:time}) and twice on the group token (Ch.~\ref{ch:groups}).
+\begin{description}[style=unboxed,leftmargin=0pt,labelindent=0pt,labelsep=0.4em,
+                    itemsep=2.4pt,parsep=0pt]
 
-\item[Activity cell] The cell where a user spends a long continuous period
-  during the working part of the day, as defined by the operator's own
-  classification rules. Paired with the home cell, it is what a
-  \emph{transition window} is supposed to sit between.
+\item[Adapter.] The small set of extra, trainable numbers that a LoRA fine-tune
+  adds beside a frozen model. Chapter~\ref{ch:groups} trains four, one per
+  behavioural group.
 
-\item[Adapter] The small set of extra, trainable numbers a LoRA fine-tune adds
-  beside a frozen model. Chapter~\ref{ch:groups} trains four of them, one per
-  behavioural group, and lets the group decide which one runs
-  (Figure~\ref{fig:adapter-routing}).
+\item[Baseline (persistence).] The rule ``predict that the next \cid{cell\_id}
+  is the last one seen''. No model, no training, and not a constant: 69.2\,\% on
+  a raw day, 43.1\,\% on mobile users, because the population differs.
 
-\item[Attention (causal)] The mechanism by which each position of a Transformer
-  looks at other positions and weights them. \emph{Causal} means it may look only
-  backwards, never at the future, which is what makes the model a next-symbol
-  predictor.
+\item[Behavioural group, or profile.] One of four clusters of users, cut on the
+  rate at which their \emph{physical site} changes over four bands of the day and
+  named by increasing mobility: G0 homebody, G1 steady, G2 evening mover, G3
+  morning mover.
 
-\item[Baseline (persistence)] The rule ``predict that the next \cid{cell\_id} is
-  the last one seen''. No model, no parameters, no training. Its value is a
-  property of the population, not a constant.
+\item[\cid{cell\_id}, site root, sector.] The identifier of one radio cell, e.g.\
+  \cid{UKVCHE102}: a technology letter (2G or 3G), a \emph{site root} naming the
+  physical antenna, \cid{KVCHE} here, then its \emph{sector}. Mobility is measured
+  on the site root, since 12.4\,\% of consecutive pairs change cell without
+  changing place; the target stays the full \cid{cell\_id}.
 
-\item[Base station / site / mast] The physical installation carrying several
-  antennas. One base station hosts several \emph{cells}, so a handset can change
-  cell without the person moving. 369 cells over 113 base stations here.
+\item[Context fraction, context window.] The \emph{fraction} is the share of a
+  user's day given to the model before it must predict the rest, 80\,\% by
+  default, and it belongs to the measurement: moving it moves the baseline too.
+  The \emph{window} is the architectural limit on how many tokens the model may
+  look at in one go, 512 here.
 
-\item[Behavioural group / profile] One of four clusters of users, cut on the rate
-  at which their \emph{physical site} changes, measured separately over four
-  bands of the day. Named G0 (homebody) to G3 (morning mover) in order of
-  increasing mobility.
+\item[Gap.] Model accuracy minus persistence-baseline accuracy, in points, on
+  the same users and the same positions. The only quantity here that is
+  comparable across datasets.
 
-\item[\cid{cell\_id}] The identifier of one radio cell, e.g.\ \cid{BSOCHO1}. It
-  decomposes into a technology letter, a site root and a zone/sector index.
+\item[Hour token.] A symbol \cid{<H00>} to \cid{<H23>} placed before each event,
+  giving its hour of day. Always given to the model, never predicted by it.
 
-\item[CDR] \emph{Call detail record.} The row an operator writes whenever a
-  handset and the network interact: a pseudonymous identifier, a timestamp, and
-  the serving cell. No content of any kind.
+\item[LoRA, QLoRA.] Fine-tuning methods that freeze the original weights and
+  train a small set of extra numbers beside them. QLoRA additionally stores the
+  frozen weights in 4-bit precision, which quarters the memory they occupy.
 
-\item[ChatML] A convention for storing a training example as a short
-  conversation with roles (system, user, assistant). Used here purely as a file
-  format.
+\item[Paired bootstrap.] A significance test in which the same test users are
+  resampled for both models compared, so that the luck of the draw cancels. An
+  interval containing zero means the two cannot be told apart.
 
-\item[Clustering / centroid] An automatic procedure that sorts items into groups
-  by resemblance, without anyone labelling them. A \emph{centroid} is a group's
-  average profile; a user is assigned to the nearest one.
+\item[Protocol: last fifth, or full sequence.] ``Last 20\,\%'' scores only the
+  final fifth of a test user's day; ``full sequence'' scores every position, one
+  at a time, which is harder and lowers the baseline on the same users from
+  45.5\,\% to 43.1\,\%.
 
-\item[Cold start] Predicting for a user about whom little history is available.
-  Measured here as accuracy at 30\,\% context fraction.
+\item[Record, or event.] One (\cid{cell\_id}, timestamp) pair. Not a movement: an
+  idle handset still produces records, because the network re-signals to it on a
+  fixed cycle.
 
-\item[Context fraction] The share of a user's day given to the model before it
-  must predict the rest. Part of the measurement, not of the model: moving it
-  moves the baseline too.
-
-\item[Context window] The maximum number of tokens the model can hold at once,
-  512 here. Fixed by the architecture, and not to be confused with the
-  \emph{context fraction}, which is a property of the measurement.
-
-\item[Copy (levelled corpus)] A scored position whose target is a record
-  duplicated from the one before, produced by stretching a sequence to a fixed
-  length. Any rule that repeats is correct on it by construction.
-
-\item[Gap] Model accuracy minus persistence-baseline accuracy, in points, both
-  measured on the same users and the same scored positions. The only quantity in
-  this report that is comparable across datasets.
-
-\item[Embedding] The vector of numbers a model associates with a token, its
-  internal representation of that symbol. The 369 cell tokens added here start
-  random and are trained alongside the adapters.
-
-\item[Entropy (normalised)] How spread out a user's time is over the cells they
-  visit, rescaled to sit between 0 (never left one cell) and 1 (evenly spread).
-  Low entropy means high predictability; see Ch.~\ref{ch:sota}
-  and Ch.~\ref{ch:user}.
-
-\item[Gini coefficient] A measure of inequality from 0 (perfectly equal) to 1
-  (one member holds everything). Applied in Ch.~\ref{ch:scale} to how many
-  training positions each user contributes.
-
-\item[GPU] \emph{Graphics processing unit}, the chip that does the arithmetic of
-  training. Its \emph{memory}, not its speed, is what constrains every choice in
-  Ch.~\ref{ch:tools}.
-
-\item[Home cell] The cell where a user is found both late at night and early in
-  the morning, as defined by the operator's own classification rules.
-
-\item[Hour token] A dedicated vocabulary symbol \cid{<H00>}\dots\cid{<H23>}
-  placed before each event, giving the hour of day of that event. Always given,
-  never predicted.
-
-\item[LLM] \emph{Large language model.} A neural network trained to predict the
-  next symbol of a sequence. Nothing in that definition is specific to language.
-
-\item[LoRA] \emph{Low-Rank Adaptation.} A fine-tuning method that freezes the
-  original weights and trains small matrices alongside them, reducing the memory
-  needed for training by orders of magnitude.
-
-\item[Markov chain] A predictor assuming the next state depends only on the
-  current one (or on the last $k$, for order-$k$). Estimated by counting
-  transitions rather than by training a network. The classical answer to
-  next-place prediction, and not the one taken here.
-
-\item[Masking] Excluding a position from the loss: the model still reads the
-  token but is neither rewarded nor penalised for predicting it. The prefix and
-  the hour tokens are masked here.
-
-\item[Overfitting] The point past which a model stops learning the regularity of
-  the data and starts memorising the training examples. Visible in
-  Figure~\ref{fig:validation-curves} as a falling training loss alongside a
-  falling validation score.
-
-\item[Paired bootstrap] A significance test in which the same test users are
-  resampled for both models being compared, so that the difficulty of the draw
-  cancels and only the difference between the models remains.
-
-\item[PEFT] \emph{Parameter-Efficient Fine-Tuning.} The library implementing
-  LoRA and QLoRA, and the general name for that family of methods.
-
-\item[Percentage point (``point'')] The arithmetic difference between two
-  percentages. 43.1\,\% to 46.8\,\% is $+3.7$ points, not $+3.7$ percent.
-
-\item[Pearson correlation $r$] A number between $-1$ and $+1$ measuring how
-  tightly two quantities move together across a population. Defined, with a
-  worked example, in Ch.~\ref{ch:user}.
-
-\item[QLoRA] LoRA applied on top of a base model stored in 4-bit precision,
-  which reduces the memory the frozen weights occupy.
-
-\item[Quantisation (4-bit)] Storing each frozen weight with only sixteen
-  possible values instead of five significant digits, which quarters the memory
-  the frozen part occupies. The adapters stay at full precision.
-
-\item[Quintile / quartile / decile] One fifth, one quarter, one tenth of a
-  population, obtained by sorting on some quantity and cutting the sorted list
-  into equal-sized parts.
-
-\item[$R^2$ / variance explained] The share of the spread in a quantity that a
-  predictor accounts for, from 0 (no better than guessing the average) to 1
-  (exactly right for everyone). Defined, with a worked example, in
-  Ch.~\ref{ch:groups}.
-
-\item[Record / event] One (\cid{cell\_id}, timestamp) pair. Not a movement: an
-  idle handset still produces records, because a base station re-signals to the
-  handsets attached to it roughly every four hours on 2G and every two hours on
-  3G.
-
-\item[Scaling law] The empirical observation that error falls as a straight line
-  when data and error are both plotted logarithmically. Established for
-  pre-training \cite{kaplan2020scaling}; measured, and found flat, for this
-  fine-tune in Ch.~\ref{ch:scale}.
-
-\item[Shrinkage] Pulling a noisy estimate towards a more reliable one in
-  proportion to how little evidence supports it. Used so that a user's sparse
-  night-time band cannot dominate their behavioural profile.
-
-\item[Signalling record] A row written by the operator each time a handset and a
-  base station exchange a message. Produced by the \emph{network}, not by the
-  user, which is why a record is not a movement.
-
-\item[Site root] The part of a \cid{cell\_id} identifying the physical antenna,
-  e.g.\ \cid{KVCHE} in \cid{UKVCHE102}. All mobility in this report is measured
-  on the site root, because 12.4\,\% of consecutive-event pairs change
-  \cid{cell\_id} without changing place.
-
-\item[Stratified split] Assigning users to train or test inside bands of
-  sequence length rather than at random, so that both sides carry the same mix of
-  short and long users.
-
-\item[Teacher forcing] Scoring position $i$ from the \emph{real} history
-  $0 \ldots i-1$ rather than from the model's own earlier predictions, so that a
-  single mistake cannot cascade.
-
-\item[Token / tokenizer] A \emph{token} is the atomic symbol a language model
-  reads and writes; the \emph{tokenizer} is the component that cuts an input into
-  such symbols. All 369 \cid{cell\_id} values are added here as tokens of their
-  own, so a cell is one symbol rather than four fragments.
-
-\item[Top-$k$] The correct cell is among the model's $k$ highest-ranked
-  candidates. Top-1, top-3 and top-5 are the same predictions read at three
-  depths.
-
-\item[Top-1 within repertoire] Top-1 restricted to targets that are cells present
-  in the user's own history, which is the set the model can in principle choose
-  from.
-
-\item[Training window] One contiguous slice of a user's day, at most the context
-  length, used as a single training example. A long user yields several.
-
-\item[Transition window] A range of hours at which a user is more likely to move
-  between their home area and their activity area, and where the training loss is
-  therefore multiplied. Guessed globally at first (04--06h, 18--20h) and later
-  derived per behavioural group from the data.
-
-\item[TRL] A Hugging Face library whose name expands to \emph{Transformer
-  Reinforcement Learning}. No reinforcement learning is used in this project;
-  only TRL's conversational \emph{file format} is, and
-  Figure~\ref{fig:training-example}(a) shows exactly what that format is.
-
-\item[Validation set] A slice of the training users held back and used
-  \emph{during} training to decide when to stop. Distinct from the test set,
-  which is read once, at the end.
-
-\item[Weights / parameters] The numbers inside a model that turn an input into an
-  output, and that training adjusts. ``Frozen'' means left untouched.
-
-\item[Zero-shot] Asking a model to perform a task it was never trained on, using
-  only an instruction. The opposite of fine-tuning.
-
-\item[Zone / sector] The trailing digits of a \cid{cell\_id}, identifying which
-  angular sector of the antenna served the handset. A change of sector alone is
-  not a movement.
+\item[Top-1, top-3, top-5.] Whether the correct cell is the model's top
+  candidate, or among its top three or five of the 369 in the vocabulary.
 
 \end{description}

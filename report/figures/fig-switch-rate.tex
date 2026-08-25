@@ -1,5 +1,5 @@
 % F7 -- Accuracy is dictated by how often the user changes cell.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \replegend{\swatch{clbase}~persistence baseline \qquad \swatch{clmodel}~model}
 \fitwidth{%
@@ -7,25 +7,25 @@
 \begin{groupplot}[
   group style={group size=2 by 1, horizontal sep=1.5cm, ylabels at=edge left},
   repbar, width=0.47\linewidth, height=5.2cm,
-  ymin=0, ymax=125, ytick={0,20,...,100},
+  ymin=0, ymax=148, ytick={0,20,...,100},
   ylabel={top-1 accuracy (\%)},
   /pgf/bar width=7pt, xtick=data,
   x tick label style={font=\scriptsize,rotate=35,anchor=east},
   title style={font=\footnotesize,yshift=1pt},
 ]
-\nextgroupplot[title={(a) \srawbig, five equal groups},
+\nextgroupplot[title={(a) \srawbig, five groups of users},
   symbolic x coords={qa,qb,qc,qd,qe},
-  xticklabels={0\%,0--21\%,21--38\%,38--60\%,60--100\%},
-  xlabel={share of steps where the cell changes}]
+  xticklabels={never moves,0--21\%,21--38\%,38--60\%,60--100\%},
+  xlabel={cell-switch rate of the group}]
 \addplot[fill=clbase,draw=none] coordinates {(qa,100.0) (qb,88.4) (qc,71.7) (qd,52.8) (qe,26.6)};
 \addplot[fill=clmodel,draw=none] coordinates {(qa,100.0) (qb,87.6) (qc,71.6) (qd,56.5) (qe,34.4)};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qd,74) {$+3.7\pt$};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qe,52) {$+7.8\pt$};
 %
-\nextgroupplot[title={(b) \smob, four equal groups},
+\nextgroupplot[title={(b) \smob, four groups of users},
   symbolic x coords={pa,pb,pc,pd},
-  xticklabels={0--25\%,25--50\%,50--75\%,75--100\%},
-  xlabel={quartile of movement rate}]
+  xticklabels={Q1,Q2,Q3,Q4},
+  xlabel={quartile of users by switch rate, Q1 least volatile}]
 \addplot[fill=clbase,draw=none] coordinates {(pa,87.7) (pb,79.6) (pc,66.7) (pd,42.8)};
 \addplot[fill=clmodel,draw=none] coordinates {(pa,80.6) (pb,74.3) (pc,63.3) (pd,43.4)};
 \node[font=\scriptsize,text=clloss,anchor=west,rotate=90,yshift=7pt] at (axis cs:pa,105) {$-7.1\pt$};
@@ -41,9 +41,13 @@ Accuracy is set by how repetitive the user already is, and the model's
 contribution runs the other way. In both panels the users are sorted by their
 cell-switch rate, the share of consecutive steps at which the cell changes,
 and cut into equal groups, five on the left and four on the right, so
-volatility increases towards the right; each group carries the persistence
-baseline in grey-blue and the model in dark blue, scored on identical
-positions, with the gap annotated above. (a)~On the unfiltered day the fifth
+volatility increases towards the right. The horizontal labels differ between
+the two: on the left they give the range of switch rates the group covers, on
+the right the four groups are quartiles of users, the leftmost holding the
+quarter who move least. Each group carries the persistence baseline in
+grey-blue and the model in dark blue, scored on identical positions, with the
+gap between them annotated above; the vertical axis is top-1 accuracy on that
+group. (a)~On the unfiltered day the fifth
 of users who never change cell are predicted at 100\,\% by both, because for
 them the task is to notice that nothing is happening, and the most volatile
 fifth plateaus at 34.4\,\%. That is a 65-point spread produced entirely by who

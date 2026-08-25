@@ -67,8 +67,9 @@ star its best epoch, the dashed line that dataset's persistence baseline.
 Validation climbs for four to nine epochs, peaks, then decays for tens of
 epochs while the training loss keeps falling. In panel~(a) the peak is
 65.0\,\% at epoch~9 against 48.1\,\% at the last epoch, so reading the end of
-a run instead of its best point costs sixteen points and forty epochs of GPU
-time. Note that the dashed line moves between panels, 69.2\,\% on the
+a run instead of its best point costs $16.9\pt$ of validation accuracy and
+forty epochs of GPU time; measured on the held-out test users, the same choice
+costs $15.5\pt$. Note that the dashed line moves between panels, 69.2\,\% on the
 unfiltered day and 43.5\,\% once the corpus is restricted to mobile users,
 because the users themselves are different; the panels are comparable only on
 the distance between the two lines, and in all four that distance is negative.

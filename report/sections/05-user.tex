@@ -12,46 +12,76 @@ property of the person, then the aggregate score is largely fixed before any
 training begins, and the only honest way to report progress is to say where in
 the population it happened. This chapter establishes that it is the second.
 
-\section{One quantity explains almost everything}
+\section{Which property of a user decides it}
 
 The candidate features are all derivable from a user's own sequence: how often
 they change cell, how concentrated their visits are on one dominant cell, how
 many distinct cells they visit, how irregular the switches are, how many records
-they have. Correlating\footnote{\textbf{Pearson correlation} $r$: how tightly two quantities move together
-across a population, between $-1$ and $+1$: \[ r \;=\; \frac{\sum_i
-(x_i-\bar{x})(y_i-\bar{y})} {\sqrt{\sum_i (x_i-\bar{x})^2}\;\sqrt{\sum_i
-(y_i-\bar{y})^2}}, \] with $x_i$ a feature of user $i$, $y_i$ that user's
-accuracy and $\bar{x},\bar{y}$ the averages. $+1$ is perfect lockstep, $-1$
-perfect opposition, $0$ no relation at all. Three users with switch rates
-$0.1, 0.5, 0.9$ and accuracies $90, 50, 10\,\%$ give $r = -1$ exactly; real
-data is never that clean, and $-0.971$ means it is close.} each of them against that user's own accuracy gives
-Figure~\ref{fig:concentration}(b), and the ranking is not close. The
-\textbf{cell-switch rate}, the share of consecutive steps at which the cell
-changes, reaches $r = -0.971$ on the 1{,}173 evaluated users of \Drawbig{}
-and is confirmed at $r = -0.773$ on the 100 held-out users of \Dmob, a
-different corpus with a different baseline. Normalised entropy\footnote{\textbf{Normalised entropy}: how spread out a user's time is over the cells
-they visit, rescaled to sit between 0 and 1. With $p_c$ the share of that
-user's events in cell $c$ and $C$ the number of distinct cells they visited,
-\[ H \;=\; \frac{-\sum_c p_c \log_2 p_c}{\log_2 C}. \] A user split evenly
-between two cells has $H = 1$, maximally spread; one spending 90\,\% of their
-time in one of the two has $H = 0.47$, concentrated and therefore easy to
-predict; $H = 0$ means they never left one cell.} of the visited cells
+they have. Each was correlated\footnote{\textbf{Pearson correlation} $r$: a
+single number saying how tightly two quantities move together across a
+population.} against that user's own accuracy, which gives
+Figure~\ref{fig:concentration}(b). A coefficient of $+1$ there would mean the
+two quantities rise together in lockstep, $-1$ that one falls exactly as the
+other rises, and $0$ that they have nothing to do with each other.
+
+The ranking is not close. The \textbf{cell-switch rate}, the share of
+consecutive steps at which the cell changes, reaches $r = -0.971$ on the 1{,}173
+evaluated users of \Drawbig{} and $-0.773$ on the 100 held-out users of \Dmob, a
+different corpus with a different baseline. Normalised
+entropy\footnote{\textbf{Normalised entropy}: how spread out a user's time is
+over the cells they visit, on a scale where 0 means they never left one cell and
+1 that they split their time evenly between all of them.} of the visited cells
 ($-0.811$) and concentration on a dominant cell ($+0.696$) are the same
-information seen from other angles. Everything else, the number of distinct
-cells, the number of predictions, the raw sequence length, is below $0.24$ in
-absolute value.
+information seen from other angles.
 
 \input{figures/fig-concentration}
 
-Figure~\ref{fig:switch-rate} shows what that correlation looks like when the
-users are simply sorted by it. Splitting them into five equal groups\footnote{\textbf{Quintile}: one fifth of the population, obtained by sorting users
+Two things have to be said about that $-0.971$ before it is used for anything,
+because taken alone it is the weakest number in this chapter. The first is that
+it is very nearly arithmetic. The cell-switch rate is, by construction, the
+complement of how often ``repeat the last cell'' is correct on the same
+positions: a user who changes cell at one step in ten hands the trivial rule
+nine easy answers out of ten. Any predictor that behaves like that rule is
+therefore guaranteed a strong negative coefficient against the switch rate
+before anything at all is measured.
+
+The second is that this particular model was behaving like it. Both
+measurements were taken on runs scoring at or below their own baseline, so what
+the coefficient really quantifies is how closely the run was imitating the rule
+it was supposed to beat. That reading is more useful than the one I gave it at
+the time: a model that genuinely helped the volatile minority would show a
+\emph{weaker} coefficient, because it would break the lockstep between a user's
+switch rate and that user's score. Nobody re-measured it once the intervention
+of Chapter~\ref{ch:groups} finally cleared the baseline, and
+Chapter~\ref{ch:critique} lists that as the cheapest unfinished check in the
+project.
+
+What the figure does establish, and what no argument about tautology can take
+away, is the negative half of its ranking. The number of distinct cells visited,
+the number of predictions and the raw sequence length all stay below $0.24$ in
+absolute value. The intuitive explanations of why one user is harder than
+another, that they simply have less history or a wider repertoire, are
+eliminated in a single pass, and repetitiveness is the only candidate left
+standing.
+
+Figure~\ref{fig:switch-rate} shows what that looks like when the users are
+simply sorted by their switch rate. Splitting them into five equal groups\footnote{\textbf{Quintile}: one fifth of the population, obtained by sorting users
 on some quantity and cutting the sorted list into five equal parts;
 \textbf{quartile} and \textbf{decile} are the same with four and ten. ``The
-most volatile fifth'' is a quintile, not everyone above a fixed threshold.} by switch rate, the fifth of users who \emph{never} change cell are
+most volatile fifth'' is a quintile, not everyone above a fixed threshold.}, the fifth of users who \emph{never} change cell are
 predicted at 100\,\%, by the model and by the baseline alike, because for them the task is
 to notice that nothing is happening. At the other end, the most volatile fifth
 plateaus at 34.4\,\%. That is a 65-point spread produced entirely by who the
 users are, on a single trained model, with no hyperparameter involved.
+
+One objection has to be closed before any of that can be called a property of
+the user rather than of the ruler, and it is closed by a measurement made two
+chapters later, in Table~\ref{tab:context-collapse}: the same user's accuracy
+with 30\,\% of their day in context and with 80\,\% of it correlates at
+$r = 0.77$. A user who is hard when the model has seen a third of their day is
+still hard when it has seen four fifths. Difficulty travels with the person, not
+with the amount of history handed over, which is what makes it a trait and not
+an artefact of where the day was cut.
 
 \input{figures/fig-switch-rate}
 
@@ -137,9 +167,11 @@ error is the model being marked wrong for a difference that is not a movement.
 Three statements survive this chapter, and they constrain everything after it.
 
 \begin{enumerate}
-  \item Per-user accuracy is explained almost entirely by how repetitive the
-        user's mobility already is: $r = -0.971$ on one corpus, $-0.773$ on
-        another. The difficulty of a user is fixed before any model sees them.
+  \item Per-user accuracy is set by how repetitive the user's mobility already
+        is, and by nothing else that was measured. It is a trait rather than an
+        artefact of the protocol: the same user's score with a third of their day
+        in context and with four fifths of it correlates at $0.77$, so the
+        difficulty is fixed before any model sees them.
   \item The model's genuine contribution is concentrated in the volatile
         minority, and that minority owns a small share of the evaluation volume,
         so the aggregate can barely move even when the contribution is real.
@@ -154,34 +186,23 @@ or training it longer would improve predictions in the segment that is already
 solved by repetition. What was needed instead was a signal that helps
 specifically \emph{when a user is about to move}.
 
-\section{What I did next, and why}
-
-The per-user diagnosis pointed at one. Scoring the same trained model with
-progressively more context, a group of users does not merely fail to improve,
-it collapses, from thirty or forty per cent down to zero, precisely when the
-scored positions are the last ones of the day. A model that predicts a user
-correctly in the morning and not at all in the evening is not short of capacity;
-it is missing the fact that the evening is different from the morning. The
-sequence given to the model contained no notion of time whatsoever.
-Chapter~\ref{ch:time} adds it.
-
 \section{Retrospective}
 \label{sec:retro-user}
 
-With hindsight I over-read the correlation. A coefficient of $r = -0.971$
-between a user's cell-switch rate and that user's accuracy is close to a
-tautology: the switch rate is, almost by construction, the complement of how
-often ``repeat the last cell'' happens to be correct, so a strong negative
-number was guaranteed before anything was measured. Presenting it as the finding
-of the chapter gave it more weight than it can carry, and I would not lead with
-it again.
+What I would change here is what I put first. The chapter as I presented it at
+the time led with $r = -0.971$, and a coefficient that is almost arithmetic
+cannot carry a chapter, however striking it looks.
 
-What the measurement genuinely established is the \emph{distribution}, not the
-correlation. One fifth of the users are predicted perfectly by doing nothing at
-all; one fifth plateau at 34.4\,\%; and the aggregate is a weighted average of
-the two, with the weights concentrated in 117 people out of 1{,}173. That is the
-result that changed what I did next, it is why every chapter after this one
-reports per-segment numbers rather than a single accuracy, and why the search
-moved towards a signal that would help specifically at the positions where a
-user is about to move. The correlation was the headline; the histogram was the
-finding.
+The measurement that genuinely changed what I did next is the
+\emph{distribution}. One fifth of the users are predicted perfectly by doing
+nothing at all; one fifth plateau at 34.4\,\%; and the aggregate is a weighted
+average of the two, with the weights concentrated in 117 people out of 1{,}173.
+That is why every chapter after this one reports per-segment numbers rather than
+a single accuracy, and why the search moved towards a signal that would help
+specifically at the positions where a user is about to move. The correlation was
+the headline; the histogram was the finding.
+
+The other thing I would do differently costs one evaluation pass and I never
+ran it: re-measuring that coefficient after the model finally beat the baseline,
+which would have turned the least informative number in the chapter into a test
+of the project's main claim.

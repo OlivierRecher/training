@@ -3,7 +3,8 @@
   title        = {How to Train an {LLM} on Your Own Data},
   year         = {2025},
   month        = sep,
-  howpublished = {Heavybit, online article},
+  howpublished = {Heavybit, online article,
+                  \url{https://www.heavybit.com/library/article/train-LLM-on-own-data}},
   note         = {Consulted July 2026}
 }
 
@@ -95,17 +96,6 @@
 % State of the art (Chapter 2)
 % ---------------------------------------------------------------------------
 
-@article{gonzalez2008understanding,
-  author  = {Gonz{\'a}lez, Marta C. and Hidalgo, C{\'e}sar A. and
-             Barab{\'a}si, Albert-L{\'a}szl{\'o}},
-  title   = {Understanding Individual Human Mobility Patterns},
-  journal = {Nature},
-  volume  = {453},
-  number  = {7196},
-  pages   = {779--782},
-  year    = {2008}
-}
-
 @article{song2010limits,
   author  = {Song, Chaoming and Qu, Zehui and Blumm, Nicholas and
              Barab{\'a}si, Albert-L{\'a}szl{\'o}},
@@ -115,52 +105,6 @@
   number  = {5968},
   pages   = {1018--1021},
   year    = {2010}
-}
-
-@article{lu2013approaching,
-  author  = {Lu, Xin and Wetter, Erik and Bharti, Nita and
-             Tatem, Andrew J. and Bengtsson, Linus},
-  title   = {Approaching the Limit of Predictability in Human Mobility},
-  journal = {Scientific Reports},
-  volume  = {3},
-  pages   = {2923},
-  year    = {2013}
-}
-
-@inproceedings{gambs2012next,
-  author    = {Gambs, S{\'e}bastien and Killijian, Marc-Olivier and
-               N{\'u}{\~n}ez del Prado Cortez, Miguel},
-  title     = {Next Place Prediction Using Mobility {M}arkov Chains},
-  booktitle = {Proceedings of the First Workshop on Measurement, Privacy,
-               and Mobility (MPM)},
-  year      = {2012}
-}
-
-@article{blondel2015survey,
-  author  = {Blondel, Vincent D. and Decuyper, Adeline and Krings, Gautier},
-  title   = {A Survey of Results on Mobile Phone Datasets Analysis},
-  journal = {EPJ Data Science},
-  volume  = {4},
-  number  = {10},
-  year    = {2015}
-}
-
-@inproceedings{liu2016strnn,
-  author    = {Liu, Qiang and Wu, Shu and Wang, Liang and Tan, Tieniu},
-  title     = {Predicting the Next Location: A Recurrent Model with Spatial
-               and Temporal Contexts},
-  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
-  year      = {2016}
-}
-
-@inproceedings{feng2018deepmove,
-  author    = {Feng, Jie and Li, Yong and Zhang, Chao and Sun, Funing and
-               Meng, Fanchao and Guo, Ang and Jin, Depeng},
-  title     = {{DeepMove}: Predicting Human Mobility with Attentional
-               Recurrent Networks},
-  booktitle = {Proceedings of the 2018 World Wide Web Conference (WWW)},
-  pages     = {1459--1468},
-  year      = {2018}
 }
 
 @article{luca2021survey,
@@ -174,28 +118,12 @@
   year    = {2021}
 }
 
-@inproceedings{vaswani2017attention,
-  author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and
-               Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and
-               Kaiser, {\L}ukasz and Polosukhin, Illia},
-  title     = {Attention Is All You Need},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2017}
-}
-
 @misc{wang2023llmmob,
   author = {Wang, Xinglei and Fang, Meng and Zeng, Zichao and Cheng, Tao},
   title  = {Where Would {I} Go Next? Large Language Models as Human Mobility
             Predictors},
   year   = {2023},
   note   = {arXiv:2308.15197}
-}
-
-@misc{beneduce2024zeroshot,
-  author = {Beneduce, Ciro and Lepri, Bruno and Luca, Massimiliano},
-  title  = {Large Language Models are Zero-Shot Next Location Predictors},
-  year   = {2024},
-  note   = {arXiv:2405.20962}
 }
 
 @misc{kaplan2020scaling,
@@ -207,10 +135,66 @@
   note   = {arXiv:2001.08361}
 }
 
-@inproceedings{hoffmann2022chinchilla,
-  author    = {Hoffmann, Jordan and Borgeaud, Sebastian and Mensch, Arthur
-               and others},
-  title     = {Training Compute-Optimal Large Language Models},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2022}
+% ---------------------------------------------------------------------------
+% State of the art: the predictability bound is mostly stationarity
+% ---------------------------------------------------------------------------
+
+@article{ikanovic2017alternative,
+  author  = {Ikanovic, Ervin L. and Mollgaard, Anders},
+  title   = {An Alternative Approach to the Limits of Predictability in
+             Human Mobility},
+  journal = {EPJ Data Science},
+  volume  = {6},
+  pages   = {12},
+  year    = {2017}
 }
+
+% ---------------------------------------------------------------------------
+% State of the art: kinds of user, and predicting across users
+% ---------------------------------------------------------------------------
+
+@article{pappalardo2015returners,
+  author  = {Pappalardo, Luca and Simini, Filippo and Rinzivillo, Salvatore and
+             Pedreschi, Dino and Giannotti, Fosca and
+             Barab{\'a}si, Albert-L{\'a}szl{\'o}},
+  title   = {Returners and Explorers Dichotomy in Human Mobility},
+  journal = {Nature Communications},
+  volume  = {6},
+  pages   = {8166},
+  year    = {2015}
+}
+
+@inproceedings{jeong2016cluster,
+  author    = {Jeong, Jaeseong and Leconte, Mathieu and Prouti{\`e}re, Alexandre},
+  title     = {Cluster-Aided Mobility Predictions},
+  booktitle = {IEEE INFOCOM 2016: The 35th Annual IEEE International
+               Conference on Computer Communications},
+  year      = {2016}
+}
+
+% ---------------------------------------------------------------------------
+% State of the art: a cell rather than a place
+% ---------------------------------------------------------------------------
+
+@inproceedings{chen2013nextcell,
+  author    = {Chen, Xu and M{\'e}riaux, Fran{\c c}ois and Valentin, Stefan},
+  title     = {Predicting a User's Next Cell With Supervised Learning Based on
+               Channel States},
+  booktitle = {IEEE 14th International Workshop on Signal Processing Advances
+               in Wireless Communications (SPAWC)},
+  year      = {2013}
+}
+
+% ---------------------------------------------------------------------------
+% State of the art: language models pointed at trajectories
+% ---------------------------------------------------------------------------
+
+@misc{qin2025mobllm,
+  author = {Qin, Zhenlin and Wang, Leizhen and Ling, Yancheng and
+            Pereira, Francisco Camara and Ma, Zhenliang},
+  title  = {A Foundational Individual Mobility Prediction Model based on
+            Open-Source Large Language Models},
+  year   = {2025},
+  note   = {arXiv:2503.16553}
+}
+

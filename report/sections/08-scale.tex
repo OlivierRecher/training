@@ -14,14 +14,14 @@ that point?}
 
 The question is unusually well posed on this corpus. Since the unit is one day
 per user (Chapter~\ref{ch:data}), the only scaling axis available is more
-\emph{people}, never more history per person, so this chapter measures the value
-of a population prior and nothing else.
+\emph{people}, never more history per person, so this chapter measures what
+knowing how the population moves is worth, and nothing else.
 
 \section{First, a wrong way to ask it}
 
 An early attempt at the same question got a misleading answer, and it is worth
 recording because the mistake is easy to repeat. On the raw day-file, moving from
-500 to 5{,}000 users lifted the model's top-1 from 64.4\,\% to 76.0\,\%,
+400 to 5{,}000 training users lifted the model's top-1 from 64.4\,\% to 76.0\,\%,
 eleven and a half points, for eight times the training time. Read alone that
 looks like a scaling law.
 
@@ -45,11 +45,11 @@ were measured, from 400 training users up to 21{,}000.
 The largest tiers required a corpus built for the purpose: eleven day-files of
 2{,}000 users each, concatenated into 22{,}000 user-days, of which 1{,}000 users
 are held out and never trained on. That concatenation is exactly what it looks
-like, more people, each observed for one day. The tiers are nested,\footnote{\textbf{Nested tiers}: each larger training set strictly contains every
-smaller one. Without that, a difference between two tiers could be caused by
-\emph{which} users were drawn rather than by how many.} so that a larger tier is
-strictly \emph{more} data and never \emph{other} data: the 21{,}000-user set is
-the 5{,}000-user set plus sixteen thousand more. Over those tiers the number of
+like, more people, each observed for one day. The tiers are nested, so that a
+larger tier is strictly \emph{more} data and never \emph{other} data: the
+21{,}000-user set is the 5{,}000-user set plus sixteen thousand more. Without
+that, a difference between two tiers could have come from \emph{which} users
+were drawn rather than from how many. Over those tiers the number of
 events grows from 369{,}451 to 1{,}538{,}379 and the number of available training
 windows\footnote{\textbf{Training window}: one contiguous slice of a user's day, at most the
 context length, used as a single training example. A long user yields several
@@ -66,11 +66,13 @@ regions.
   \item[Imitation, at 400 training users.] $+0.6\pt$. The model is barely
         distinguishable from the rule it is supposed to beat.
   \item[Generalisation, from 400 to 1{,}900.] $+0.6 \rightarrow +2.8
-        \rightarrow +3.5 \rightarrow +4.2\pt$. A roughly four-fold increase in
+        \rightarrow +3.5 \rightarrow +4.2\pt$, at 400, 900, 1{,}400 and 1{,}900
+        training users. A roughly four-fold increase in
         population buys $+3.6\pt$ of edge, essentially the entire benefit the
         project ever obtained from data volume.
-  \item[Saturation, from 1{,}900 to 21{,}000.] $+4.3$, $+4.4$, $+4.7$,
-        $+4.3\pt$. A further ten-fold increase buys $+0.1\pt$, and not
+  \item[Saturation, from 5{,}000 training users on.] $+4.3$, $+4.4$, $+4.7$ and
+        $+4.3\pt$ at 5{,}000, 10{,}000, 15{,}000 and 21{,}000. A ten-fold
+        increase over the 1{,}900-user tier buys $+0.1\pt$, and not
         monotonically: the best tier (15{,}000) is followed by the worst
         (21{,}000).
 \end{description}
@@ -80,26 +82,29 @@ The curve does not slow down. It stops.
 \section{Is the flatness real, or is it noise?}
 
 ``The best tier is followed by the worst'' is the signature of noise, but a
-signature is not a test. The test used is a \emph{paired} bootstrap over the
-1{,}000 held-out users, 2{,}000 resamples: the same users are resampled for both
-tiers being compared, so the luck of the test draw cancels and what remains is
-the difference between the two models. Table~\ref{tab:bootstrap} gives it.
+signature is not a test. The test used is a paired bootstrap over the 1{,}000
+held-out users. A thousand users are drawn at random from those thousand, with
+replacement so that some appear twice and others not at all; both tiers are
+scored on exactly that draw and the difference between them is noted; and the
+whole thing is repeated two thousand times. The middle 95\,\% of those two
+thousand differences is the interval reported, and because the two tiers always
+see the same draw, the luck of the sample cancels and only the difference
+between the models is left. An interval containing zero means the two cannot be
+told apart. Table~\ref{tab:bootstrap} gives them.
 
 \input{tables/tab-bootstrap}
 
 Every interval contains zero, each individual step, and the interval spanning
 the entire ladder from 5{,}000 to 21{,}000 users, whose point estimate is
-$+0.04\pt$. Fitting a scaling law\footnote{\textbf{Scaling law}: the observation, in the pre-training literature
-\cite{kaplan2020scaling}, that error falls as a straight line when both axes
-are plotted logarithmically. Fitting one here asks how many points the edge
-gains each time the user count is multiplied by ten. A slope of $+0.18$ means
-2{,}000 to 20{,}000 users would buy $0.18$ points, and the $R^2 = 0.12$ says
-the fitted line explains almost none of the eight measured points: the ``law''
-is fitting noise.} to the same points gives a slope of
-$+0.18\pt$ per ten-fold increase in users with $R^2 = 0.12$; at that slope, one
-additional point of accuracy would require on the order of 1.5 billion users.
-The correct statement is therefore not ``the gain is small'' but ``no gain was
-measured''.
+$+0.04\pt$. Fitting a scaling law\footnote{\textbf{Scaling law}: in the
+pre-training literature \cite{kaplan2020scaling}, the observation that error
+falls in a straight line when data and error are both plotted logarithmically.}
+to the same points asks how many points of edge a ten-fold increase in users
+buys. The answer is a slope of $+0.18\pt$ per ten-fold increase, which at that
+rate would need on the order of 1.5 billion users to buy one further point, and
+the fit accounts for only 12\,\% of the spread of the eight measured points, so
+the ``law'' is fitting noise rather than a trend. The correct statement is
+therefore not ``the gain is small'' but ``no gain was measured''.
 
 Nor does anything hide behind the aggregate. Table~\ref{tab:all-metrics} takes
 the same four tiers through six different metrics, top-1, top-3, top-5, the
@@ -117,7 +122,9 @@ One line of that table is worth isolating, because it is the only place where
 scale might have been expected to pay and where the model is genuinely more
 useful: with only 30\,\% of a user's day in context, the model beats its baseline
 by $+4.6\pt$ against $+4.3\pt$ at 80\,\%. Its edge is largest on users about
-whom little is known, which is the commercially interesting case. But that
+whom little is known, which is the operationally interesting case and also the
+one where the group detection this model leans on is least reliable, a tension
+Chapter~\ref{ch:critique} states in full. But that
 edge, too, is identical at 5{,}000 and at 21{,}000 users.
 Table~\ref{tab:context-scale} shows the same insensitivity across every context
 fraction at the smaller tiers: the edge is already $+4.3\pt$ when only 30\,\%
@@ -130,16 +137,18 @@ of how much history it is handed.
 
 One thing does, and it is a property of the user rather than of the dataset:
 which behavioural profile they belong to. Evaluated with the
-21{,}000-user model on the same held-out users, the four groups score 62.8\,\%
-(sedentary, 22\,\% of users), 53.6\,\% (regular, 37\,\%), 43.0\,\%
-(afternoon-mobile, 22\,\%) and 40.4\,\% (morning-mobile, 18\,\%): a spread of
-\textbf{22.4 points}. And the four profiles were quantitatively identical at
-every tier, which is itself a scaling result, 5{,}000 users already describe
-this population completely, so there is nothing left for the next sixteen
-thousand to add.
+21{,}000-user model on the same held-out users, the four profiles of
+Chapter~\ref{ch:groups} score 62.8\,\% (G0, the homebody, 22\,\% of the users of
+\seleven), 53.6\,\% (G1, the steady user, 37\,\%), 43.0\,\% (G2, the evening
+mover, 22\,\%) and 40.4\,\% (G3, the morning mover, 18\,\%): a spread of
+\textbf{22.4 points}. The shares are not those measured on \smob{} in
+Chapter~\ref{ch:groups}, since these are twenty-one thousand different people,
+but the four shapes themselves were quantitatively identical at every tier,
+which is itself a scaling result: 5{,}000 users already describe this population
+completely, so there is nothing left for the next sixteen thousand to add.
 
-Put side by side, 22.4 points against 0.3: who the user is outweighs how much
-data was used to train, by a factor of roughly seventy.
+Put side by side, 22.4 points against 0.4: who the user is outweighs how much
+data was used to train, by a factor of more than fifty.
 
 \section{Why it climbs and then stops}
 
@@ -159,11 +168,14 @@ is exactly what the ablations of Chapter~\ref{ch:groups} independently
 concluded.
 
 \paragraph{The jump happens where the smallest profile becomes estimable.} One
-mechanism fits the timing of the transition, and it is testable. The
-afternoon-mobile profile is the least populated of the four: 14\,\% of users. At
-the 400-user tier that is \textbf{56 people}; at 900 training users,
-\textbf{126}; at 1{,}900, \textbf{266}. It crosses roughly a hundred members
-exactly between the two tiers where the edge jumps from $+0.6$ to $+2.8\pt$. A
+mechanism fits the timing of the transition, and it is testable. On the corpus
+the profiles were cut on, G2, the evening mover, is the least populated of the
+four at 14\,\% of users. At the 400-user tier that is \textbf{56 people}; at 900
+training users, \textbf{126}; at 1{,}900, \textbf{266}. It crosses roughly a
+hundred members exactly between the two tiers where the edge jumps from $+0.6$
+to $+2.8\pt$. On the much larger \seleven{} that same profile holds 22\,\% of
+users, which would move the crossing earlier rather than later, so the argument
+does not turn on which of the two shares is taken. A
 group token can only carry information if the group has enough inhabitants for
 its rhythm to be estimated at all, below that, the model is right to ignore
 it, which is precisely what the failed ablation showed it doing. Cross-training
@@ -188,10 +200,22 @@ larger dataset was not added, it was spread thinner. Separately, only about
 increased with the data.
 
 So the defensible conclusion is \emph{``with this much training time and this
-much trainable capacity, 2{,}000 users are enough''}, not ``more users can never
+much trainable capacity, 1{,}900 users are enough''}, not ``more users can never
 help''. Both statements would draw the same flat line, and one experiment would
 tell them apart: give the largest dataset the training time its size deserves.
 That run was not performed, and the claim is limited accordingly.
+
+\section{What the numbers said}
+
+The chapter settles two things. Data volume is a real lever over one narrow
+stretch, from roughly 400 to 1{,}900 training users, and is worth nothing above
+it at constant compute. And what difficulty there is lives in the user: 22.4
+points across behavioural profiles, against 0.4 points across the whole training
+ladder.
+
+A third result belongs beside them, and the section that follows is given to it:
+one way of using the same users better, levelling the number of records each of
+them contributes, does everything it promises and still cannot be used here.
 
 \section{A parenthesis: levelling records instead of adding users}
 \label{sec:levelling}
@@ -204,23 +228,21 @@ The idea, adapted from a colleague's work, is that a few very long users dominat
 training: with natural sequence lengths, the top quarter of users carries
 44.3\,\% of the training positions,\footnote{\textbf{Training position}: one scored \cid{cell\_id} in the training data.
 A user with 200 events contributes about 200 of them and a user with 20
-contributes 20, so long users dominate the gradient simply by being long.} so a fine-tune spends most of its budget
+contributes 20, so long users dominate the training simply by being long.} so a fine-tune spends most of its budget
 learning the habits of the heaviest users. The remedy is to stretch every
 sequence to exactly 200 records by repeating each existing record a few times,
 spread evenly along the sequence rather than piled up at one end.
 
 \paragraph{What it delivers is exactly what it promises.} Measured on the 400
 training users: the ratio between longest and shortest user goes from 200:19 to
-1:1; the Gini coefficient\footnote{\textbf{Gini coefficient}: a measure of inequality borrowed from economics,
-from 0 (everyone equal) to 1 (one member holds everything), applied here to
-how many training positions each user contributes. Four users contributing
-$25, 25, 25, 25$ give 0; $10, 20, 30, 40$ give 0.25; $1, 1, 1, 97$ give
-roughly 0.72. The measured 0.294 says the corpus is moderately unequal.} of per-user weight
-goes from 0.294 to \textbf{0}; the
+1:1; the Gini coefficient\footnote{\textbf{Gini coefficient}: a measure of
+inequality borrowed from economics, from 0 when every user contributes the same
+number of training positions to 1 when a single user contributes all of them.}
+of per-user weight goes from a moderately unequal 0.294 to \textbf{0}; the
 top decile's share of training positions falls from 21.0\,\% to 10.0\,\% and the
 top quartile's from 44.3\,\% to 25.0\,\%; and the number of training positions
-rises from 34{,}408 to 80{,}000. Every user now contributes exactly 0.25\,\% of
-the gradient. The diagnosis behind the technique is right, and the technique does
+rises from 34{,}408 to 80{,}000. Every user now weighs exactly 0.25\,\% of the
+training. The diagnosis behind the technique is right, and the technique does
 what it was designed to do.
 
 \paragraph{What it does to the score is a warning about baselines.}
@@ -270,23 +292,6 @@ which makes the profiles harder to tell apart, which disables cross-training.
 The technique is not wrong, it fixes a real imbalance, and the imbalance it
 fixes is genuine, but on this corpus and with this method it removes more
 information than it redistributes.
-
-\section{What the numbers said}
-
-The chapter settles three things. Data volume is a real lever over one narrow
-stretch, roughly 500 to 2{,}000 users, and is worth nothing above it, at
-constant compute. What difficulty there is lives in the user: 22 points across
-behavioural profiles, against 0.3 points across the whole training ladder. And levelling the amount of data per user, an
-otherwise sound idea, cannot be applied here without destroying the behavioural
-signal that makes the model work.
-
-\section{What I did next, and why}
-
-What remains open after this is no longer a question of volume. Having settled
-how many users a within-day model needs, the natural next step is to ask whether
-the day of the week changes anything. A seven-day experiment was set up for
-exactly that and did not finish, the session crashed after five hours with none
-of the seven trainings complete, which is where the work stands.
 
 \section{Retrospective}
 \label{sec:retro-scale}
