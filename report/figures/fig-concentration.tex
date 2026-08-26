@@ -1,31 +1,12 @@
-% F8 -- Where the evaluation signal lives, and what actually correlates with accuracy.
+% F8 -- What actually correlates with accuracy.
 \begin{figure}[!htbp]
 \centering
-\replegend{\swatch{clbase}~persistence baseline \qquad \swatch{clmodel}~model,
-           \srawbig \qquad \swatch{clink}~model, \smob}
+\replegend{\swatch{clmodel}~1{,}173-user set \qquad \swatch{clink}~100 held-out users, \smob}
 \fitwidth{%
 \begin{tikzpicture}
-\begin{groupplot}[
-  group style={group size=1 by 2, vertical sep=2.7cm},
-  rep, width=0.80\linewidth,
+\begin{axis}[rephbar, width=0.80\linewidth, height=5.4cm,
+  title={Pearson correlation between a per-user feature, one per row, and that user's accuracy},
   title style={font=\footnotesize,yshift=1pt},
-]
-% ---- (a) volume quintiles ----
-\nextgroupplot[repbar, height=4.6cm,
-  title={(a) \srawbig, five bands of users cut on the predictions they contribute},
-  symbolic x coords={va,vb,vc,vd,ve}, xtick=data,
-  xticklabels={{1--2\\324 users},{2--6\\234 users},{6--17\\234 users},
-               {17--58\\234 users},{58--1{,}533\\117 users}},
-  x tick label style={font=\scriptsize,align=center},
-  xlabel={predictions per user},
-  ylabel={top-1 accuracy (\%)},
-  ymin=0, ymax=100, ytick={0,20,...,100}, /pgf/bar width=9pt]
-\addplot[fill=clbase,draw=none] coordinates {(va,66.3)(vb,61.9)(vc,62.2)(vd,66.6)(ve,78.1)};
-\addplot[fill=clmodel,draw=none] coordinates {(va,66.0)(vb,61.9)(vc,61.9)(vd,68.1)(ve,78.6)};
-%
-% ---- (b) correlations ----
-\nextgroupplot[rephbar, height=5.4cm,
-  title={(b) Pearson correlation between a per-user feature, one per row, and that user's accuracy},
   xmin=-1.2, xmax=1.2, xtick={-1,-0.5,0,0.5,1},
   xlabel={Pearson $r$}, /pgf/bar width=5.5pt,
   symbolic y coords={len,vol,uniq,irr,dom,ent,switch},
@@ -40,21 +21,12 @@
   every node near coord/.append style={font=\tiny}]
 \addplot[fill=clmodel,draw=none] coordinates {(0.054,len)(0.154,vol)(-0.175,uniq)(0.696,dom)(-0.811,ent)(-0.971,switch)};
 \addplot[fill=clink,draw=none]   coordinates {(-0.101,vol)(-0.232,uniq)(-0.140,irr)(0.285,dom)(-0.773,switch)};
-\end{groupplot}
+\end{axis}
 \end{tikzpicture}}
-\caption{Concentration of the evaluation signal and per-user correlations}
+\caption{Per-user correlations with accuracy}
 \label{fig:concentration}
 \figtext{%
-(a)~The 1{,}173 evaluated users, sorted by how many predictions each
-contributes and cut into five bands, each label giving the range of that band
-and how many users fall in it; grey-blue is the persistence baseline and dark
-blue the model, both scored on the same positions. The evaluation signal is extremely concentrated:
-the median user contributes 11 predictions, while the most active tenth, 117
-people, carries 58.6\,\% of the 54{,}173 predictions, so any average on this
-corpus is essentially the score of those 117 people. Accuracy nevertheless
-barely moves across the groups, and the raw correlation with volume is weak
-($r = +0.15$), so this is not a volume effect: heavy users simply happen to
-switch cell less often ($r = -0.15$). (b)~One row per candidate feature, named on the left, and the
+One row per candidate feature, named on the left, and the
 length of its bar is the Pearson correlation between that feature and the
 user's own accuracy; zero means the feature says nothing about the score,
 $\pm1$ that it says everything, and the sign says in which direction.
@@ -66,7 +38,5 @@ normalised entropy ($-0.811$) and dominant-cell frequency ($+0.696$) are the
 same information seen from other angles and everything else stays below
 $0.24$. The $-0.971$ is close to arithmetic, for the reason given in the text,
 and says as much about a model imitating the trivial rule as about the users;
-the distribution, not the coefficient, is the finding.
-The five bands of panel~(a) carry, left to right, 353, 948, 2{,}601, 7{,}553
-and 42{,}718 predictions.}
+the distribution, not the coefficient, is the finding.}
 \end{figure}

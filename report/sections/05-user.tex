@@ -20,13 +20,13 @@ many distinct cells they visit, how irregular the switches are, how many records
 they have. Each was correlated\footnote{\textbf{Pearson correlation} $r$: a
 single number saying how tightly two quantities move together across a
 population.} against that user's own accuracy, which gives
-Figure~\ref{fig:concentration}(b). A coefficient of $+1$ there would mean the
+Figure~\ref{fig:concentration}. A coefficient of $+1$ there would mean the
 two quantities rise together in lockstep, $-1$ that one falls exactly as the
 other rises, and $0$ that they have nothing to do with each other.
 
 The ranking is not close. The \textbf{cell-switch rate}, the share of
 consecutive steps at which the cell changes, reaches $r = -0.971$ on the 1{,}173
-evaluated users of \Drawbig{} and $-0.773$ on the 100 held-out users of \Dmob, a
+evaluated users of the \textsc{raw day} at 500 users and $-0.773$ on the 100 held-out users of \Dmob, a
 different corpus with a different baseline. Normalised
 entropy\footnote{\textbf{Normalised entropy}: how spread out a user's time is
 over the cells they visit, on a scale where 0 means they never left one cell and
@@ -52,9 +52,8 @@ it was supposed to beat. That reading is more useful than the one I gave it at
 the time: a model that genuinely helped the volatile minority would show a
 \emph{weaker} coefficient, because it would break the lockstep between a user's
 switch rate and that user's score. Nobody re-measured it once the intervention
-of Chapter~\ref{ch:groups} finally cleared the baseline, and
-Chapter~\ref{ch:critique} lists that as the cheapest unfinished check in the
-project.
+of Chapter~\ref{ch:groups} finally cleared the baseline; it remains the
+cheapest unfinished check in the project.
 
 What the figure does establish, and what no argument about tautology can take
 away, is the negative half of its ranking. The number of distinct cells visited,
@@ -115,7 +114,7 @@ be worse than a one-line rule overall.
 
 If accuracy varies that much between users, the weights matter. They are
 extremely uneven. Splitting the same 1{,}173 users into five equal groups by how
-many predictions each contributes, Figure~\ref{fig:concentration}(a), the
+many predictions each contributes, the
 median user contributes eleven predictions while the most active tenth, 117
 people, carries \textbf{58.6\,\%} of the 54{,}173 scored predictions. Any
 aggregate on this corpus is, to a first approximation, the score of those 117
@@ -126,7 +125,7 @@ is not supported. Accuracy is almost flat across the five volume groups, and the
 raw correlation between volume and accuracy is $r = +0.154$. What actually
 happens is that high-volume users tend to switch cell \emph{less} often
 ($r = -0.15$ between volume and switch rate), so the mild upward tilt at the
-right of the panel is the switch-rate finding wearing a different label. This
+high-volume end is the switch-rate finding wearing a different label. This
 matters practically: it means that levelling the number of records per user
 cannot be expected to redistribute difficulty, which is the prediction that
 Chapter~\ref{ch:scale} eventually tests directly.

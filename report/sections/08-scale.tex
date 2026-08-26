@@ -17,23 +17,6 @@ per user (Chapter~\ref{ch:data}), the only scaling axis available is more
 \emph{people}, never more history per person, so this chapter measures what
 knowing how the population moves is worth, and nothing else.
 
-\section{First, a wrong way to ask it}
-
-An early attempt at the same question got a misleading answer, and it is worth
-recording because the mistake is easy to repeat. On the raw day-file, moving from
-400 to 5{,}000 training users lifted the model's top-1 from 64.4\,\% to 76.0\,\%,
-eleven and a half points, for eight times the training time. Read alone that
-looks like a scaling law.
-
-It is not, because the persistence baseline of the larger sample rose from
-69.2\,\% to 81.6\,\% at the same time. The gap to the baseline did not close; it
-\emph{widened}, from $-4.8$ to $-5.6\pt$. What had actually happened is that a
-larger random sample of an unfiltered day-file contains a larger absolute number
-of near-immobile users, so both the model and the trivial rule got easier
-questions. Scaling a dataset within a regime whose baseline scales with it buys
-nothing at all, and this is the clearest illustration in the report of why every
-number here is a gap.
-
 \section{The ladder, done properly}
 
 The proper version fixes everything except the number of users. Same
@@ -123,8 +106,7 @@ scale might have been expected to pay and where the model is genuinely more
 useful: with only 30\,\% of a user's day in context, the model beats its baseline
 by $+4.6\pt$ against $+4.3\pt$ at 80\,\%. Its edge is largest on users about
 whom little is known, which is the operationally interesting case and also the
-one where the group detection this model leans on is least reliable, a tension
-Chapter~\ref{ch:critique} states in full. But that
+one where the group detection this model leans on is least reliable. But that
 edge, too, is identical at 5{,}000 and at 21{,}000 users.
 Table~\ref{tab:context-scale} shows the same insensitivity across every context
 fraction at the smaller tiers: the edge is already $+4.3\pt$ when only 30\,\%
