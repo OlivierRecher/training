@@ -19,6 +19,7 @@ data/
 .ipynb_checkpoints/
 
 REPORT.md
+CLAUDE.md
 # LaTeX - fichiers auxiliaires et sorties de compilation
 *.aux
 *.bbl

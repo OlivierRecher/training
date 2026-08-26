@@ -68,17 +68,16 @@ company and open-source project that hosts most publicly available language
 models and publishes the standard Python libraries for using them. ``The Hugging
 Face ecosystem'' means those libraries plus the online repository
 the base model is downloaded from.} where four libraries do four jobs:
-\textbf{Transformers} \cite{wolf2020transformers} loads the base model and runs
-the training loop, \textbf{PEFT}\footnote{\textbf{PEFT}: \emph{Parameter-Efficient
+\textbf{Transformers} loads the base model and runs the training loop,
+\textbf{PEFT}\footnote{\textbf{PEFT}: \emph{Parameter-Efficient
 Fine-Tuning}. The library implementing LoRA and QLoRA: it inserts the
 small trainable matrices of Figure~\ref{fig:lora} into a frozen model and
-keeps track of which parameters are allowed to move.} \cite{peft2022} inserts
-the adapters and trains the representations of the tokens added to the vocabulary,
-\textbf{TRL}\footnote{\textbf{TRL}: the name expands to \emph{Transformer Reinforcement
+keeps track of which parameters are allowed to move.} inserts the adapters and
+trains the representations of the tokens added to the vocabulary, \textbf{TRL}\footnote{\textbf{TRL}: the name expands to \emph{Transformer Reinforcement
 Learning}, which is misleading here: no reinforcement learning is used. Only
 the library's ordinary supervised path is, and what was taken from it is a
-\emph{file format}, see Figure~\ref{fig:training-example}(a).} \cite{trl2020}
-supplies the conversational file format of the data files, and
+\emph{file format}, see Figure~\ref{fig:training-example}(a).} supplies the
+conversational file format of the data files, and
 \textbf{bitsandbytes} stores the frozen weights in 4 bits.
 
 \input{figures/fig-training-example}
@@ -211,8 +210,8 @@ On the analysis side, pandas\footnote{\textbf{pandas}, \textbf{scikit-learn} and
 \textbf{scipy}: the three standard Python libraries for, respectively,
 manipulating tables of data, machine-learning utilities, and statistical tests.
 None of them does any modelling here; they prepare and check the data.} and
-scikit-learn \cite{pedregosa2011scikit} produce the stratified user split, scipy
-checks that the two halves have comparable length distributions, and a
+scikit-learn produce the stratified user split, scipy checks that the two halves
+have comparable length distributions, and a
 \emph{paired} bootstrap\footnote{\textbf{Bootstrap}: error bars obtained by
 rescoring the models on many random redraws of the test users, with no
 assumption about the shape of the underlying distribution. \emph{Paired} means

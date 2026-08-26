@@ -99,7 +99,7 @@ directly: 22.4 points between behavioural profiles, against four tenths of a
 point across an entire training-size ladder.
 That decomposition is this report's main claim.
 
-\section{What has been used to predict, and the two ways of using a language model}
+\section{What has been used to predict}
 
 The predictors themselves I take from one place. Luca et al.\ survey the whole
 deep-learning branch of human mobility, from recurrent
@@ -108,11 +108,13 @@ sequence one element at a time while carrying a summary of what it has already
 read, so a prediction can depend on more than the last item.} that read a
 trajectory step by step to attention mechanisms that let a prediction reach back
 to a matching moment in an earlier day \cite{luca2021survey}. Two points in it
-bear on the chapters below. Giving a model the time of day alongside the
-location has been standard practice in that branch for years, so the mechanism
-of Chapter~\ref{ch:time} is not an idea of mine; what
-Chapters~\ref{ch:time} and~\ref{ch:groups} add is the finding that \emph{which}
-hours matter is a property of the user rather than of the corpus. And the
+bear on the chapters below.
+
+Giving a model the time of day alongside the location has been standard practice
+in that branch for years, so the mechanism of Chapter~\ref{ch:time} is not an
+idea of mine; what Chapters~\ref{ch:time} and~\ref{ch:groups} add is the finding
+that \emph{which} hours matter is a property of the user rather than of the
+corpus. And the
 attention that the better recurrent models had to be extended with is the native
 operation of the architecture behind current language
 models,\footnote{\textbf{Transformer}: the architecture behind current language
@@ -120,8 +122,10 @@ models, in which every position of a sequence can attend directly to every
 earlier one.} which is one honest reason to reach for an existing language model
 here instead of building a predictor from scratch.
 
-Since 2023 that is what the field has been doing, and it split into the same two
-branches the team I joined was split into (Chapter~\ref{ch:intro}).
+\section{Prompting or fine-tuning}
+
+Since 2023 the field has been reaching for those models, and it split into the
+same two branches the team I joined was split into (Chapter~\ref{ch:intro}).
 
 The first branch leaves the model's weights alone and writes a better
 instruction. Wang et al.\ turn a user's recent stays into a text prompt,
@@ -136,21 +140,7 @@ small open-source model with the same parameter-efficient method used here,
 across six mobility datasets, and argue that a model adapted this way transfers
 to a new corpus better than prompting a large commercial one does, at a fraction
 of the running cost \cite{qin2025mobllm}. It is the closest published analogue
-of what this report attempts, and worth reading against
-Chapter~\ref{ch:scale}: their case for fine-tuning rests on transfer between
-corpora, which is precisely the thing a single-day, single-area corpus cannot
-demonstrate.
-
-Two practitioner articles belong in this chapter too, because they are what the
-first week actually ran on. Heavybit's guide \cite{heavybit2025} walks the loop
-end to end: cleaning and tokenising a dataset of one's own, starting from a
-pre-trained base rather than from nothing, training only a subset of the
-parameters, renting a cloud GPU, and which hyperparameters to touch first, the
-learning rate, the batch size and the number of epochs. It is not a research
-paper and does not claim to be, and that was exactly its value: it fixed the
-vocabulary and the order of operations a week before I had any of my own.
-Tewari's walkthrough of fine-tuning a Llama model on a custom dataset
-\cite{tewari2025} supplied the concrete details of the same path.
+of what this report attempts.
 
 \section{A population, split into kinds of user}
 
@@ -197,25 +187,9 @@ going, only which antenna will serve them next.
 
 Predicting a cell from a trace of cells, with no radio measurements, sits
 between the two and inherits a drawback from each. 12.4\,\% of consecutive
-records in this corpus change cell without anyone moving, because the handset
-re-attached to another cell of the same antenna (Chapter~\ref{ch:data}), so part
-of what a model here is asked to predict is a network decision rather than a
-human one. And the human part of it is graded on cells rather than on places,
-which is a finer target than the published ceilings were ever estimated for.
-
-\section{What this chapter does not give me}
-
-None of the numbers above is a number this report can be scored against. The
-corpora differ, the spatial and temporal granularities differ, and above all the
-unit differs. A per-person ceiling is estimated from months of history for one
-individual, whereas this corpus holds one day per person and no person appears
-in two of its files, so what can be learned here is a regularity of the
-\emph{population} rather than of anybody in particular. Eleven weeks were not
-enough to obtain a comparable corpus, and no result in the chapters that follow
-is presented as beating or failing to beat a published one.
-
-What the literature did give me is the frame the whole report is written in.
-Predictability belongs to the user; most of it is the user standing still; and
-the honest measure of a model is therefore its distance from the rule that
-assumes the user never moves, computed on the same positions. Everything after
-this page is that measurement, taken apart.
+records in this corpus change cell without the site the user is attached to
+having really changed, because the handset re-attached to another cell of the
+same antenna (Chapter~\ref{ch:data}), so part of what a model here is asked to
+predict is a network decision rather than a human one. And the human part of it
+is graded on cells rather than on places, which is a finer target than the
+published ceilings were ever estimated for.
