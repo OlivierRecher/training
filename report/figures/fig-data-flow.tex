@@ -1,5 +1,5 @@
 % F3 -- From a raw day-file to training sequences.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \fitwidth{%
 \begin{tikzpicture}[font=\small,
@@ -17,46 +17,57 @@
 \node[font=\scriptsize,anchor=north,text=clrule] at ([xshift=-4.9cm,yshift=-0.34cm]raw.south)
   {$\underbrace{\hspace{4.6em}}$};
 \node[font=\scriptsize,anchor=north,text=clrule] at ([xshift=-4.9cm,yshift=-0.62cm]raw.south)
-  {8 metadata columns};
+  {8 administrative columns};
 \node[font=\scriptsize,anchor=north,text=clrule] at ([xshift=1.9cm,yshift=-0.34cm]raw.south)
   {$\underbrace{\hspace{16em}}$};
 \node[font=\scriptsize,anchor=north,text=clrule] at ([xshift=1.9cm,yshift=-0.62cm]raw.south)
-  {(\cid{cell\_id}, timestamp) pairs, the timestamp always \emph{follows} its cell};
+  {antenna-and-time pairs, the time always \emph{following} its antenna};
 
 \node[stage,below left=1.95cm and 3.4cm of raw.south] (s1)
-  {\textbf{1. Keep what is a\\trajectory}\\[1pt]\footnotesize user id, record count,\\ the (cell, timestamp) pairs};
+  {\textbf{1. Keep the\\trajectory}\\[1pt]\footnotesize the anonymous number, the record count, the antenna-and-time pairs};
 \node[stage,right=0.5cm of s1] (s2)
-  {\textbf{2. Second $\rightarrow$ hour}\\[1pt]\footnotesize
-   $\lfloor \mathit{ts}/3600 \rfloor$\\ one hour token per event};
+  {\textbf{2. Time $\rightarrow$ hour}\\[1pt]\footnotesize
+   seconds since midnight become the hour of day, one symbol per event};
 \node[stage,right=0.5cm of s2] (s3)
-  {\textbf{3. One line per user}\\[1pt]\footnotesize an ordered sequence of
-   (\cid{cell\_id}, hour) events for one day};
+  {\textbf{3. One line per person}\\[1pt]\footnotesize their whole day as an ordered list of \emph{antenna, hour} events};
 \node[stage,right=0.5cm of s3] (s4)
-  {\textbf{4. Split by user}\\[1pt]\footnotesize stratified on the number of
-   records, \emph{before} any training};
+  {\textbf{4. Split the people}\\[1pt]\footnotesize balanced on the number of records, \emph{before} any training};
 
 \draw[ar] ([yshift=-0.95cm]raw.south) -- ++(0,-0.35) -| (s1.north);
 \draw[ar] (s1) -- (s2); \draw[ar] (s2) -- (s3); \draw[ar] (s3) -- (s4);
 
-\node[disk,below=1.25cm of s2] (tr) {\textbf{TRAIN}\\[2pt]{\large 400}\\[1pt]users the\\model studies};
-\node[disktest,below=1.25cm of s4] (te) {\textbf{TEST}\\[2pt]{\large 100}\\[1pt]users it is\\graded on};
+\node[disk,below=1.25cm of s2] (tr) {\textbf{TRAIN}\\[2pt]{\large 400}\\[1pt]people the\\model studies};
+\node[disktest,below=1.25cm of s4] (te) {\textbf{TEST}\\[2pt]{\large 100}\\[1pt]people it is\\graded on};
 \node[font=\footnotesize,text=clloss,align=center] (neq) at ($(tr)!0.5!(te)$)
-  {$\neq$\\[1pt]\textbf{0 user}\\ in common};
+  {$\neq$\\[1pt]\textbf{0 person}\\ in common};
 
 \draw[ar] (s4.south) -- ++(0,-0.4) -| (te.north);
 \draw[ar] (s4.south) -- ++(0,-0.4) -| (tr.north);
 
 \node[draw=clrule,fill=white,rounded corners=2pt,align=left,inner sep=6pt,
       text width=14.4cm,font=\footnotesize,below=0.75cm of neq]
-  {\textbf{What the split guarantees.} The model never sees a single test user
-   before being graded, so nothing it scores is memorised. Since the unit is one
-   day per user, what it learns is how a \emph{population} moves, which is the
-   quantity Chapters~\ref{ch:user} and~\ref{ch:scale} measure.};
+  {\textbf{Why the two circles never overlap.} The model is graded only on people
+   it has never seen, so nothing it scores can have been memorised.};
 \end{tikzpicture}}
-\caption{From a raw day-file to training sequences}
+\caption{From a raw file to training material, in four steps}
 \label{fig:data-flow}
 \figtext{%
-How a raw daily export becomes training material. The 400/100 figures are
-those of the mobile-user day; the other tiers of Table~\ref{tab:datasets}
-follow the same four stages with different counts.}
+\figpara{The raw line, at the top.}{This is one person's whole day as it arrives
+from the operator. The first eight fields are administrative; everything after
+them alternates the name of an antenna and the time, in seconds since midnight,
+at which the phone was seen on it.}
+
+\figpara{The four steps.}{\textbf{(1)} Throw away everything that is not a
+trajectory and keep the anonymous number, the record count and the
+antenna-and-time pairs. \textbf{(2)} Turn each time into the hour of day it
+falls in, so that 23{,}822 seconds becomes ``hour 6''. \textbf{(3)} Write one
+line per person: their day as an ordered list of events. \textbf{(4)} Split the
+people into those the model studies and those it is graded on.}
+
+\figpara{The two circles.}{They hold different people, never the same ones, and
+the split is balanced so that both sides get the same mix of short and long
+histories. The 400 and 100 shown here are the figures for the mobile-user day;
+the other rows of Table~\ref{tab:datasets} go through the same four steps with
+different counts.}}
+
 \end{figure}

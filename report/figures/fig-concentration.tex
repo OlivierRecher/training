@@ -5,16 +5,20 @@
 \fitwidth{%
 \begin{tikzpicture}
 \begin{axis}[rephbar, width=0.80\linewidth, height=5.4cm,
-  title={Pearson correlation between a per-user feature, one per row, and that user's accuracy},
+  title={How strongly each property of a person predicts that person's own score},
   title style={font=\footnotesize,yshift=1pt},
   xmin=-1.2, xmax=1.2, xtick={-1,-0.5,0,0.5,1},
-  xlabel={Pearson $r$}, /pgf/bar width=5.5pt,
+  xlabel={Pearson correlation $r$ \ \ ($-1$ = perfect opposition, $0$ = no link, $+1$ = perfect agreement)},
+  x label style={font=\scriptsize}, /pgf/bar width=5.5pt,
   symbolic y coords={len,vol,uniq,irr,dom,ent,switch},
   ytick={len,vol,uniq,irr,dom,ent,switch},
-  yticklabels={records in the raw sequence, predictions contributed,
-               distinct cells visited, irregularity of the switches,
-               share of the dominant cell, spread over cells (entropy),
-               \textbf{cell-switch rate}},
+  yticklabels={how many records the person has,
+               how many predictions they contribute,
+               how many different antennas they visit,
+               how irregular their changes are,
+               how much time on their main antenna,
+               how spread out their time is (entropy),
+               \textbf{how often they change antenna}},
   y tick label style={font=\scriptsize,align=right},
   nodes near coords,
   /pgf/number format/.cd, fixed, fixed zerofill, precision=3, /pgfplots/.cd,
@@ -23,20 +27,34 @@
 \addplot[fill=clink,draw=none]   coordinates {(-0.101,vol)(-0.232,uniq)(-0.140,irr)(0.285,dom)(-0.773,switch)};
 \end{axis}
 \end{tikzpicture}}
-\caption{Per-user correlations with accuracy}
+\caption{What actually predicts how well a person is scored}
 \label{fig:concentration}
 \figtext{%
-One row per candidate feature, named on the left, and the
-length of its bar is the Pearson correlation between that feature and the
-user's own accuracy; zero means the feature says nothing about the score,
-$\pm1$ that it says everything, and the sign says in which direction.
-Dark blue bars are measured on the 1{,}173-user set and teal bars on the 100
-held-out users of a different dataset; features with a single bar were
-computed on one dataset only. The ranking is not close. The cell-switch rate
-reaches $r = -0.971$ and is confirmed at $-0.773$ on the second corpus, while
-normalised entropy ($-0.811$) and dominant-cell frequency ($+0.696$) are the
-same information seen from other angles and everything else stays below
-$0.24$. The $-0.971$ is close to arithmetic, for the reason given in the text,
-and says as much about a model imitating the trivial rule as about the users;
-the distribution, not the coefficient, is the finding.}
+\figpara{What each bar is.}{One row per candidate property of a person, named on
+the left in plain words. The length of the bar is the Pearson correlation of
+Equation~\eqref{eq:pearson} between that property and that person's own score. A
+bar of length zero means the property tells you nothing about the score. A bar
+reaching $\pm1$ means it tells you everything. The side it points to gives the
+direction: to the left means ``more of this, worse predicted''.}
+
+\figpara{Two sets of people, two colours.}{Dark blue bars are measured on the
+1{,}173 scored people of a raw day file, teal bars on the 100 held-out people of
+a different set. A row with only one bar is a property that was computed on one
+of the two only.}
+
+\figpara{The ranking is not close.}{How often somebody changes antenna reaches
+$-0.971$ on the first set and is confirmed at $-0.773$ on the second. How spread
+out their time is ($-0.811$) and how much of it sits on one main antenna
+($+0.696$) are the same information seen from other angles. Everything else,
+including how much history the person has, stays below $0.24$ in absolute value,
+which eliminates the intuitive explanations in a single pass.}
+
+\figpara{And a warning about the top bar.}{The $-0.971$ is close to arithmetic,
+for the reason given in the text: how often somebody changes antenna is the
+mirror image of how often the one-line rule is right on them, so any model
+imitating that rule is guaranteed a large negative value before anything is
+measured. It says as much about the run as about the people. The distribution of
+Figure~\ref{fig:switch-rate}, not this coefficient, is the finding of the
+chapter.}}
+
 \end{figure}

@@ -1,61 +1,78 @@
 \chapter{Glossary}
 \label{app:glossary}
 
-The terms that recur from chapter to chapter.
+The terms that recur from chapter to chapter, each in one or two sentences.
 
 \begin{description}[style=unboxed,leftmargin=0pt,labelindent=0pt,labelsep=0.4em,
-                    itemsep=2.4pt,parsep=0pt]
+                    itemsep=3.5pt,parsep=0pt]
 
-\item[Adapter.] The small set of extra, trainable numbers that a LoRA fine-tune
-  adds beside a frozen model. Chapter~\ref{ch:groups} trains four, one per
-  behavioural group.
+\item[Antenna, mast, \cid{cell\_id}.] A \emph{mast} is one physical installation
+  standing somewhere in the landscape. It carries three or four \emph{antennas}
+  pointing in different directions, and each of those is what the working files
+  call a \cid{cell\_id}, for instance \cid{UKVCHE102}. The middle letters of that
+  name identify the mast, \cid{KVCHE} here. Mobility is always measured on the
+  mast, because 12.4 out of every 100 back-to-back records change antenna without
+  changing place; what has to be predicted stays the full antenna name.
 
-\item[Baseline (persistence).] The rule ``predict that the next \cid{cell\_id}
-  is the last one seen''. No model, no training, and not a constant: 69.2\,\% on
-  a raw day, 43.1\,\% on mobile users, because the population differs.
+\item[Cell-switch rate.] Out of every hundred back-to-back records of one person,
+  how many land on a different antenna than the one before. Near 0\,\% for
+  somebody who stays home all day, near 100\,\% for somebody constantly moving.
+  It is the single property that best predicts how well that person will be
+  scored.
 
-\item[Behavioural group, or profile.] One of four clusters of users, cut on the
-  rate at which their \emph{physical site} changes over four bands of the day and
-  named by increasing mobility: G0 homebody, G1 steady, G2 evening mover, G3
-  morning mover.
+\item[Correct answers per hundred.] How every result in this report is expressed.
+  Saying the model gains 4.3 means it answers correctly 54.5 times out of a
+  hundred where the one-line rule answers correctly 50.2 times, so 4.3 more
+  correct answers out of a hundred, on the same people and the same moments.
 
-\item[\cid{cell\_id}, site root, sector.] The identifier of one radio cell, e.g.\
-  \cid{UKVCHE102}: a technology letter (2G or 3G), a \emph{site root} naming the
-  physical antenna, \cid{KVCHE} here, then its \emph{sector}. Mobility is measured
-  on the site root, since 12.4\,\% of consecutive pairs change cell without
-  changing place; the target stays the full \cid{cell\_id}.
+\item[Distance to the rule.] The model's score minus the one-line rule's score,
+  on the same people and the same moments. It is the only quantity in this report
+  that is comparable from one chapter to the next.
 
-\item[Context fraction, context window.] The \emph{fraction} is the share of a
-  user's day given to the model before it must predict the rest, 80\,\% by
-  default, and it belongs to the measurement: moving it moves the baseline too.
-  The \emph{window} is the architectural limit on how many tokens the model may
-  look at in one go, 512 here.
+\item[Held-out people.] People set aside before training and never shown to the
+  model, on which every reported score is measured. Training and test people are
+  always different people here.
 
-\item[Gap.] Model accuracy minus persistence-baseline accuracy, in points, on
-  the same users and the same positions. The only quantity here that is
-  comparable across datasets.
+\item[Hour symbol.] A symbol \cid{<H00>} to \cid{<H23>} placed before each event,
+  giving the hour of day it happened at. Always handed to the model, never
+  predicted by it, because the current time is always known when a prediction is
+  asked for.
 
-\item[Hour token.] A symbol \cid{<H00>} to \cid{<H23>} placed before each event,
-  giving its hour of day. Always given to the model, never predicted by it.
+\item[Kind of user, or behavioural profile.] One of four groups of people, sorted
+  automatically by how often their \emph{mast} changes over four broad stretches
+  of the day, and named by increasing mobility: G0 the stay-at-home user, G1 the
+  steady user, G2 the evening-moving user, G3 the morning-moving user.
 
-\item[LoRA, QLoRA.] Fine-tuning methods that freeze the original weights and
-  train a small set of extra numbers beside them. QLoRA additionally stores the
-  frozen weights in 4-bit precision, which quarters the memory they occupy.
+\item[LoRA, QLoRA.] Training methods that freeze the model's original numbers and
+  train a small set of new ones beside them, about 2 in every 100 here. QLoRA
+  additionally stores the frozen numbers in a coarser form, which quarters the
+  memory they occupy.
 
-\item[Paired bootstrap.] A significance test in which the same test users are
-  resampled for both models compared, so that the luck of the draw cancels. An
-  interval containing zero means the two cannot be told apart.
+\item[One-line rule, or persistence baseline.] The rule ``the next antenna is the
+  last one seen''. No model, no training, and not a constant: 69.2\,\% on a raw
+  day and 43.1\,\% on people who genuinely move, because the people differ.
 
-\item[Protocol: last fifth, or full sequence.] ``Last 20\,\%'' scores only the
-  final fifth of a test user's day; ``full sequence'' scores every position, one
-  at a time, which is harder and lowers the baseline on the same users from
-  45.5\,\% to 43.1\,\%.
+\item[Paired resampling.] A test in which the same test people are redrawn at
+  random for both models being compared, so that the luck of the draw cancels out.
+  A range containing zero means the two models cannot be told apart.
 
-\item[Record, or event.] One (\cid{cell\_id}, timestamp) pair. Not a movement: an
-  idle handset still produces records, because the network re-signals to it on a
-  fixed cycle.
+\item[Protocol: last fifth, or whole day.] ``Last 20\,\%'' grades only the final
+  fifth of a test person's day. ``Whole day'' grades every position of it, one at
+  a time, which is harder and lowers the one-line rule on the very same people
+  from 45.5\,\% to 43.1\,\%.
 
-\item[Top-1, top-3, top-5.] Whether the correct cell is the model's top
-  candidate, or among its top three or five of the 369 in the vocabulary.
+\item[Record, or event.] One antenna name paired with one time. Not a movement:
+  an untouched phone still produces records, because the network asks it to
+  announce itself on a fixed cycle.
+
+\item[Share of the day given, or context fraction.] How much of a person's day is
+  handed to the model before it has to produce the rest, 80\,\% by default. It
+  belongs to the measurement rather than to the model: moving it moves the
+  one-line rule too. Not to be confused with the model's \emph{context window},
+  the hard limit of 512 symbols it may look at in one go.
+
+\item[Top-1, top-3, top-5.] Whether the antenna the person really visited is the
+  model's first guess, or anywhere among its first three or first five out of the
+  369 it knows.
 
 \end{description}

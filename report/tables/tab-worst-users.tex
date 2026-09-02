@@ -1,41 +1,56 @@
 % T4 -- The seven worst users, and what actually separates them (slide 28).
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
-\caption{The seven worst users}
+\caption{The seven worst-scoring people, and why they score badly}
 \label{tab:worst-users}
 \begin{tabular}{@{}lrrrrl@{}}
 \toprule
-\textbf{User} & \textbf{Preds.} & \textbf{Ceiling} & \textbf{Baseline} & \textbf{Model} & \textbf{Situation} \\
+\textbf{\texttt{user\_id}} & \textbf{Moments} & \textbf{Ceiling} & \textbf{Rule} & \textbf{Model} & \textbf{Which situation} \\
 \midrule
-1049149 & 3  & 0\,\%   & 0\,\%  & 0\,\%    & \multirow{4}{*}{\begin{tabular}{@{}l@{}}\textbf{A}, two to twelve predictions each:\\ too little material to judge a model\end{tabular}} \\
+1049149 & 3  & 0\,\%   & 0\,\%  & 0\,\%    & \multirow{4}{*}{\begin{tabular}{@{}l@{}}\textbf{A}, two to twelve moments each:\\ too little material to judge a model\end{tabular}} \\
 1291964 & 3  & 0\,\%   & 0\,\%  & 0\,\%    & \\
 1344347 & 8  & 25\,\%  & 12\,\% & 12.5\,\% & \\
 929903  & 12 & 75\,\%  & 8\,\%  & 8.3\,\%  & \\
 \addlinespace
-1161518 & 9  & 89\,\%  & 67\,\% & 11.1\,\% & \textbf{B}, a real behaviour shift \\
+1161518 & 9  & 89\,\%  & 67\,\% & 11.1\,\% & \textbf{B}, a real change of behaviour \\
 \addlinespace
-828479  & 2  & 100\,\% & 50\,\% & 0\,\%    & \multirow{2}{*}{\begin{tabular}{@{}l@{}}\textbf{C}, beaten by a trivial rule\end{tabular}} \\
+828479  & 2  & 100\,\% & 50\,\% & 0\,\%    & \multirow{2}{*}{\begin{tabular}{@{}l@{}}\textbf{C}, two names, one mast\end{tabular}} \\
 1067194 & 3  & 100\,\% & 67\,\% & 0\,\%    & \\
 \bottomrule
 \end{tabular}
 
 \figtext{%
-Every user scoring at or below 12.5\,\% on \sfilt. ``Preds.'' is how many
-predictions that user contributes and ``ceiling'' is the best score reachable
-given the cells present in that user's own history. Three distinct situations
-hide behind one bad number, and only the third is about the model.}
+\figpara{Who is in this table.}{These are \textbf{the seven worst-scoring people
+of the whole test set} on \sfilt, and nobody else: every person there whose score
+is at or below 12.5\,\%. They were pulled out precisely because a single bad
+number hides several completely different problems, and only one of the three is
+about the model.}
 
-\vspace{4pt}
-\begin{minipage}{\textwidth}\footnotesize
-\textbf{A} (four users): between two and twelve predictions each, and a ceiling
-between 0 and 75\,\%, far too little material for the score to say anything
-about a model. \textbf{B} (one user): a ceiling of 89\,\%, so the behaviour was
-learnable, and neither the baseline nor the model tracked it. \textbf{C} (two
-users): the ceiling is 100\,\%, plain repetition already scores 50--67\,\%, and
-the model scores nothing, these users oscillate between near-twin cells of
-the \emph{same} antenna, e.g.\ \cid{UKVCHE102} and \cid{UKVCHE104}, which is the
-observation that led to measuring mobility on the site root while keeping the
-raw \cid{cell\_id} as the prediction target.
-\end{minipage}
+\figpara{The columns.}{\texttt{user\_id} is the anonymous number the operator
+assigned to that person for that day. \textbf{Moments} is how many graded moments
+they contribute, so how much material there is to judge anything on.
+\textbf{Ceiling} is the best score reachable at all given the antennas that
+appear in that person's own history: if an antenna never appeared before, no
+model could have named it. \textbf{Rule} and \textbf{Model} are the one-line rule
+and my model on the same moments.}
+
+\figpara{Situation A, four people: there is nothing to measure.}{Between two and
+twelve graded moments each. A person with three moments scores 0, 33, 67 or
+100\,\%, and nothing in between, so their number says almost nothing about a
+model.}
+
+\figpara{Situation B, one person: a genuine miss.}{The ceiling is 89\,\%, so the
+behaviour was learnable, and neither the rule nor the model followed it. This is
+the only row of the table that is a straightforward modelling failure.}
+
+\figpara{Situation C, two people: beaten by the trivial rule, and the row that
+mattered.}{The ceiling is 100\,\%, plain repetition already scores 50 to 67\,\%,
+and my model scores nothing at all. These two people bounce between near-twin
+antennas of the \emph{same} mast, \cid{UKVCHE102} and \cid{UKVCHE104} for
+instance. The model tries to choose between the two names and keeps choosing
+wrong, so it is being marked down for failing a distinction that involves no
+movement. This is the observation that led to measuring mobility on the mast
+while keeping the full antenna name as what has to be predicted.}}
+
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the per-user error listing}
 \end{table}

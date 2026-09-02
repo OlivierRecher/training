@@ -1,11 +1,11 @@
 % T9 -- Paired bootstrap over the test users (slide 75).
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
-\caption{Paired bootstrap between consecutive tiers}
+\caption{Is any step up the ladder real? Every interval says no}
 \label{tab:bootstrap}
 \begin{tabular}{@{}lrlc@{}}
 \toprule
-\textbf{Step} & \textbf{Difference} & \textbf{95\,\% interval} & \textbf{Real gain?} \\
+\textbf{Step in training people} & \textbf{Measured difference} & \textbf{Range it could really be} & \textbf{Real gain?} \\
 \midrule
 5{,}000 $\rightarrow$ 10{,}000  & $+0.20\pt$ & $-0.21 \ \ldots \ +0.64$ & no \\
 10{,}000 $\rightarrow$ 15{,}000 & $+0.09\pt$ & $-0.32 \ \ldots \ +0.52$ & no \\
@@ -16,11 +16,27 @@
 \end{tabular}
 
 \figtext{%
-Is any step up the ladder real? Bootstrap over the 1{,}000 test users, 2{,}000
-resamples, \emph{paired}, the same users are resampled for both tiers, so the
-luck of the test draw cancels and only the difference between the two models
-is left. Every interval contains zero, including the one spanning the whole
-ladder. \seleven.}
+\figpara{The question.}{Between two training sizes the score moves a little. Is
+that movement the model genuinely improving, or is it the luck of which thousand
+people happened to be in the test set?}
+
+\figpara{How it is tested.}{A thousand people are drawn at random from the
+thousand held-out ones, with replacement, so some appear twice and others not at
+all. Both models are scored on exactly that draw and the difference is noted. That
+is repeated two thousand times, and the middle 95\,\% of the two thousand
+differences is the range printed in the third column. Because both models always
+see the same draw, the luck of the sample cancels and only the difference between
+the models is left.}
+
+\figpara{How to read a row.}{If the range contains zero, then ``no difference at
+all'' is a perfectly ordinary outcome of this experiment, and the two sizes
+cannot be told apart. Every row here contains zero, including the last one, which
+spans the entire ladder from 5{,}000 to 21{,}000 people and whose best estimate
+is 0.04.}
+
+\figpara{What that licenses me to say.}{Not ``the gain from more people is
+small''. \emph{No gain was measured at all} above 5{,}000 people. \seleven,
+1{,}000 test people, 2{,}000 resamples.}}
 
 \vspace{3pt}
 \begin{minipage}{\textwidth}\footnotesize

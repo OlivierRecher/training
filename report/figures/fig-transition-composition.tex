@@ -1,5 +1,5 @@
 % F4 -- What a consecutive-event pair actually is, on two datasets.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \fitwidth{%
 \begin{tikzpicture}
@@ -19,27 +19,37 @@
 \addplot[fill=clmodel,draw=none] coordinates {(37,0) [37.0\,\%] (43.6,1) [43.6\,\%]};
 \addplot[fill=clink,draw=none]   coordinates {(12,0) [12.0\,\%] (12.4,1) [12.4\,\%]};
 \addplot[fill=clmove,draw=none]  coordinates {(51,0) [51.0\,\%] (44.0,1) [44.0\,\%]};
-\legend{identical \cid{cell\_id}, same site\,--\,other \cid{cell\_id}, real site change}
+\legend{same antenna name, same mast\,--\,other antenna, the person really moved}
 \end{axis}
 \end{tikzpicture}}
-\caption{Composition of consecutive-event pairs}
+\caption{What a pair of back-to-back records actually is}
 \label{fig:transition-composition}
 \figtext{%
-What a pair of back-to-back records actually is. Each bar is 100\,\% of one
-corpus's consecutive-event pairs, split three ways: dark blue where the two
-records carry the same \cid{cell\_id}, teal where the \cid{cell\_id} changed
-but the site root did not, so the handset re-attached to another antenna of
-the same mast, and orange where the site root changed too. On \sraw{},
-43.6\,\% of pairs repeat the same \cid{cell\_id} outright and a further
-12.4\,\% change cell without changing place; only 44.0\,\% are a real site
-change. Restricting the corpus to mobile, non-absent users (\smob{}) moves the
-mass towards real movement, 51\,\%, while the middle band stays at 12\,\%,
-which says that band is a property of the radio network rather than of the
-population. Counting it as mobility would inflate every movement statistic by
-roughly a quarter and would scramble the behavioural profiles of
-Chapter~\ref{ch:groups}, so every mobility measurement in this report is taken
-on the site root. The prediction target deliberately remains the raw
-\cid{cell\_id}, and the consequence, that the model is marked wrong for a
-difference that is not a movement, is accepted rather than hidden
-(Chapter~\ref{ch:user}).}
+\figpara{What is being counted.}{Take every pair of back-to-back records in a
+file, and ask what separates the two records of the pair. Each bar above is
+100\,\% of one such file's pairs, cut three ways. Dark blue: the two records
+carry the very same antenna name, so nothing at all happened. Teal: the antenna
+name changed but the mast did not, so the phone hopped to another antenna of
+the same installation while the person stayed where they were. Orange: the mast
+changed too, so the person genuinely went somewhere.}
+
+\figpara{The top bar, an ordinary day.}{Out of a hundred pairs, 43.6 are pure
+repetition and only 44.0 are a real movement. The remaining 12.4 are the middle
+band, and they are the trap: they look like movement in the raw data and are
+not.}
+
+\figpara{The bottom bar, once only mobile people are kept.}{Real movement rises
+from 44 to 51 out of a hundred, which is the whole point of that filtering. The
+middle band, however, stays at 12, which tells us something useful: that band is
+a property of the radio network, not of the people. Filtering the population
+cannot remove it.}
+
+\figpara{What follows from it.}{Counting the middle band as mobility would
+inflate every movement figure in this report by about a quarter, and would blur
+the four kinds of user of Chapter~\ref{ch:groups}, whose whole purpose is to
+separate people who move from people who do not. So mobility is always measured
+on the mast. The prediction target deliberately stays the full antenna name, and
+the price of that, namely that the model is marked wrong for a change that is
+not a movement, is accepted openly rather than hidden (Chapter~\ref{ch:user}).}}
+
 \end{figure}

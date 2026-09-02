@@ -1,31 +1,32 @@
 % F7 -- Accuracy is dictated by how often the user changes cell.
 \begin{figure}[!htbp]
 \centering
-\replegend{\swatch{clbase}~persistence baseline \qquad \swatch{clmodel}~model}
+\replegend{\swatch{clbase}~the one-line rule \qquad \swatch{clmodel}~my model}
 \fitwidth{%
 \begin{tikzpicture}
 \begin{groupplot}[
   group style={group size=2 by 1, horizontal sep=1.5cm, ylabels at=edge left},
   repbar, width=0.47\linewidth, height=5.2cm,
   ymin=0, ymax=148, ytick={0,20,...,100},
-  ylabel={top-1 accuracy (\%)},
+  ylabel={correct answers per 100 (\%)},
   /pgf/bar width=7pt, xtick=data,
   x tick label style={font=\scriptsize,rotate=35,anchor=east},
   title style={font=\footnotesize,yshift=1pt},
 ]
-\nextgroupplot[title={(a) \textsc{raw day}, 500 users, five groups of users},
+\nextgroupplot[title={(a) raw day, 500 people, cut into five equal groups},
   symbolic x coords={qa,qb,qc,qd,qe},
-  xticklabels={never moves,0--21\%,21--38\%,38--60\%,60--100\%},
-  xlabel={cell-switch rate of the group}]
+  xticklabels={never changes,0--21\%,21--38\%,38--60\%,60--100\%},
+  xlabel={how often the group changes antenna, calmest on the left}]
 \addplot[fill=clbase,draw=none] coordinates {(qa,100.0) (qb,88.4) (qc,71.7) (qd,52.8) (qe,26.6)};
 \addplot[fill=clmodel,draw=none] coordinates {(qa,100.0) (qb,87.6) (qc,71.6) (qd,56.5) (qe,34.4)};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qd,74) {$+3.7\pt$};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qe,52) {$+7.8\pt$};
 %
-\nextgroupplot[title={(b) \smob, four groups of users},
+\nextgroupplot[title={(b) \smob, 100 held-out people, cut into four equal groups},
   symbolic x coords={pa,pb,pc,pd},
-  xticklabels={Q1,Q2,Q3,Q4},
-  xlabel={quartile of users by switch rate, Q1 least volatile}]
+  xticklabels={calmest 25\%,next 25\%,next 25\%,most restless 25\%},
+  x tick label style={font=\scriptsize,rotate=35,anchor=east},
+  xlabel={how often the group changes antenna, calmest on the left}]
 \addplot[fill=clbase,draw=none] coordinates {(pa,87.7) (pb,79.6) (pc,66.7) (pd,42.8)};
 \addplot[fill=clmodel,draw=none] coordinates {(pa,80.6) (pb,74.3) (pc,63.3) (pd,43.4)};
 \node[font=\scriptsize,text=clloss,anchor=west,rotate=90,yshift=7pt] at (axis cs:pa,105) {$-7.1\pt$};
@@ -34,32 +35,43 @@
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:pd,61) {$+0.6\pt$};
 \end{groupplot}
 \end{tikzpicture}}
-\caption{Accuracy by cell-switch rate}
+\caption{The score follows how often the person changes antenna}
 \label{fig:switch-rate}
 \figtext{%
-Accuracy is set by how repetitive the user already is, and the model's
-contribution runs the other way. In both panels the users are sorted by their
-cell-switch rate, the share of consecutive steps at which the cell changes,
-and cut into equal groups, five on the left and four on the right, so
-volatility increases towards the right. The horizontal labels differ between
-the two: on the left they give the range of switch rates the group covers, on
-the right the four groups are quartiles of users, the leftmost holding the
-quarter who move least. Each group carries the persistence baseline in
-grey-blue and the model in dark blue, scored on identical positions, with the
-gap between them annotated above; the vertical axis is top-1 accuracy on that
-group. (a)~On the unfiltered day the fifth
-of users who never change cell are predicted at 100\,\% by both, because for
-them the task is to notice that nothing is happening, and the most volatile
-fifth plateaus at 34.4\,\%. That is a 65-point spread produced entirely by who
-the users are, on a single trained model, with no hyperparameter involved. The
-model overtakes the baseline only in the two hardest groups, by $+3.7$ and
-$+7.8\pt$, and those two hold 18.5\,\% of the predictions between them, the
-most volatile one alone holding 5.6\,\%: eight points on one twentieth of the
-volume moves the aggregate by less than half a point. (b)~The same ordering on
-the 100 held-out mobile users of \smob{}, and less comfortably. The model
-\emph{loses} to the baseline in the three easier quartiles ($-7.1$, $-5.3$,
-$-3.4\pt$) and only draws level in the most volatile one ($+0.6\pt$), which is
-precisely how a model can be genuinely useful on hard users and still be worse
-than a one-line rule overall. Baselines are recomputed per user, on the same
-positions the model is scored on.}
+\figpara{How the groups were made.}{In each panel the people are sorted by how
+often they change antenna, from the calmest to the most restless, and the sorted
+list is then cut into equal groups: five on the left, four on the right. So
+restlessness increases from left to right in both panels. The two panels label
+their horizontal axis differently: on the left the label gives the range of
+switch rates the group actually covers, on the right it simply names the quarter.
+The vertical axis is the number of correct answers per hundred graded moments
+for that group.}
+
+\figpara{The two bars in each pair.}{Grey-blue is the one-line rule, dark blue is
+my model, and both are scored on exactly the same moments of the same people. The
+number written above each pair is the distance between them.}
+
+\figpara{Panel (a): a spread of 65, produced by nobody's decision.}{The fifth of
+people who never change antenna are predicted at 100\,\% by both, because for
+them the task is to notice that nothing is happening. The most restless fifth
+plateaus at 34.4\,\%. That is 65 correct answers per hundred separating the two
+ends of the same population, on one single trained model, with no setting
+involved anywhere. Whatever else is true, this is far larger than anything the
+modelling in this report ever moved.}
+
+\figpara{Panel (a), second reading: where the model earns anything.}{In the three
+calmest groups the two bars are the same height. The model only pulls ahead in
+the two hardest groups, by 3.7 and then by 7.8. But those two groups hold 18.5\,\%
+of all the graded moments between them, and the most restless one alone holds
+5.6\,\%, so winning eight answers per hundred there moves the overall average by
+less than half an answer per hundred. Real contribution, invisible average.}
+
+\figpara{Panel (b): the same ordering, and less comfortable.}{On a second,
+independent set of people the model \emph{loses} to the rule in the three calmer
+quarters, by 7.1, 5.3 and 3.4, and only draws level in the most restless one, by
+0.6. The ordering is identical and the mechanism is the same; the overall result
+is negative. This is exactly how a model can be genuinely useful on hard people
+and still be worse than one line of code on average. The rule is recomputed for
+each person, on the same moments the model is scored on.}}
+
 \end{figure}

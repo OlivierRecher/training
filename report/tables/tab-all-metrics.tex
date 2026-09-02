@@ -1,36 +1,54 @@
 % T10 -- Every metric across the four tiers (slide 78).
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
-\caption{Every other metric gives the same verdict}
+\caption{Six ways of measuring, and all six say the same thing}
 \label{tab:all-metrics}
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-\textbf{Metric} & \textbf{1{,}900}$^{\dagger}$ & \textbf{5{,}000} & \textbf{10{,}000} & \textbf{15{,}000} & \textbf{21{,}000} & \textbf{Spread} \\
+\textbf{Way of measuring} & \textbf{1{,}900}$^{\dagger}$ & \textbf{5{,}000} & \textbf{10{,}000} & \textbf{15{,}000} & \textbf{21{,}000} & \textbf{Spread} \\
 \midrule
-Top-1                       & 52.4\,\% & 54.5\,\% & 54.6\,\% & 54.9\,\% & 54.5\,\% & 0.4\pt \\
+Top-1, the headline         & 52.4\,\% & 54.5\,\% & 54.6\,\% & 54.9\,\% & 54.5\,\% & 0.4\pt \\
 Top-3                       & 71.4\,\% & 72.0\,\% & 72.1\,\% & 72.1\,\% & 72.2\,\% & 0.2\pt \\
 Top-5                       & 78.6\,\% & 78.9\,\% & 78.9\,\% & 78.9\,\% & 79.3\,\% & 0.4\pt \\
-Top-1 with only 30\,\% of the history & 51.4\,\% & 52.3\,\% & 52.6\,\% & 52.3\,\% & 52.1\,\% & 0.5\pt \\
-Median user                 &       & 49.1\,\% & 49.2\,\% & 49.2\,\% & 50.3\,\% & 1.2\pt \\
-Bottom decile of users      &       & 14.4\,\% & 13.1\,\% & 14.4\,\% & 13.1\,\% & 1.3\pt \\
+Top-1 on a cold start, 30\,\% of the day & 51.4\,\% & 52.3\,\% & 52.6\,\% & 52.3\,\% & 52.1\,\% & 0.5\pt \\
+The middle person           &       & 49.1\,\% & 49.2\,\% & 49.2\,\% & 50.3\,\% & 1.2\pt \\
+The worst tenth of people   &       & 14.4\,\% & 13.1\,\% & 14.4\,\% & 13.1\,\% & 1.3\pt \\
 \bottomrule
 \end{tabular}
 
 \figtext{%
-Nothing hides behind the average: not the depth of the ranking, not the hard
-decile of users, not the cold-start regime. All four tiers of \seleven{} are
-scored on the same 1{,}000 held-out users. The 1{,}900-user column is a
-reference point from \stwok{}, a ten times smaller test set whose baseline is
-48.2\,\% instead of 50.2\,\%; it is not a fifth tier, and the spread column
-covers the four \seleven{} tiers only.}
+\figpara{Why six rows and not one.}{A flat headline can hide movement underneath.
+Perhaps more people help the model rank better without changing its first guess,
+or help the people it already served well while abandoning the rest. These six
+rows are that objection, tested.}
+
+\figpara{What each row measures.}{\textbf{Top-1} is the strict headline: the
+right antenna in first place. \textbf{Top-3} and \textbf{top-5} ask whether it is
+anywhere in the first three or five. \textbf{Cold start} gives the model only
+30\,\% of each person's day instead of 80\,\%, which is the operationally
+interesting case. \textbf{The middle person} is the score of the person sitting
+exactly halfway down the ranked list, which ignores the busiest people entirely.
+\textbf{The worst tenth} is a guard against a model that lifts the average by
+abandoning the people it already served badly.}
+
+\figpara{The verdict is in the last column.}{Across four training sizes covering
+a four-fold increase in people, no row moves by more than 1.3 correct answers per
+hundred, and most move by less than half of that. Depth of ranking is flat. The
+hard tenth is flat. Cold start is flat. Nothing hides behind the average.}
+
+\figpara{The one row worth isolating.}{On a cold start the model beats its rule
+by 4.6 against 4.3 at 80\,\% of the day, so its edge is \emph{largest} on people
+about whom little is known. That is the useful case. But that edge, too, is
+identical at 5{,}000 and at 21{,}000 people. All four \seleven{} columns are
+scored on the same 1{,}000 held-out people.}}
 
 \vspace{3pt}
 \begin{minipage}{\textwidth}\footnotesize
-$^{\dagger}$ Measured on \stwok, not \seleven, and the two blank cells are the
-metrics that were not computed on it. With only 30\,\% of the history
-in context the model beats its baseline by $+4.6\pt$ against $+4.3\pt$ at
-80\,\%, its edge is largest on cold users, and that edge too is the same at
-every training-set size.
+$^{\dagger}$ The 1{,}900 column is measured on \stwok{} rather than on \seleven,
+which is a ten times smaller test set with a 48.2\,\% rule instead of 50.2\,\%.
+It is a reference point and not a fifth size, the \textbf{Spread} column covers
+the four \seleven{} sizes only, and the two blank cells are simply measurements
+that were never computed on it.
 \end{minipage}
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the six-metric evaluation of the four tiers}
 \end{table}

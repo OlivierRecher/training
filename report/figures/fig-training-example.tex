@@ -1,11 +1,11 @@
 % F3b -- One training example: the JSONL record, and the same line as tokens.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 
-{\footnotesize\textbf{(a) One user-day, as it is stored on disk.} One line of
-the training file \texttt{400\_users\_train.jsonl}, reformatted here over
-several lines for legibility. Nothing is a conversation in any real sense: the
-three roles are simply the slots the training library expects.\par}
+{\textbf{(a) One person's day, as it is stored on disk.} One line of the
+training file, spread over several lines here so that it can be read. Nothing is
+a conversation in any real sense: the three labels are simply the slots the
+training library expects to find.\par}
 \vspace{3pt}
 
 \begin{lstlisting}
@@ -20,21 +20,22 @@ three roles are simply the slots the training library expects.\par}
 
 \vspace{2pt}
 {\footnotesize
-\begin{tabular}{@{}p{1.8cm}p{11.15cm}@{}}
-\texttt{system} & The task description. Identical on every line of the file. \\
-\texttt{user}   & The request. Also identical everywhere: it is a placeholder,
-                  not a question. \\
-\texttt{assistant} & The answer the model must learn to produce, and the only
-                  part its mistakes are counted on. \\
+\begin{tabular}{@{}p{2.2cm}p{10.75cm}@{}}
+\texttt{system} & What the task is. The same words on every line of the file. \\
+\texttt{user}   & The request. Also the same everywhere: a placeholder, not a
+                  question. \\
+\texttt{assistant} & The person's actual day. This is what the model has to
+                  learn to produce, and the only part its mistakes are counted
+                  on. \\
 \end{tabular}\par}
 
 \vspace{0.55cm}
 \hrule height 0.4pt
 \vspace{0.45cm}
 
-{\footnotesize\textbf{(b) The same line, once the tokenizer has read it.} Each
-\cid{cell\_id} is one symbol, not a spelling; each event is preceded by its
-hour. Only the shaded positions contribute to the loss.\par}
+{\textbf{(b) The same line, once it has been cut into symbols.} This is what
+the model actually reads. Each antenna name is \emph{one} symbol, not a spelling;
+each event is preceded by its hour. Only the dark blue positions are graded.\par}
 \vspace{5pt}
 
 \fitwidth{%
@@ -60,32 +61,44 @@ hour. Only the shaded positions contribute to the loss.\par}
 
 \draw[decorate,decoration={brace,amplitude=4pt,mirror},clrule]
   ($(t1.south west)+(0,-2pt)$) -- ($(t4.south east)+(0,-2pt)$)
-  node[midway,below=5pt,font=\scriptsize,text=clrule,align=center] {prefix\\ \emph{not scored}};
+  node[midway,below=5pt,font=\scriptsize,text=clrule,align=center] {opening\\ \emph{not graded}};
 \draw[decorate,decoration={brace,amplitude=4pt,mirror},clmodel]
   ($(t5.south west)+(0,-2pt)$) -- ($(t13.south east)+(0,-2pt)$)
   node[midway,below=5pt,font=\scriptsize,text=clmodel,align=center]
-  {the trajectory: the model is scored on the 4 blue positions only};
+  {the day itself: only the 4 blue positions are graded};
 \end{tikzpicture}}
 
 \vspace{0.15cm}
 \vspace{-0.15cm}
-\replegend{\swatch{clsoft}~prefix: masked out of the loss \qquad
-           \swatch{clmove!20}~hour token: \emph{given}, never predicted \qquad
-           \swatch{clmodel!18}~\cid{cell\_id}: the only positions scored}
+\replegend{\swatch{clsoft}~opening: excluded from the grade \qquad
+           \swatch{clmove!20}~hour: \emph{given}, never guessed \qquad
+           \swatch{clmodel!18}~antenna name: the only positions graded}
 
-\caption{What one training example looks like}
+\caption{One person's day, as the model receives it}
 \label{fig:training-example}
 \figtext{%
-``The conversational fine-tuning format of TRL'' means only this. (a)~Each
-user-day is written as a three-slot JSON record. The \texttt{system} and
-\texttt{user} slots are boilerplate, repeated identically on every line of the
-file, and the whole trajectory lives in the \texttt{assistant} slot; choosing
-that format buys nothing conceptually, it buys compatibility with a library
-that already knows how to read it. (b)~Reading the same line left to right is
-what the model actually sees: the prefix sets the scene and is masked out of
-the loss, each hour token is handed to the model for free because the current
-time is always known when a prediction is requested, and only the
-\cid{cell\_id} positions are ever scored. A trajectory of 200 events costs 400
-tokens plus a short prefix, which is why the hour is coded as one symbol
-rather than written out as a time.}
+\figpara{Panel (a): the file on disk.}{Each person's day is written as a record
+with three slots. Two of them are boilerplate, repeated word for word on every
+line of the file, and the entire trajectory lives in the third. Choosing that
+layout buys nothing conceptually; it buys compatibility with a library that
+already knows how to read it, which is the only reason it is there.}
+
+\figpara{Panel (b): what the model actually reads.}{Reading left to right, the
+grey symbols set the scene and are excluded from the grade. Then the day itself
+arrives as pairs: an orange symbol giving the hour, then a dark blue symbol
+giving the antenna. Each antenna name is a single symbol rather than a spelling,
+which is why the model is choosing among 369 known answers instead of trying to
+spell one letter by letter.}
+
+\figpara{Why the hour is orange and not blue.}{The hour is handed to the model
+for free and never has to be guessed. That is legitimate here and in production
+alike, because the current time is always known at the moment a prediction is
+asked for. Only the blue positions are ever graded.}
+
+\figpara{Why the hour is one symbol rather than a written-out time.}{A day of
+200 events costs 400 symbols in this layout, plus the short opening. Writing
+``07:31:22'' instead of \cid{<H07>} would have cost four or five symbols per
+event, and since the model may only look at 512 symbols at a time, that would
+have cut the visible history by roughly two thirds.}}
+
 \end{figure}

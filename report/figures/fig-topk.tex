@@ -1,0 +1,93 @@
+% F5e -- What top-1, top-3 and top-5 mean, and how a score is computed from them.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  cand/.style={draw=clrule,fill=white,rounded corners=2pt,align=center,
+               inner sep=4pt,text width=2.15cm,font=\scriptsize},
+  hit/.style={cand,draw=clgain,fill=clgain!14,thick},
+  brk/.style={clmodel,thick,|-|},
+  cell/.style={draw=clrule,minimum width=0.85cm,minimum height=0.55cm,
+               inner sep=0pt,font=\scriptsize},
+  ok/.style={cell,draw=clgain,fill=clgain!40},
+  ko/.style={cell,draw=clnonsig,fill=white},
+]
+% ================= (a) one prediction, ranked =================
+\node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (-0.35,3.55)
+  {(a) The model never answers once. It ranks all 369 antennas.};
+\node[anchor=west,font=\scriptsize,text=clrule] at (-0.35,3.18)
+  {Here are its first five, for one moment of one person's day, with how sure it
+   is of each.};
+
+% the three depth markers, stacked above the row
+\draw[brk] (-0.05,2.62) -- (2.35,2.62);
+\node[font=\scriptsize,text=clmodel,anchor=west] at (2.55,2.62) {\textbf{top-1}};
+\draw[brk] (-0.05,2.20) -- (7.45,2.20);
+\node[font=\scriptsize,text=clmodel,anchor=west] at (7.65,2.20) {\textbf{top-3}};
+\draw[brk] (-0.05,1.78) -- (12.55,1.78);
+\node[font=\scriptsize,text=clmodel,anchor=west] at (12.75,1.78) {\textbf{top-5}};
+
+\node[cand] (k1) at (1.15,0.95) {\#1\\ \cid{UKVBER101}\\ 52\,\%};
+\node[cand] (k2) at (3.70,0.95) {\#2\\ \cid{UKVTGM104}\\ 23\,\%};
+\node[hit]  (k3) at (6.25,0.95) {\#3\\ \cid{BKVPAN1}\\ 13\,\%};
+\node[cand] (k4) at (8.80,0.95) {\#4\\ \cid{UKVDVO104}\\ 7\,\%};
+\node[cand] (k5) at (11.35,0.95){\#5\\ \cid{BKVBOH1}\\ 5\,\%};
+\node[font=\scriptsize,text=clrule,anchor=west] at (12.75,0.95)
+  {\dots\ 364 more};
+
+\node[font=\scriptsize,text=clgain,anchor=north,align=center] at (6.25,0.28)
+  {$\uparrow$ this is the antenna the person really visited};
+
+\node[font=\scriptsize,anchor=west] at (-0.35,-0.55)
+  {\textcolor{clloss}{\textbf{top-1: wrong}}, it is not first. \qquad
+   \textcolor{clgain}{\textbf{top-3: right}}, it is in the first three. \qquad
+   \textcolor{clgain}{\textbf{top-5: right}}, it is in the first five.};
+
+% ================= (b) how a score is computed =================
+\draw[clrule,dotted] (-0.45,-1.05) -- (14.4,-1.05);
+\node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (-0.35,-1.45)
+  {(b) The score is then just a count, over every graded moment of every test
+   person.};
+
+\foreach \i/\st in {0/ok,1/ko,2/ok,3/ok,4/ko,5/ok,6/ok,7/ok,8/ko,9/ok}{
+  \node[\st] at (0.1+\i*0.92,-2.25) {};
+}
+\node[font=\scriptsize,anchor=west,text width=6.2cm] at (9.4,-2.25)
+  {shaded = right, empty = wrong\\[2pt]
+   7 right out of 10 graded moments\\ $\Rightarrow$ a score of \textbf{70\,\%}};
+\node[font=\scriptsize,text=clrule,anchor=west] at (-0.35,-2.95)
+  {The one-line rule is graded on the very same moments, and its own count is
+   what my score is compared against.};
+\end{tikzpicture}}
+\caption{What top-1, top-3 and top-5 mean, and how a score is obtained}
+\label{fig:topk}
+\figtext{%
+\figpara{The model does not give an answer, it gives an order.}{Asked what comes
+next, it does not name one antenna. It assigns a degree of confidence to all 369
+antennas of the area and sorts them, most likely first. Panel (a) shows the top
+of that sorted list for one moment: it is 52\,\% sure of \cid{UKVBER101},
+23\,\% sure of \cid{UKVTGM104}, and so on.}
+
+\figpara{The three depths are three ways of reading the same list.}{\textbf{Top-1}
+asks whether the right answer is in first place. \textbf{Top-3} asks whether it
+is anywhere in the first three. \textbf{Top-5}, anywhere in the first five. In
+the example the right answer sits third, so the same prediction is a failure at
+top-1 and a success at top-3 and top-5. Nothing about the model changes between
+the three numbers, only how strict the question is.}
+
+\figpara{Why report three of them rather than one.}{Because they answer different
+practical questions, and because reporting several depths is the convention of
+this literature rather than a choice of mine \cite{luca2021survey,qin2025mobllm}.
+An operator that can prepare one antenna in advance cares about top-1. One that
+can prepare three cares about top-3, and for it a model that reliably puts the
+right antenna somewhere in its first three is useful even if it rarely puts it
+first. Top-1 is the strict headline used throughout this report; the other two
+say whether a model that misses is missing narrowly or wildly.}
+
+\figpara{Panel (b): where a percentage comes from.}{The score is a plain count
+and nothing more. Every graded moment of every test person is answered, marked
+right or wrong at the chosen depth, and the score is the number of right answers
+divided by the number of moments. Ten moments, seven right, 70\,\%. The one-line
+rule answers the very same moments and gets its own count, and every result in
+this report is the difference between the two counts.}}
+\end{figure}

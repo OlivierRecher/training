@@ -1,12 +1,12 @@
 \chapter{Reproducibility}
 \label{app:repro}
 
-This appendix records what would be needed to reproduce the results. Three
-tables cover it: the training configuration of every run family, the artefact
-behind every headline number quoted in the body, and the handful of
-configuration keys that encode a decision rather than a preference. The
-datasets themselves are described in Table~\ref{tab:datasets}, with counts
-measured on the files rather than quoted.
+This appendix records what would be needed to reproduce the results. Three tables
+cover it: the training settings of every family of runs, the run behind every
+number quoted in the body, and the handful of configuration keys that encode a
+decision argued somewhere in the report rather than a preference. The sets of
+people themselves are described in Table~\ref{tab:datasets}, with counts measured
+on the files rather than quoted.
 
 \bigskip
 \input{tables/tab-hyperparams}
@@ -17,27 +17,30 @@ measured on the files rather than quoted.
 \bigskip
 \begin{minipage}{\textwidth}
 \centering\footnotesize
-\captionof{table}{Configuration keys carrying a decision}
+\captionof{table}{The settings that encode a decision, not a preference}
 \label{tab:config-keys}
 \begin{tabular}{@{}ll>{\raggedright\arraybackslash}p{6.7cm}@{}}
 \toprule
-\textbf{Key} & \textbf{Value} & \textbf{Decision it encodes} \\
+\textbf{Key} & \textbf{Value} & \textbf{The decision it encodes} \\
 \midrule
-\texttt{context\_fraction}              & 0.8            & the reference cut; part of the ruler (Ch.~\ref{ch:first}) \\
-\texttt{max\_epochs}                    & 20             & also the cosine horizon: lowering it changes the regime \\
-\texttt{early\_stop\_patience}           & 4              & the validation peak is early on this task \\
-\texttt{transition\_windows}             & (4,6,$\times2$), (18,20,$\times4$) & the \emph{guessed} global window; fallback only \\
-\texttt{group\_windows}                  & \texttt{None}  & derive the windows from the data, per group (Ch.~\ref{ch:groups}) \\
-\texttt{transition\_chunk\_oversample}   & 3.0            & oversample windows containing a transition \\
-\texttt{group\_bands}                    & 4 bands        & coarse enough for each band to be estimable \\
-\texttt{group\_shrinkage}                & 8.0            & a sparse band must not dominate a profile \\
-\texttt{group\_detect\_fraction}         & prefix only    & no leakage: the group is read from the past \\
-\texttt{max\_steps} (scaling)            & 1{,}000        & constant compute across tiers (Ch.~\ref{ch:scale}) \\
-\texttt{val\_subsample} (scaling)        & 250 fixed users& the same stopping rule at every tier \\
+\texttt{context\_fraction}              & 0.8            & where each day is cut; part of the ruler (Ch.~\ref{ch:first}) \\
+\texttt{max\_epochs}                    & 20             & also the decay horizon: lowering it changes the regime \\
+\texttt{early\_stop\_patience}           & 4              & the best pass arrives early on this task (Ch.~\ref{ch:first}) \\
+\texttt{transition\_windows}             & (4,6,$\times2$), (18,20,$\times4$) & the \emph{guessed} hours of Ch.~\ref{ch:time}; fallback only \\
+\texttt{group\_windows}                  & \texttt{None}  & derive the hours from the data, per kind of user (Ch.~\ref{ch:groups}) \\
+\texttt{transition\_chunk\_oversample}   & 3.0            & show slices containing a move three times more often \\
+\texttt{group\_bands}                    & 4 stretches    & coarse enough for each stretch to be estimable \\
+\texttt{group\_shrinkage}                & 8.0            & a thin stretch must not dominate a profile \\
+\texttt{group\_detect\_fraction}         & past only      & no leakage: the kind of user is read from the past \\
+\texttt{max\_steps} (scaling)            & 1{,}000        & the same training time at every size (Ch.~\ref{ch:scale}) \\
+\texttt{val\_subsample} (scaling)        & 250 fixed people & the same stopping rule at every size \\
 \bottomrule
 \end{tabular}
 
 \figtext{%
-Values that are not tuning knobs but encode a decision argued in the body, so
-that a reader who changes one knows which claim they are changing.}
+\figpara{Why these eleven and not the whole configuration file.}{None of these is
+a tuning knob. Each one encodes a decision argued somewhere in the body, so that
+a reader who changes one knows which claim of the report they are changing. The
+ordinary settings, learning rate and the rest, are in
+Table~\ref{tab:hyperparams}.}}
 \end{minipage}

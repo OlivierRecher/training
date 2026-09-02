@@ -1,195 +1,195 @@
 \chapter{State of the art}
 \label{ch:sota}
 
-Eight published works matter to this report, and this chapter says what each one
-gives it. Two set the frame every later result is read in, three place the
-instrument, two are the closest relatives of its one substantial gain, and one
-marks the boundary between the published task and the task actually taken on
-here.
+Predicting where a person goes next is an old question with a large literature.
+Eight published works matter to this report, and this chapter says, in plain
+terms, what each one gave me. Two of them set the frame every later result is
+read in, three place the instrument, two are the closest relatives of my one
+substantial gain, and one marks the boundary between the published task and the
+task I actually took on.
 
-\section{How predictable a person is, and why that is the first question}
+\section{How predictable is a person?}
 \label{sec:sota-ceiling}
 
-The literature on predicting where someone goes next is large, and the part of
-it that matters most here is not the part that proposes predictors. It is the
-part that measures how much room a predictor has before it starts.
+The most useful part of this literature is not the part that proposes
+predictors. It is the part that measures how much room a predictor has before it
+even starts.
 
-Song et al.\ measured exactly that \cite{song2010limits}. From three months of
-mobile-phone records for 45{,}000 people, they treated each person's sequence of
-visited towers as a source of symbols and asked how much of the next position is
-already implied by the order of everything that came before. From that quantity,
-an entropy,\footnote{\textbf{Entropy}: a measure of how spread out and how
-disordered a set of possibilities is. A user seen in two cells in a fixed
-alternation has low entropy; one seen in forty in no particular order has high
-entropy.} they derived a ceiling on the accuracy that \emph{any} predictor could
-ever reach on that person, whatever its sophistication, and found that ceiling
-narrowly peaked at 93\,\%.
+Song et al.\ measured exactly that \cite{song2010limits}. They took three months
+of mobile-phone records for 45{,}000 people, treated each person's sequence of
+visited antennas as a stream of symbols, and asked how much of the next position
+is already implied by the order of everything that came before. From that
+quantity they derived a \emph{ceiling}: the best score any predictor could ever
+reach on that person, however clever it is. The ceiling came out narrowly peaked
+at 93\,\%.
 
-Three things in that paper matter to this report, and the 93\,\% is the least of
-them.
+Three things in that paper matter here, and the 93\,\% is the least of them.
 
-The first is that the ceiling turned out to be uniform. The authors state their
-own expectation plainly, and it was wrong: they expected heavy travellers to be
-harder to predict than people who never leave their neighbourhood, and found
-instead that past a radius of ten kilometres the ceiling stops depending on
-distance travelled at all. Someone covering hundreds of kilometres a week is
-bounded no lower than someone whose whole life fits in a ten-kilometre circle.
-Whatever separates an easy user from a hard one, it is not how much ground that
-user covers.
+\textbf{The ceiling is the same for everybody.} The authors say plainly that they
+expected heavy travellers to be harder to predict than people who never leave
+their neighbourhood, and they were wrong: past a radius of ten kilometres, the
+ceiling stops depending on distance travelled at all. Whatever separates an easy
+person from a hard one, it is not how much ground they cover.
 
-The second is that a uniform ceiling does not imply a uniform score. The same
-paper also computes what is predictable from a user's visit frequencies alone,
-ignoring the order in which places were visited, and reports that this quantity
-is spread very widely across the population and peaks near 30\,\%. The room is
-therefore the same for everyone while what a predictor extracts from it is not,
-and the variability lives in how much of the ceiling a given signal can reach.
-That is the quantity Chapters~\ref{ch:user} and~\ref{ch:groups} measure on this
-corpus, where it runs from 0 to 100\,\% depending on the user.
+\textbf{The same ceiling does not mean the same score.} The same paper also
+computes what can be predicted from a person's visit frequencies alone, ignoring
+the order in which places were visited. That quantity is spread very widely
+across the population and peaks near 30\,\%. So the room is the same for
+everyone, while what a predictor manages to extract from it is not. That is
+exactly the quantity Chapters~\ref{ch:user} and~\ref{ch:groups} measure on my
+own data, where it runs from 0 to 100\,\% depending on the person.
 
-The third is a curve the paper publishes almost in passing, and not having read
-it sooner cost me an iteration. Splitting the week into 168 hourly slots, they
-measure how often a user is found in their most-visited location for that hour
-of the week. The answer is about 70\,\% across the population, but close to
-90\,\% during the night, when people are reliably at home, with clear minima
-around midday and between six and seven in the evening. The hours at which
-people are hard to predict were published in 2010, they are not the small hours,
-and Chapter~\ref{ch:time} spends its length rediscovering that the expensive
+\textbf{And a curve published almost in passing, which cost me an iteration.}
+Splitting the week into 168 hourly slots, the authors measure how often a person
+is found in their most-visited place for that hour of the week. The answer is
+about 70\,\% on average, but close to 90\,\% during the night, when people are
+reliably at home, with clear low points around midday and between six and seven
+in the evening. In other words, the hours at which people are hard to predict
+were published in 2010, and they are not the small hours of the morning.
+Chapter~\ref{ch:time} spends its whole length rediscovering that the expensive
 way.
 
-\section{The ceiling is mostly standing still}
+\section{Most of that predictability is just standing still}
 
-A ceiling of 93\,\% sounds like an invitation, and the most useful thing I read
-during the internship was the argument that it is not one.
+A ceiling of 93\,\% sounds like an invitation. The most useful thing I read
+during the internship is the argument that it is not one.
 
-Ikanovic and Mollgaard make that argument precisely \cite{ikanovic2017alternative}.
-The quantity Song et al.\ bound answers the question \emph{``where will this
-person be during the next time slot''}. In most time slots the answer is
-``exactly where they are now'', because people do not move most of the time, so
-most of the apparent 93\,\% is not knowledge about anybody's habits. It is the
-fact that staying put is the normal case. The authors therefore re-ran the same
-machinery on the question a predictor is actually useful for, \emph{``where will
-this person go next''}, by removing the repetitions before measuring, and on GPS
-traces from 604 people the ceiling fell from above 90\,\% to \textbf{71\,\%}.
-Roughly a quarter of what looked like predictability was the passage of time
-rather than the behaviour of a person.
+Ikanovic and Mollgaard make that argument precisely
+\cite{ikanovic2017alternative}. The quantity Song et al.\ bound answers the
+question \emph{``where will this person be during the next time slot''}. In most
+time slots the answer is ``exactly where they are now'', because people do not
+move most of the time. So most of the apparent 93\,\% is not knowledge about
+anybody's habits; it is the fact that staying put is the normal case. The
+authors re-ran the same machinery on the question a predictor is actually useful
+for, \emph{``where will this person go next''}, by removing the repetitions
+before measuring. On location traces from 604 people, the ceiling fell from
+above 90\,\% to \textbf{71\,\%}. Roughly a quarter of what looked like
+predictability was the passage of time rather than the behaviour of a person.
 
-This names my competitor, and it is why the whole report is written against one.
-If most of a high score is people staying where they are, then the rule
-\emph{``predict that the next cell is the last one seen''}, one line of code, no
-parameters, no training, already collects most of it. On a raw day of this corpus
-that rule is right \textbf{69.2\,\%} of the time (Chapter~\ref{ch:data}), which
-is roughly where Song et al.'s hourly regularity sits and well below the 93\,\%
-ceiling, and the distance between those two numbers is the entire working space
-of this report. The rule is the \textbf{persistence baseline}, and it is the only
-yardstick used here.
+This is what names my competitor, and it is why the whole report is written
+against one. If most of a high score is people staying where they are, then the
+rule ``answer the last antenna seen'' already collects most of it, for free. On
+an ordinary day of my corpus that rule is right \textbf{69.2\,\%} of the time
+(Chapter~\ref{ch:data}), which is roughly where Song et al.'s hourly regularity
+sits, and well below the 93\,\% ceiling. The distance between those two numbers
+is the entire working space of this report.
 
-Two conventions follow, and they are used everywhere after this page.
+Two conventions follow from that, and they are used everywhere after this page.
 
-\paragraph{Every result is a gap, never an absolute.} The same trivial rule
-scores 69.2\,\% on one of the files used here and 43.1\,\% on another, because
-the users in them differ (Table~\ref{tab:datasets}). An absolute accuracy
-therefore describes the test set more than it describes the model. Only the
-distance to the baseline measured on the same positions survives that, so that
-is what every number in this report is.
+\paragraph{Every result is a distance, never an absolute score.} The same trivial
+rule scores 69.2\,\% on one of the files used here and 43.1\,\% on another,
+because the people in them differ (Table~\ref{tab:datasets}). An absolute
+accuracy therefore describes the test group more than it describes the model.
+Only the distance to the rule, measured on the same moments, survives that.
 
-\paragraph{The interesting quantity is per segment, not on average.} If the
-ceiling is uniform but the score is not, a population average hides the thing
-worth reporting. Chapters~\ref{ch:user} and~\ref{ch:groups} measure the spread
-directly: 22.4 points between behavioural profiles, against four tenths of a
-point across an entire training-size ladder.
-That decomposition is this report's main claim.
+\paragraph{The interesting quantity is per kind of person, not on average.} If
+the ceiling is the same for everybody but the score is not, a population average
+hides the thing worth reporting. Chapters~\ref{ch:user} and~\ref{ch:groups}
+measure the spread directly: 22.4 correct answers per hundred separate the four
+kinds of user, against 0.4 across an entire range of training sizes. That
+decomposition is this report's main claim.
 
-\section{What has been used to predict}
+\section{What other people have used to predict}
 
 The predictors themselves I take from one place. Luca et al.\ survey the whole
-deep-learning branch of human mobility, from recurrent
-networks\footnote{\textbf{Recurrent network}: a neural network that reads a
-sequence one element at a time while carrying a summary of what it has already
-read, so a prediction can depend on more than the last item.} that read a
-trajectory step by step to attention mechanisms that let a prediction reach back
-to a matching moment in an earlier day \cite{luca2021survey}. Two points in it
-bear on the chapters below.
+deep-learning branch of human mobility, from networks that read a trajectory
+step by step\footnote{\textbf{Recurrent network}: a network that reads a sequence
+one item at a time while carrying a summary of what it has already read.} to
+mechanisms that let a prediction reach back to a matching moment in an earlier
+day \cite{luca2021survey}. Three points in that survey bear on the chapters
+below.
 
-Giving a model the time of day alongside the location has been standard practice
-in that branch for years, so the mechanism of Chapter~\ref{ch:time} is not an
-idea of mine; what Chapters~\ref{ch:time} and~\ref{ch:groups} add is the finding
-that \emph{which} hours matter is a property of the user rather than of the
-corpus. And the
-attention that the better recurrent models had to be extended with is the native
-operation of the architecture behind current language
-models,\footnote{\textbf{Transformer}: the architecture behind current language
-models, in which every position of a sequence can attend directly to every
-earlier one.} which is one honest reason to reach for an existing language model
-here instead of building a predictor from scratch.
+\textbf{Giving a model the time of day is standard practice}, and has been for
+years, so the mechanism of Chapter~\ref{ch:time} is not an idea of mine. What
+Chapters~\ref{ch:time} and~\ref{ch:groups} add is the finding that \emph{which}
+hours matter is a property of the person rather than of the corpus.
 
-\section{Prompting or fine-tuning}
+\textbf{Scoring a prediction at several depths is the convention of the field},
+and it is not something I invented either. Predictors in this literature are
+reported at top-1, top-3 and top-5: whether the correct answer is the model's
+first guess, or somewhere in its first three or first five \cite{luca2021survey}.
+The language-model work that is closest to mine reports the same three depths
+\cite{qin2025mobllm}, which is why this report does too, and
+Chapter~\ref{ch:first} shows the three depths on one picture. The reason the
+convention exists is practical: an operator that can prepare three antennas
+instead of one is served by a correct answer in third place, so a model that
+never puts the right antenna first but often puts it third is still worth
+something.
+
+\textbf{And the reaching-back mechanism} that the better step-by-step networks
+had to be extended with is the native operation of the architecture behind
+current language models,\footnote{\textbf{Transformer}: the architecture behind
+current language models, in which every position of a sequence can look directly
+at every earlier one.} which is one honest reason to reach for an existing
+language model here instead of building a predictor from scratch.
+
+\section{Two ways to use a language model}
 
 Since 2023 the field has been reaching for those models, and it split into the
 same two branches the team I joined was split into (Chapter~\ref{ch:intro}).
 
-The first branch leaves the model's weights alone and writes a better
-instruction. Wang et al.\ turn a user's recent stays into a text prompt,
-separating the long-term history from the immediate context, and ask GPT-3.5 for
-the next location \cite{wang2023llmmob}. They get results competitive with
-purpose-built deep-learning predictors without training anything, and report
-that the design of the prompt, not the choice of model, is what moves the score.
-That is in substance the branch Tiphain and Benjamin were taking on this corpus.
+The first branch leaves the model's numbers alone and writes a better
+instruction. Wang et al.\ turn a person's recent stops into a paragraph of
+English, separating the long-term history from the immediate context, and ask a
+large commercial model for the next location \cite{wang2023llmmob}. They get
+results comparable with purpose-built predictors without training anything, and
+they report that the design of the instruction, not the choice of model, is what
+moves the score. That is in substance the branch Tiphain and Benjamin were
+taking on this corpus.
 
-The second branch changes the weights, and it is mine. Qin et al.\ fine-tune a
-small open-source model with the same parameter-efficient method used here,
-across six mobility datasets, and argue that a model adapted this way transfers
-to a new corpus better than prompting a large commercial one does, at a fraction
-of the running cost \cite{qin2025mobllm}. It is the closest published analogue
-of what this report attempts.
+The second branch changes the numbers, and it is mine. Qin et al.\ fine-tune a
+small open-source model with the same cheap method used here, across six
+mobility datasets, and argue that a model adapted this way transfers to a new
+corpus better than prompting a large commercial one does, at a fraction of the
+running cost \cite{qin2025mobllm}. It is the closest published relative of what
+this report attempts.
 
-\section{A population, split into kinds of user}
+\section{Sorting a population into kinds of user}
 
-The step that produced this report's only substantial gain, grouping users by
-\emph{when} they move and letting each group inform its own members
+The step that produced this report's only substantial gain, sorting people by
+\emph{when} they move and letting each kind inform its own members
 (Chapter~\ref{ch:groups}), has two ancestors I found only after the fact.
 
 Pappalardo et al.\ establish the observation \cite{pappalardo2015returners}.
-Looking at both mobile-phone and GPS data, they find that a population does not
-spread smoothly along a single axis of mobility but separates into two
-recognisable kinds of person: returners, who keep cycling between a small set of
-habitual locations however far they travel, and explorers, whose set of visited
-places keeps growing. The two behave differently enough that a phenomenon
-spreading through the population moves at a different speed depending on which
-kind carries it. The four behavioural profiles of Chapter~\ref{ch:groups} are a
-version of the same finding with the axis changed, since what separates mine is
-not how far a user travels but at which hours they change site.
+Looking at both mobile-phone and location data, they find that a population does
+not spread smoothly along a single scale of mobility. It separates into two
+recognisable kinds of person: \emph{returners}, who keep cycling between a small
+set of habitual places however far they travel, and \emph{explorers}, whose set
+of visited places keeps growing. The two behave differently enough that a
+phenomenon spreading through the population moves at a different speed depending
+on which kind carries it. The four kinds of user in Chapter~\ref{ch:groups} are a
+version of the same finding with the axis changed: what separates mine is not
+how far a person travels but at which hours they change location.
 
-Jeong, Leconte and Prouti\`ere supply the mechanism \cite{jeong2016cluster}. Their
-argument is that any single user's history is too short to estimate that user's
-own transition behaviour from, so they cluster users and predict one user's next
-location partly from the trajectories of those who resemble them. The property
-that makes it more than a heuristic is that their method falls back to
-per-user prediction when the similarities are not really present in the training
-data, so clustering cannot make things worse. Chapter~\ref{ch:groups} does the
-same thing in a different place: the group is a single token prepended to the
-sequence, so one model serves every group and the grouping is a hint rather than
-a partition, and it has to be recoverable from the user's past alone, which is
-the constraint that chapter spends most of its length on.
+Jeong, Leconte and Proutière supply the mechanism \cite{jeong2016cluster}. Their
+argument is that any single person's history is too short to estimate that
+person's own habits from, so they group people who resemble each other and
+predict one person's next location partly from the trajectories of the others.
+The property that makes it more than a heuristic is that their method falls back
+to per-person prediction when the resemblances are not really there, so grouping
+cannot make things worse. Chapter~\ref{ch:groups} does the same thing in a
+different place, and spends most of its length on one constraint they also face:
+the group has to be recoverable from the person's past alone.
 
-\section{Predicting cells rather than places}
+\section{Predicting an antenna rather than a place}
 
-Everything above predicts a \emph{place}: a home, a workplace, a stay point
-obtained by clustering nearby records together. The target here is the next
-\cid{cell\_id}, which is a different object, and the work that predicts cells
-rather than places sits in the networking community and asks the question for a
-different purpose. Chen, M\'eriaux and Valentin predict which cell a handset will
-hand over\footnote{\textbf{Handover}: the moment the network moves an ongoing
-connection from one cell to another, normally because the new one now offers a
-better signal.} to, from radio measurements, so that the network can prepare the
-handover before it happens \cite{chen2013nextcell}. They have signal strengths
-this corpus does not carry, and they do not need to know where the person is
-going, only which antenna will serve them next.
+Everything above predicts a \emph{place}: a home, a workplace, a stopping point
+obtained by grouping nearby records together. My target is the next antenna,
+which is a different object, and the work that predicts antennas rather than
+places sits in the networking community and asks the question for another
+purpose. Chen, Mériaux and Valentin predict which antenna a phone will be handed
+over to,\footnote{\textbf{Handover}: the moment the network moves an ongoing
+connection from one antenna to another, normally because the new one now offers
+a better signal.} from radio measurements, so that the network can prepare the
+handover before it happens \cite{chen2013nextcell}. They have signal strengths my
+corpus does not carry, and they do not need to know where the person is going,
+only which antenna will serve them next.
 
-Predicting a cell from a trace of cells, with no radio measurements, sits
-between the two and inherits a drawback from each. 12.4\,\% of consecutive
-records in this corpus change cell without the site the user is attached to
-having really changed, because the handset re-attached to another cell of the
-same antenna (Chapter~\ref{ch:data}), so part of what a model here is asked to
-predict is a network decision rather than a human one. And the human part of it
-is graded on cells rather than on places, which is a finer target than the
+Predicting an antenna from a trace of antennas, with no radio measurements, sits
+between the two and inherits a drawback from each. In this corpus, 12.4\,\% of
+back-to-back records change antenna without the person having really gone
+anywhere, because the phone re-attached to another antenna of the same mast
+(Chapter~\ref{ch:data}), so part of what my model is asked to predict is a
+decision of the network rather than of a human being. And the human part of it is
+graded on antennas rather than on places, which is a finer target than the
 published ceilings were ever estimated for.

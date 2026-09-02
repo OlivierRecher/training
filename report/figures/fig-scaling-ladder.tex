@@ -1,5 +1,5 @@
 % F14 -- The whole ladder: gap to each run's own baseline, against training-set size.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \plotlink{\nbfinal}{\fitwidth{%
 \begin{tikzpicture}
@@ -11,8 +11,9 @@
   x tick label style={font=\scriptsize,rotate=40,anchor=east},
   ymin=-0.5, ymax=7.6, ytick={0,1,...,5},
   yticklabels={0,$+1$,$+2$,$+3$,$+4$,$+5$},
-  xlabel={training users (logarithmic scale)},
-  ylabel={points gained over that run's own baseline},
+  xlabel={number of training people (logarithmic scale)},
+  ylabel={correct answers per 100 gained over that run's own rule},
+  y label style={font=\scriptsize},
   xmajorgrids, ymajorgrids,
 ]
 % regime bands
@@ -20,9 +21,9 @@
 \fill[clgain!12]   (axis cs:452,-0.5) rectangle (axis cs:1900,7.6);
 \fill[clbase!12]   (axis cs:1900,-0.5) rectangle (axis cs:30000,7.6);
 \node[font=\scriptsize,text=clrule,anchor=north,align=center] at (axis cs:900,7.45)
-  {\textbf{GENERALISATION}\\ the four profiles become\\ large enough to read\\ \textcolor{clgain}{$+3.6\pt$}};
+  {\textbf{GENERALISATION}\\ the four kinds of user become\\ large enough to read\\ \textcolor{clgain}{$+3.6$}};
 \node[font=\scriptsize,text=clrule,anchor=north,align=center] at (axis cs:8000,7.45)
-  {\textbf{SATURATION}\\ every new user is a\\ behavioural duplicate\\ \textcolor{clbase}{$+0.1\pt$}};
+  {\textbf{SATURATION}\\ every new person is a\\ behavioural duplicate\\ \textcolor{clbase}{$+0.1$}};
 \node[font=\scriptsize,text=clrule,anchor=south,align=center,rotate=90] at (axis cs:414,1.2)
   {\textbf{IMITATION}};
 %
@@ -38,34 +39,43 @@
 \node[font=\scriptsize,anchor=south] at (axis cs:10000,4.45) {$+4.4$};
 \node[font=\scriptsize,anchor=south] at (axis cs:15000,4.75) {$+4.7$};
 \node[font=\scriptsize,anchor=south] at (axis cs:21000,4.35) {$+4.3$};
-\node[font=\scriptsize,text=clbase,anchor=east] at (axis cs:28000,0.24) {the persistence baseline of each run};
+\node[font=\scriptsize,text=clbase,anchor=east] at (axis cs:28000,0.24) {the one-line rule of each run};
 \end{axis}
 \end{tikzpicture}}}
-\caption{The whole scaling ladder, in points over each run's own baseline}
+\caption{Eight training sizes: the gain climbs, then stops}
 \label{fig:scaling-ladder}
 \figtext{%
-Eight training-set sizes, each read against the persistence baseline measured
-on its \emph{own} test users. The horizontal axis is logarithmic, so equal
-distances are equal multiples and 400 to 1{,}900 occupies the same width as
-4{,}000 to 19{,}000; the vertical axis is not accuracy but the gap to the
-baseline, the only quantity that survives a change of test set, so the dashed
-line at zero means ``indistinguishable from repeating the last cell''. At 400
-training users the model gains $+0.6\pt$ and is barely distinguishable from the rule it
-is meant to beat. Between 400 and 1{,}900 the edge climbs $+0.6 \rightarrow
-+2.8 \rightarrow +3.5 \rightarrow +4.2\pt$, a four-fold increase in population
-buying $+3.6\pt$, which is essentially the entire benefit the project ever
-obtained from data volume. The ten-fold increase that follows buys $+0.1\pt$,
-and not monotonically: the best tier (15{,}000) is followed by the worst
-(21{,}000), and none of the steps inside that stretch is statistically
-distinguishable from zero (Table~\ref{tab:bootstrap}). The curve does not slow
-down, it stops. Two things constrain how far that reads. The 900 to
-1{,}900-user tiers are scored on \stwok{} (100 test users, 48.2\,\% baseline)
-and the 400-user point is the \smob{} run (43.1\,\% baseline) and the 5{,}000 to
-21{,}000-user tiers on \seleven{} (1{,}000 test users, 50.2\,\% baseline),
-which is why the axis is a gap and why the small step across that boundary is
-not a measurement. And every tier received the same budget of optimiser steps,
-so at 21{,}000 users only 36\,\% of the available training windows were ever
-read: the defensible claim is that 1{,}900 users are already enough at this
-training budget, not that more users can never help.}
+\figpara{What is on each axis.}{Eight separate training runs, differing only in
+how many people they were trained on. The horizontal axis is that number, on a
+logarithmic scale, so equal distances are equal multiples and the stretch from
+400 to 1{,}900 occupies the same width as 4{,}000 to 19{,}000. The vertical axis
+is \emph{not} a score. It is the distance between the model and the one-line rule
+measured on that run's own test people, which is the only quantity that survives
+a change of test set. The dashed line at zero therefore means
+``indistinguishable from repeating the last antenna''.}
+
+\figpara{The left band: imitation.}{At 400 training people the model gains 0.6,
+which is to say it is doing nothing the trivial rule was not already doing.}
+
+\figpara{The middle band: generalisation, and the whole of the benefit.}{Between
+400 and 1{,}900 people the gain climbs 0.6, 2.8, 3.5, 4.2. A four-fold increase
+in population buys 3.6 more correct answers per hundred, and that is essentially
+the entire benefit this project ever obtained from data volume.}
+
+\figpara{The right band: saturation.}{The ten-fold increase that follows buys
+0.1, and not even in an orderly way, since the best size, 15{,}000, is followed
+by the worst, 21{,}000. None of the steps inside that stretch can be told apart
+from zero (Table~\ref{tab:bootstrap}). The curve does not slow down. It stops.}
+
+\figpara{Two things constrain how far this reads.}{First, the points do not all
+come from the same test people: 900 to 1{,}900 are scored on \stwok{} against a
+48.2\,\% rule, 400 is the \smob{} run against 43.1\,\%, and 5{,}000 to 21{,}000
+are scored on \seleven{} against 50.2\,\%. That is exactly why the axis is a
+distance and not a score, and why the small step across that boundary is not a
+measurement. Second, every size received the same budget of training time, so at
+21{,}000 people only 36\,\% of the available training slices were ever read. The
+defensible claim is that 1{,}900 people are already enough \emph{at this training
+budget}, not that more people can never help.}}
+
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the eight-tier scaling notebook}
 \end{figure}

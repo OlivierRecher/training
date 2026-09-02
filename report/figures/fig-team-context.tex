@@ -1,5 +1,5 @@
 % F1 -- Where this internship sits inside the team's work on the same corpus.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \fitwidth{%
 \begin{tikzpicture}[
@@ -28,11 +28,11 @@
 
 \coordinate (mid) at ($(tb.south)!0.5!(tip.south)$);
 \node[mine,below=1.15cm of mid] (me) {\textbf{This internship}\\[1pt]
-  \footnotesize \emph{fine-tune} a language model to predict a user's next \cid{cell\_id}};
+  \footnotesize \emph{fine-tune} a language model to predict the next cell of a user};
 
 \node[yard,below=0.75cm of me] (yardn) {\textbf{The common yardstick: the persistence baseline},
-  ``predict the last-seen \cid{cell\_id}'', no model at all.\\[1pt]
-  \footnotesize Every claim in this report is stated as a gap to this baseline, measured on the very same data.};
+  ``answer the last cell seen'', no model at all.\\[1pt]
+  \footnotesize Every claim in this report is a distance to this rule, measured on the very same data.};
 
 \draw[ar] (raw.south) ++(-6.0,0) -- (nino.north);
 \draw[ar] (raw.south) ++(-2.0,0) -- (tb.north);
@@ -46,10 +46,18 @@
 \caption{Where this internship sits inside the team's work}
 \label{fig:team-context}
 \figtext{%
-Where this internship sits. Four colleagues worked on the same 15-day corpus
-with different instruments; Nino ran his own descriptive analysis and used the
-tooling he had built for it to extract the day-files I needed, Tiphain and
-Benjamin lent two reusable ideas, and I contributed the fine-tuning branch.
-Everything below the dashed line is what makes the branches comparable: a
-single, model-free yardstick.}
+\figpara{Who did what.}{The four boxes across the middle are my colleagues.
+All five of us worked on the same fifteen days of records, drawn at the top,
+but on different questions and with different tools. Nino ran his own
+description of the corpus and, with the tooling he had built for it, extracted
+the daily files I asked for. Tiphain and Benjamin worked on the prompting side
+and lent me two ideas I reused. Reda worked on his own question. My own box is
+the one at the bottom: retraining a language model to name a user's next cell.}
+
+\figpara{Why the dashed box matters.}{Different tools produce numbers that
+cannot be compared unless everyone is graded against the same thing. The dashed
+box is that common thing: a rule with no model in it, ``answer the last cell
+seen''. Every claim in this report is the distance between my model and that
+rule, measured on the same people.}}
+
 \end{figure}

@@ -1,67 +1,82 @@
-% F1 -- What a single prediction is, and when a model can possibly earn anything.
-\begin{figure}[t]
+% F1 -- What a single prediction is. Deliberately the simplest figure in the
+% report: three columns A, B, C, and two rows, one per kind of moment.
+\begin{figure}[!htbp]
 \centering
 \fitwidth{%
 \begin{tikzpicture}[font=\small,
-  ev/.style={draw=clrule,fill=clsoft,rounded corners=1.5pt,inner sep=2pt,
-             font=\scriptsize\ttfamily,minimum width=1.6cm,minimum height=0.5cm},
-  tgt/.style={ev,fill=white,draw=clmodel,thick},
+  ev/.style={draw=clrule,fill=clsoft,rounded corners=2pt,inner sep=3pt,
+             font=\scriptsize\ttfamily,minimum width=1.35cm,minimum height=0.55cm},
+  tgt/.style={draw=clmodel,fill=white,thick,rounded corners=2pt,inner sep=3pt,
+              minimum width=1.35cm,minimum height=0.55cm},
   hr/.style={font=\scriptsize,text=clrule},
-  lbl/.style={font=\scriptsize,anchor=west},
-  ttl/.style={font=\footnotesize\bfseries,anchor=west},
-  note/.style={font=\scriptsize,text=clrule,anchor=north west,text width=13.4cm},
+  hdr/.style={font=\footnotesize\bfseries,text=clmodel,anchor=west},
+  cs/.style={font=\footnotesize\bfseries,anchor=east},
+  ans/.style={font=\scriptsize,anchor=west},
+  note/.style={font=\scriptsize,text=clrule,anchor=west},
 ]
-% ============================ (a) the user stays =========================
-\node[ttl] at (0,1.0) {(a) The user stays put: the trivial rule is already right};
-\foreach \i/\h/\c in {0/07h/BKVCHE1, 1/09h/BKVCHE1, 2/11h/UKVCHE102, 3/12h/BKVCHE1}{
-  \node[hr] at (\i*1.75,0.62) {\h};
-  \node[ev] at (\i*1.75,0.15) {\c};
-}
-\draw[clmodel,dashed] (6.05,-0.22) -- (6.05,0.80);
-\node[hr] at (6.85,0.62) {13h};
-\node[tgt] at (6.85,0.15) {\textbf{?}};
-\node[lbl] at (7.95,0.60) {the cell actually visited: \cid{BKVCHE1}};
-\node[lbl] at (7.95,0.24) {persistence answers \cid{BKVCHE1}: \textcolor{clgain}{\textbf{right}}};
-\node[lbl] at (7.95,-0.12) {the model answers \cid{BKVCHE1}: \textcolor{clgain}{\textbf{right}}};
-\node[note] at (0,-0.55)
-  {Positions of this kind are the majority, and they are the whole reason the
-   trivial rule is right 69.2\,\% of the time on a raw day: both answers are
-   free, and neither is about the model. In passing, \cid{UKVCHE102} at 11h is
-   another radio cell of the \emph{same} antenna as \cid{BKVCHE1}, so even that
-   step is a change of name rather than a movement
-   (Figure~\ref{fig:cellid-anatomy}).};
+% ================= column headers =================
+\node[hdr] at (-0.70,2.05) {A. What the model is given};
+\node[hdr] at (5.55,2.05)  {B. The moment};
+\node[hdr] at (8.30,2.05)  {C. The two answers, compared};
+\draw[clrule] (-0.80,1.80) -- (14.2,1.80);
 
-% ============================ (b) the user moves =========================
-\begin{scope}[yshift=-3.5cm]
-\node[ttl] at (0,1.0) {(b) The user goes somewhere: the only kind of position a model can win};
-\foreach \i/\h/\c in {0/07h/BKVCHE1, 1/09h/BKVCHE1, 2/11h/UKVCHE102, 3/12h/BKVCHE1}{
-  \node[hr] at (\i*1.75,0.62) {\h};
-  \node[ev] at (\i*1.75,0.15) {\c};
+% ================= row 1: the person has not moved =================
+\node[cs] at (-1.00,0.85) {1};
+\foreach \i/\h/\c in {0/07h/BKVCHE1, 1/09h/BKVCHE1, 2/11h/BKVCHE1, 3/12h/BKVCHE1}{
+  \node[hr] at (\i*1.50,1.42) {\h};
+  \node[ev] at (\i*1.50,0.95) {\c};
 }
-\draw[clmodel,dashed] (6.05,-0.22) -- (6.05,0.80);
-\node[hr] at (6.85,0.62) {18h};
-\node[tgt] at (6.85,0.15) {\textbf{?}};
-\node[lbl] at (7.95,0.60) {the cell actually visited: \cid{BKVPAN1}};
-\node[lbl] at (7.95,0.24) {persistence answers \cid{BKVCHE1}: \textcolor{clloss}{\textbf{wrong}}};
-\node[lbl] at (7.95,-0.12) {the model answers \cid{BKVPAN1}: \textcolor{clgain}{\textbf{right}}};
-\node[note] at (0,-0.55)
-  {What makes this position answerable at all is the hour: 18h is when this
-   user leaves. Every point the model gains anywhere in this report is won on
-   positions of this second kind, and Chapter~\ref{ch:user} measures how few of
-   them there are.};
-\end{scope}
+\node[hr]  at (6.15,1.42) {13h};
+\node[tgt] at (6.15,0.95) {\textbf{?}};
+\node[ans] at (8.30,1.32) {really visited: \cid{BKVCHE1}};
+\node[ans] at (8.30,0.97) {the rule says \cid{BKVCHE1}: \textcolor{clgain}{\textbf{right}}};
+\node[ans] at (8.30,0.62) {my model says \cid{BKVCHE1}: \textcolor{clgain}{\textbf{right}}};
+\node[note] at (-0.70,0.20)
+  {\textbf{The person has not moved.} Both answers are free, and neither is
+   about the model. This is the ordinary case.};
+
+\draw[clrule,dotted] (-0.80,-0.18) -- (14.2,-0.18);
+
+% ================= row 2: the person has gone somewhere =================
+\node[cs] at (-1.00,-1.15) {2};
+\foreach \i/\h/\c in {0/07h/BKVCHE1, 1/09h/BKVCHE1, 2/11h/BKVCHE1, 3/12h/BKVCHE1}{
+  \node[hr] at (\i*1.50,-0.58) {\h};
+  \node[ev] at (\i*1.50,-1.05) {\c};
+}
+\node[hr]  at (6.15,-0.58) {18h};
+\node[tgt] at (6.15,-1.05) {\textbf{?}};
+\node[ans] at (8.30,-0.68) {really visited: \cid{BKVPAN1}};
+\node[ans] at (8.30,-1.03) {the rule says \cid{BKVCHE1}: \textcolor{clloss}{\textbf{wrong}}};
+\node[ans] at (8.30,-1.38) {my model says \cid{BKVPAN1}: \textcolor{clgain}{\textbf{right}}};
+\node[note] at (-0.70,-1.80)
+  {\textbf{The person has gone somewhere.} The rule must fail. This is the only
+   kind of moment on which I can win anything.};
 \end{tikzpicture}}
-\caption{What one prediction is, and where a model can gain}
+\caption{What one prediction is}
 \label{fig:worked-example}
 \figtext{%
-The task, on two positions of one day. Everything to the left of the dashed line
-is history the model reads, one hour token and one \cid{cell\_id} per event; the
-boxed position is the one being scored, and the model is told its hour but not
-its cell. The two panels deliberately share the same history: what differs is
-the moment being predicted. In (a) the user has not moved, so answering ``the
-last cell again'' is correct and both predictors score the point for nothing; in
-(b) the user leaves, the trivial rule necessarily fails, and the answer has to
-come from somewhere else. The two cases are illustrations, with identifiers taken
-from the study area's own vocabulary; the measured share of each kind is in
-Chapter~\ref{ch:data}.}
+\figpara{How to read it.}{The two rows are two different moments of the same
+person's day, and the three columns are always the same three things. Column A
+is the past the model is allowed to read: four moments, each written as an hour
+and the name of the antenna the phone was on. Column B is the moment I want an
+answer for, with the hour given and the antenna hidden. Column C compares the
+answer of the one-line rule with the answer of my model against the antenna the
+person really visited.}
+
+\figpara{Row 1: nothing happens.}{The person is still on the same antenna at
+13h. Answering ``the same as before'' is correct, so the one-line rule scores a
+point without knowing anything, and my model scores the same point. Moments like
+this one are the majority, which is why a rule with no model in it is right
+about seven times out of ten.}
+
+\figpara{Row 2: the person leaves.}{At 18h they are on a different antenna. The
+rule now has to be wrong, because being wrong is all it can do when someone
+moves. This is the only kind of moment on which a model can gain anything at
+all, and every gain reported in this document was won on moments of this second
+kind. The hour is what makes the second row answerable: 18h is when this
+particular person leaves.}
+
+\figpara{One caution.}{The two rows are drawn to explain the task, not measured
+from a run. The antenna names are real names from the study area; how often each
+of the two cases actually occurs is measured in Chapter~\ref{ch:data}.}}
 \end{figure}

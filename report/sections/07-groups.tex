@@ -1,283 +1,330 @@
-\chapter{Grouping users by when they move}
+\chapter{Sorting people into four kinds of user}
 \label{ch:groups}
 
-\section{The question}
+\section{The goal}
 
-Chapter~\ref{ch:time} ended on a specific failure: a single pair of transition
-windows, guessed a priori and applied to everybody, marks positions that are no
-harder than average. The remedy it implies is not ``pick better hours'' but
-``stop assuming everybody shares the same hours''. That turns into two questions
-that this chapter answers together.
+Chapter~\ref{ch:time} ended on a specific failure. One pair of stretches of the
+day, guessed in advance and applied to everybody, marks moments that are no
+harder than average.
 
-\emph{Can users be grouped by when they move, using only information that will
-still be available at prediction time?} And if so, \emph{does telling the model
-which group a user belongs to make it predict them better?} The first question
-is a measurement problem and the answer is yes. The second is a modelling
-problem, and the answer was no until the group stopped being a piece of text.
+The remedy that failure implies is not ``pick better hours''. It is ``stop
+assuming everybody has the same hours''. Some people leave home at seven in the
+morning and are settled by six in the evening; others do the opposite; and a
+third kind barely moves at all. A single stretch of the day cannot be the hard
+one for all of them at once.
 
-\section{What a group is, and the constraint that makes it usable}
+That turns into two questions, which this chapter answers together.
 
-A behavioural group here is not a label anyone assigned. It is a shape: for each
-user, the share of consecutive record pairs at which the \emph{physical site}
-changes, computed separately over four bands of the day, night (22h--07h),
-morning (07h--12h), day (12h--18h) and evening (18h--22h). Four broad bands were
-used rather than five, six or eight because each band must keep enough events
-per user to be estimated at all; with finer bands a user with three night-time
-events gets a night-time rate of 0\,\% or 100\,\%, which is noise dressed as a
-profile. For the same reason each band is drawn towards the user's global
-rate: a band holding three events barely constrains anything, so it ends up
-most of the way towards that user's all-day rate, while a band holding two
-hundred is left almost untouched. A sparse band
-cannot dominate a profile that way.
+\emph{Can people be sorted into kinds of user according to when they move, using
+only information that will still be available at the moment a prediction is
+asked for?} That is a measurement problem, and the answer is yes.
 
-Two properties of this definition matter more than the clustering itself.
+\emph{And does telling the model which kind of user it is looking at make it
+predict that person better?} That is a modelling problem, and the answer was no
+until the kind of user stopped being a piece of text.
 
-\paragraph{Movement is measured on the site root.} As established in
-Chapter~\ref{ch:data}, 12.4\,\% of consecutive-event pairs are a change of
-\cid{cell\_id} with no change of place. Computing these profiles on the raw
-\cid{cell\_id} would fold that 12.4\,\% into ``mobility'' and blur exactly the
-distinction the groups exist to draw. Measuring them on the raw
-\cid{cell\_id} was in fact tried first, and produced groups that separated
-behaviour less well.
+\paragraph{Where the numbers in this chapter come from.} From \Dmob{}
+(Table~\ref{tab:datasets}): the four kinds of user are fitted on the \textbf{400
+training people}, and every score is measured on the \textbf{100 held-out
+people}, who are different people and are never trained on. Every position of
+their day is graded, and on that protocol the one-line rule scores 43.1\,\%.
 
-\paragraph{A group must be recoverable from the past alone.} This is the
-constraint that makes the whole idea usable rather than circular. At prediction
-time only a user's history exists; their future, the very thing being
-predicted, does not. So the group is computed on the \emph{context prefix}
-only, never on the full sequence, both during training and at test time, and the
-same computation is used on both sides. The ``oracle'' variant, where the group
-is read from the whole sequence, exists only as a diagnostic upper bound and is
-never used to produce a reported score.
+\section{What a kind of user is, and the constraint that makes it usable}
 
-Whether that constraint is affordable is an empirical question, answered in
-Figure~\ref{fig:group-difficulty}(b): at the reference 80\,\% context the
-pipeline assigns the correct group to 92 of the 100 held-out users, unaided, and
-at 90\,\% context the figure is the same. Below roughly 60\,\% of the day it
-collapses, 61\,\% agreement at half a day, 44\,\% at 30\,\%, because there is
-simply not enough history to tell a morning mover from an evening mover. That is
-a real operational limit, and it is stated here rather than averaged away: the
-group mechanism is worth using on users with most of a day behind them, and is
-worth nothing on a cold start, that is, on someone who has just appeared and
-offers an hour of history instead of a day.
+A kind of user here is not a label anybody assigned. It is a \emph{shape}.
 
-\section{The four profiles}
+For each person, I compute how often their \emph{physical location} changes,
+separately over four stretches of the day: night from 22h to 07h, morning from
+07h to 12h, day from 12h to 18h, and evening from 18h to 22h. That gives four
+numbers per person, and those four numbers are the person's profile.
 
-The grouping itself is done by clustering,\footnote{\textbf{Clustering}: an
-automatic procedure that sorts items into groups by resemblance, with nobody
+Four stretches were used rather than five, six or eight because each one has to
+hold enough events to be estimated at all. With finer stretches, somebody with
+three night-time events gets a night-time rate of 0 or 100\,\%, which is noise
+dressed up as a profile. For the same reason each stretch is pulled towards that
+person's own all-day rate in proportion to how little data it holds: a stretch
+containing three events ends up most of the way towards the all-day rate, while
+one containing two hundred is left almost untouched. A thin stretch cannot
+dominate a profile that way.
+
+Two properties of this definition matter more than the sorting itself.
+
+\paragraph{Movement is measured on the mast, never on the antenna name.} As
+established in Chapter~\ref{ch:data}, 12.4 out of every 100 back-to-back records
+change antenna name with no change of place. Computing these profiles on the raw
+antenna name would fold that 12.4 into ``mobility'' and blur exactly the
+distinction the whole exercise exists to draw. Measuring on the raw name was in
+fact tried first, and produced kinds of user that separated behaviour less well.
+
+\paragraph{The kind of user must be recoverable from the past alone.} This is the
+constraint that makes the idea usable rather than circular. At the moment a
+prediction is asked for, only the person's history exists; their future, which is
+the very thing being predicted, does not. So the profile is computed on the
+history \emph{only}, never on the whole day, both during training and at grading
+time, and the same computation is used on both sides. A variant in which the
+profile is read from the whole day exists in the code, but only as a diagnostic
+upper bound, and it is never used to produce a reported score.
+
+Whether that constraint is affordable is an empirical question, and
+Figure~\ref{fig:group-difficulty}(b) answers it. At the reference protocol, where
+80\,\% of the day is given as history, the pipeline assigns the correct kind of
+user to 92 of the 100 held-out people, unaided. Below roughly 60\,\% of the day
+it collapses, to 61\,\% agreement at half a day and 44\,\% at 30\,\%, because
+there is simply not enough history to tell a morning mover from an evening mover.
+
+That is a real operational limit and it is stated here rather than averaged away:
+the mechanism is worth using on somebody with most of a day behind them, and
+worth nothing on somebody who has just appeared and offers an hour of history.
+
+\section{The four kinds of user}
+
+The sorting itself is done by an automatic procedure\footnote{\textbf{Clustering}:
+an automatic procedure that sorts items into groups by resemblance, with nobody
 labelling anything. Each group is summarised by its average profile, and each
-item is assigned to the nearest one.} which is handed each user's four-band
-profile and asked for four average profiles. The number four was chosen rather than
-discovered, and it is the one arbitrary parameter of the whole mechanism.
-Fitted on the 400 training users of \smob, the groups are the ones shown in
-Figure~\ref{fig:group-profiles}, and they are shapes in time rather than
-levels.
+item is assigned to the nearest one.} which is handed each person's four numbers
+and asked for four average profiles. \textbf{The number four was chosen rather
+than discovered}, and it is the one arbitrary parameter of the whole mechanism: I
+picked it because four stretches of the day give four numbers per person, and
+because fewer than four profiles merged the two mirror-image kinds described
+below into one.
+
+Fitted on the 400 training people, the four profiles are the ones shown in
+Figure~\ref{fig:group-profiles}, and they are shapes in time rather than levels.
 
 \input{figures/fig-group-profiles}
 
 \begin{description}
-  \item[G0, the homebody (28\,\% of users).] Flat and low all day, peaking at
-        35\,\% at 17h. Barely moves.
-  \item[G1, the steady user (35\,\%).] Moves at a constant, moderate rate from
-        07h to 20h, with a single late peak at 58\,\%.
-  \item[G2, the evening mover (14\,\%).] A calm morning, then a climb all
-        afternoon to 84\,\% at 19h.
-  \item[G3, the morning mover (23\,\%).] The mirror image: 79\,\% before noon,
-        then settling for the evening down to 29\,\%.
+  \item[G0, the stay-at-home user, 28\,\% of people.] Flat and low all day. This
+        person changes location on roughly 30 out of every 100 back-to-back
+        records, at every hour alike, peaking at only 35 at five in the
+        afternoon. There is no moment of their day at which they are noticeably
+        more likely to go somewhere.
+  \item[G1, the steady user, 35\,\%.] Moves at a constant, \emph{moderate} rate
+        from seven in the morning to eight in the evening. Moderate here means
+        about 45 changes of location per 100 records, all day long: clearly above
+        the 30 of the stay-at-home user, and far below the 80 that the next two
+        kinds reach at their peak. What characterises this person is not the
+        level but the flatness: no single hour stands out, except one late rise
+        to 58.
+  \item[G2, the evening-moving user, 14\,\%.] A calm morning at around 40 to 55,
+        then a climb all afternoon to 84 changes per 100 records at seven in the
+        evening. This is the shape of somebody who goes home late, or goes out
+        after work.
+  \item[G3, the morning-moving user, 23\,\%.] The mirror image: 79 changes per
+        100 records before noon, then a settling down through the evening to 29.
+        This is the shape of somebody who commutes early and then stays put.
 \end{description}
 
-G2 and G3 are the reason a single global window could never have worked. They
-are near mirror images of each other in time, they represent 37\,\% of the
-population between them, and any hour that is hard for one is easy for the
-other. A window that upweights 18h--20h for everybody helps G2 and actively
-misleads G3, for whom the evening is the moment they have just settled down.
+G2 and G3 are the reason a single global stretch of the day could never have
+worked. They are near mirror images of each other in time, they are 37\,\% of the
+population between them, and any hour that is hard for one is easy for the other.
+A rule that emphasises 18--20h for everybody helps the evening-moving user and
+actively misleads the morning-moving user, for whom the evening is the moment
+they have just settled down.
 
-The grouping is also useful in a stronger sense than description:
-Figure~\ref{fig:group-difficulty}(a) shows that the group label predicts
-\emph{difficulty}. G0 changes site about a third of the time and ``repeat the
-last cell'' is right 56.3\,\% of the time for them; G3 changes site half again as
-often and the same rule is right only 17.8\,\% of the time. The ranking of
-persistence is exactly the inverse of the ranking of mobility, which is what one
-would hope for and is worth verifying rather than assuming.
+The sorting is also useful in a stronger sense than description: the label
+predicts \emph{difficulty}. Figure~\ref{fig:group-difficulty}(a) shows that the
+stay-at-home user changes location about a third of the time and ``repeat the
+last antenna'' is right 56.3\,\% of the time for them, while the morning-moving
+user changes location half again as often and the same rule is right only
+17.8\,\% of the time. The ranking of the rule is exactly the inverse of the
+ranking of mobility, which is what one would hope for and is worth verifying
+rather than assuming.
 
 \input{figures/fig-group-difficulty}
 
-Quantitatively, knowing nothing whatever about a user except which of the four
-profiles they fall into accounts for 69\,\% of the spread in per-user
-predictability on the training users and 72\,\% on the held-out ones, with the
-profiles fitted on the training side only. The scale runs from 0\,\%, where the
-label would tell you no more than always guessing the population average, to
-100\,\%, where it would tell you each user's score exactly. One rival
-explanation has to be acknowledged: sequence length also predicts
-predictability, and $\log
-n$\footnote{$\log n$: the logarithm of a user's number of records. Using it rather than
-$n$ says that what matters is the \emph{order of magnitude} of a history: 10
-to 100 records counts the same as 100 to 1{,}000. Sequence lengths here span
-more than a decade.} alone
-explains 48\,\% of that spread. But the label still explains 38\,\% of what
-remains after removing $\log n$, and the scale-free part of the profile, the
-morning-minus-evening asymmetry of its shape, correlates with $\log n$ at only
-$-0.28$. The groups are therefore not merely a proxy for ``long users versus
-short users''.
+Quantitatively, knowing nothing whatever about a person except which of the four
+kinds they fall into accounts for 69\,\% of the spread in how predictable people
+are on the training side, and 72\,\% on the held-out side, with the profiles
+fitted on the training side only. That scale runs from 0\,\%, where the label
+would tell you no more than always guessing the population average, to 100\,\%,
+where it would tell you each person's score exactly.
 
-\section{Windows derived, not guessed}
+One rival explanation has to be acknowledged. The sheer length of somebody's day
+also predicts how well they are scored, and length alone explains 48\,\% of that
+same spread.\footnote{$\log n$: the logarithm of a person's number of records.
+Using it rather than $n$ says that what matters is the \emph{order of magnitude}
+of a history, so 10 to 100 records counts the same as 100 to 1{,}000.} But the
+label still explains 38\,\% of what remains after length has been removed, and
+the part of the profile that has no scale in it, namely how lopsided it is
+between morning and evening, is barely related to length at all. The four kinds
+of user are therefore not merely a proxy for ``long histories versus short
+ones''.
 
-With profiles in hand, the transition windows can be defined the way they should
-have been from the start: as the contiguous hours where a group's \emph{own}
-persistence falls furthest below that group's \emph{own} average, that is,
-where ``repeat the last cell'' stops working for that kind of user. The result
-is Table~\ref{tab:group-windows}.
+\section{Hours derived from the data, not guessed}
+
+With profiles in hand, the stretches of the day to emphasise can be defined the
+way they should have been from the start: as the run of consecutive hours where a
+given kind of user's \emph{own} rule score falls furthest below that same kind's
+\emph{own} average. In plain terms, the hours at which ``repeat the last
+antenna'' stops working \emph{for that kind of person}. The result is
+Table~\ref{tab:group-windows}.
 
 \input{tables/tab-group-windows}
 
-Two features of that table are worth pausing on. First, G0 receives \emph{no}
-window at all. A group whose day is flat has no hours worth upweighting, and a
-uniform weight of 1.0 is the correct answer for 28\,\% of the population, an
-outcome a hand-chosen global window structurally cannot produce. Second, the
-derived windows for G2 and G3 are almost disjoint in time, which is the same
-mirror-image fact stated in the language of the loss function.
+Two features of that table are worth pausing on.
 
-The lower block of the table is the measurement that justifies the whole
-detour. Applied to the full test sequences, the guessed global window separates
-persistence by $+0.2$ percentage points, inside it the baseline scores
-43.6\,\%, outside it 43.4\,\%. The per-group windows separate it by
-$\mathbf{-27.4}$ percentage points: 19.0\,\% inside against 46.4\,\% outside. The
-first marks nothing; the second marks positions that are twenty-seven points
-harder than average. Whatever the model then does with that weighting, it is at
-least being aimed at the right places.
+First, the stay-at-home user receives \emph{no} emphasised hours at all. A person
+whose day is flat has no hours worth emphasising, and leaving every hour at its
+ordinary cost is the correct answer for 28\,\% of the population. That is an
+outcome a hand-chosen global window structurally cannot produce.
 
-\section{The first attempt failed, and the ablation says why}
+Second, the derived hours for the evening-moving user and the morning-moving user
+are almost disjoint in time, which is the same mirror-image fact stated in the
+language of the training procedure.
 
-Given all that, the first cross-training\footnote{\textbf{Cross-training}:
-training one set of weights on several users at once, so that users who behave
-alike inform each other instead of being learnt as independent
-sequences.} run was expected to work and did not.
-The group was encoded as a dedicated token prepended to the sequence, one
-shared \cid{<Gk>} symbol at the head, so that causal
-attention\footnote{\textbf{Attention}: the mechanism by which each position of
-the model looks at the others and decides how much weight to give each.
-\textbf{Causal} means it may look only backwards, never at the future.} lets it
-condition every subsequent prediction, a token placed first being visible to
-every position that follows it, and the run scored 41.3\,\% against a baseline of 43.1\,\%:
-$-1.8\pt$, no better than anything before it.
+The lower block of the table is the measurement that justifies the whole detour.
+Applied to the full test day, the guessed global window separates the rule by two
+tenths: 43.6\,\% inside it against 43.4\,\% outside. The per-kind hours separate
+it by \textbf{27.4}: 19.0\,\% inside against 46.4\,\% outside. The first marks
+nothing at all; the second marks moments that are twenty-seven correct answers
+per hundred harder than average. Whatever the model then does with that
+emphasis, it is at least being aimed at the right places.
 
-The useful part is the ablation that followed, because it does not merely say
-``it did not work'' but \emph{where} it did not work. Switching the group token
-off entirely gives 41.1\,\%. Feeding a deliberately \emph{wrong} group gives
-41.2\,\%. The correct group gives 41.3\,\%. Three conditions within
-$0.2\pt$ of each other means one thing only: the model was not reading the group
-at all. The same test on the hour tokens gave 41.3\,\% with real hours against
-41.8\,\% with no hours whatsoever, if anything, slightly better without them.
+\section{The first attempt failed, and why}
 
-So the failure was not in the groups, which had just been shown to separate
-persistence by twenty-seven points, nor in the hours, which an earlier ablation
-had shown the model does use. It was in the \emph{channel}. A single token at
-the head of a sequence of up to five hundred tokens is one symbol among many;
-attention is free to dilute it to nothing, and on this task it did, because
-ignoring it costs almost no training loss.
+Given all that, the first attempt was expected to work and did not.
+
+The kind of user was written into the input as a dedicated symbol placed at the
+head of the sequence, one shared symbol \cid{<G0>} to \cid{<G3>}, so that the
+model could look back at it from every later position.\footnote{\textbf{Attention}:
+the mechanism by which each position of the model looks at the others and decides
+how much weight to give each. It may only look backwards, never at the future,
+which is why a symbol placed first is visible to everything that follows it.} The
+run scored 41.3\,\% against a rule of 43.1\,\%, so 1.8 behind, no better than
+anything before it.
+
+The useful part is the check that followed, because it does not merely say ``it
+did not work'' but says \emph{where} it did not work. Switching the symbol off
+entirely gives 41.1\,\%. Feeding a deliberately \emph{wrong} kind of user gives
+41.2\,\%. The correct one gives 41.3\,\%. Three conditions within two tenths of
+each other means one thing only: \textbf{the model was not reading the symbol at
+all}. The same test on the hour symbols gave 41.3\,\% with real hours against
+41.8\,\% with no hours whatsoever, so if anything slightly better without them.
+
+So the failure was not in the sorting, which had just been shown to separate the
+rule by twenty-seven. It was not in the hours, which an earlier test had shown
+the model does use. It was in the \emph{channel}. One symbol at the head of a
+sequence of up to five hundred is one symbol among many, and the model is free to
+dilute it to nothing. On this task it did exactly that, because ignoring it cost
+almost nothing during training.
+
 Figure~\ref{fig:adapter-routing} contrasts that failed channel with the one that
 replaced it.
 
 \input{figures/fig-adapter-routing}
 
-\section{The fix, and which part of it was structural}
+\section{The fix, and which part of it mattered}
 
 Four changes were made. Three are bookkeeping, and one changes the nature of the
 mechanism.
 
 \begin{enumerate}
-  \item \textbf{Narrow G2's evening window} from 16--21h to 18--21h. A five-hour
-        block is wide enough that most of it carries no more change than the rest
-        of the day, which dilutes the upweighting across hours that did not
-        deserve it.
-  \item \textbf{Derive the peak hours per user, then average}, instead of from
-        one global histogram. Because a handful of users own a large share of the
-        records, the concentration measured in Chapter~\ref{ch:user}, the
-        global histogram was really \emph{their} day rather than the
-        population's.
-  \item \textbf{Route each group to its own adapter.} The base model stays
-        frozen and four independent LoRA adapters are trained, one per group. The
-        group is no longer text that attention may or may not attend to: it
-        physically decides which weights run. Each adapter is trained on every
-        user of its group and on no one else, which is what turns four hundred
-        users into four cross-trained populations rather than four hundred
-        independent fits: people who move at the same hours now shape the same
-        weights, and a user with sixty events benefits from everyone whose day
-        has the same shape. This is the structural change, and it is drawn in
-        Figure~\ref{fig:adapter-routing}(b).
-  \item \textbf{Keep the per-group windows.} The one component already measured
-        to be correct was left untouched.
+  \item \textbf{Narrow the evening-moving user's stretch} from 16--21h to
+        18--21h. A five-hour block is wide enough that most of it carries no more
+        movement than the rest of the day, which spreads the emphasis over hours
+        that did not deserve it.
+  \item \textbf{Work out the peak hours person by person, then average}, instead
+        of from one histogram over everybody. Because a handful of people own a
+        large share of the records, as Chapter~\ref{ch:user} measured, the global
+        histogram was really \emph{their} day rather than the population's.
+  \item \textbf{Give each kind of user its own set of trained numbers.} The base
+        model stays frozen and four independent sets of added numbers are
+        trained, one per kind of user. The kind of user is no longer text the
+        model may or may not attend to: it physically decides which numbers run.
+        Each set is trained on every person of its kind and on nobody else, which
+        is what turns four hundred people into four cross-trained
+        populations\footnote{\textbf{Cross-training}: training one set of numbers
+        on several people at once, so that people who behave alike inform each
+        other instead of being learnt as independent sequences.} rather than four
+        hundred independent fits. People who move at the same hours now shape the
+        same numbers, and somebody with sixty events benefits from everybody
+        whose day has the same shape. This is the structural change, and it is
+        drawn in Figure~\ref{fig:adapter-routing}(b).
+  \item \textbf{Keep the derived hours.} The one component already measured to be
+        correct was left untouched.
 \end{enumerate}
 
 Only the third could plausibly account for a large move, and that is what the
 result suggests happened.
 
-\section{What the numbers said}
+\section{What I conclude: the routing is what worked}
 
 The run after those four changes reached \textbf{46.8\,\% against the same
-43.1\,\% baseline: $+3.7\pt$}, the first run of the whole project to clear
-``repeat the last cell'' on a full test set rather than on a hand-picked segment.
-The baseline itself did not move, which is the point: same users, same protocol,
-same architecture, and the only difference is what the loss was told to care
-about and which weights were allowed to answer.
+43.1\,\% rule, so 3.7 more correct answers per hundred}. It is the first run of
+the whole project to clear ``repeat the last antenna'' on a complete test set
+rather than on a hand-picked segment. The rule itself did not move, which is the
+point: same people, same protocol, same architecture, and the only difference is
+which mistakes the training was told to care about and which numbers were allowed
+to answer.
 
-Figure~\ref{fig:group-gain} shows where those points came from, and the pattern
-is the strongest single result in this report.
+Figure~\ref{fig:group-gain} shows where those correct answers came from, and the
+pattern is the strongest single result in this report.
 
 \input{figures/fig-group-gain}
 
-The gain ranks in exactly the reverse order of the baseline, with no exception
-among the four. G0, whom repetition already predicts 56.0\,\% of the time, gains
-$+0.8\pt$; G3, whom repetition predicts 17.8\,\% of the time, gains $+6.4\pt$.
-The ordering is the result, and I state it as an ordering on purpose: a
-correlation coefficient over four points would land within a whisker of $-1$ for
-any inverse ranking whatsoever, so quoting one here would dress the same
-observation up as a stronger measurement than it is. Read against
-Chapter~\ref{ch:user}, this is that chapter's finding arriving from the other
-direction: difficulty lives in the user, and a model earns its cost precisely
-where the trivial rule fails.
+\textbf{The gain ranks in exactly the reverse order of the rule, with no
+exception among the four.} The stay-at-home user, whom repetition already
+predicts 56.0\,\% of the time, gains 0.8. The morning-moving user, whom
+repetition predicts 17.8\,\% of the time, gains 6.4. In between, the steady user
+gains 2.3 and the evening-moving user 5.4.
 
-Two honest qualifications belong with that number. The $+3.7\pt$ is the
-unweighted mean over the four groups, each counted once. Weighted by how many
-users each group actually contains, the gain is $+3.3\pt$, because 28\,\% of the
-population sits in the group that needed no model. And the whole mechanism
-depends on the group being detectable, which Figure~\ref{fig:group-difficulty}(b)
-showed collapses below roughly 60\,\% of a day of history.
+I state that as an ordering on purpose. A correlation coefficient over four
+points would land within a whisker of $-1$ for any inverse ranking whatsoever, so
+quoting one here would dress the same observation up as a stronger measurement
+than it is. The ordering itself is the claim, and it is exact.
 
-One thing this number is not is the report's headline. It is what the
-configuration is worth on four hundred training users, and the configuration
-itself, hour tokens plus one adapter per behavioural group, is carried unchanged
-into Chapter~\ref{ch:scale}, where the same architecture on larger populations
-measures $+4.2$ and $+4.3\pt$ against their own baselines. The mechanism is
-established here; its ceiling is measured there.
+Read against Chapter~\ref{ch:user}, this is that chapter's finding arriving from
+the other direction. There, difficulty was shown to live in the person; here, the
+model is shown to earn its cost precisely where the trivial rule fails, and to
+earn nothing where the trivial rule already works. The two results are the same
+statement about this problem, measured two different ways.
 
-\section{Retrospective}
+Two honest qualifications belong with the headline. The 3.7 is the plain average
+over the four kinds of user, each counted once. Weighted by how many people each
+kind actually contains, the gain is \textbf{3.3}, because 28\,\% of the
+population sits in the kind that needed no model at all, and 3.3 is the figure an
+operator would experience. And the whole mechanism depends on the kind of user
+being detectable, which Figure~\ref{fig:group-difficulty}(b) showed collapses
+below roughly 60\,\% of a day of history.
+
+\textbf{Where this leaves the project.} This number is not the report's headline.
+It is what the configuration is worth on four hundred training people, and it
+raises the obvious next question: four hundred people split across four kinds
+leaves the smallest kind with a few dozen members, which is barely a profile at
+all. If the mechanism depends on the kinds being well populated, then population
+size is the next lever to pull. The configuration itself, hour symbols plus one
+set of numbers per kind of user, is carried unchanged into
+Chapter~\ref{ch:scale}, where the same architecture on larger populations reaches
+4.2 and 4.3 against their own rules. The mechanism is established here; its
+ceiling is measured there.
+
+\section{Looking back}
 \label{sec:retro-groups}
 
 This is the chapter I would defend rather than qualify. The move to
 cross-training is the largest success of the internship, and the reason is worth
-stating in one sentence: instead of treating four hundred users as four hundred
+stating in one sentence: instead of treating four hundred people as four hundred
 independent sequences, each with a handful of events to learn from, it lets
-users who behave alike inform one another. That is what turned a model that had
-spent five iterations imitating a one-line rule into one that beats it, and it
-is the only intervention in the whole project whose effect is larger than the
-noise around it.
+people who behave alike inform one another. That is what turned a model that had
+spent five iterations imitating a one-line rule into one that beats it, and it is
+the only change in the whole project whose effect is larger than the noise around
+it.
 
-Two qualifications I would attach to the headline number, both of which
-temper it rather than undo it. The first is that $+3.7\pt$ is the unweighted
-mean over the four profiles, each counted once. Weighted by how many users each
-profile actually contains it is $+3.3\pt$, and that is the figure an operator
-would experience, because 28\,\% of the population sits in the group that needed
-no model at all. Given the choice again I would lead with $+3.3$ and mention
-$+3.7$ as the per-profile mean, not the other way round. Both are numbers about
-this iteration and this corpus of four hundred users, which is why neither is
-the figure quoted in the abstract.
+Two qualifications I would attach to the headline number, both of which temper it
+rather than undo it. The first is that 3.7 is the plain average over four
+profiles counted once each, while the figure an operator would actually
+experience is 3.3. Given the choice again I would lead with 3.3 and mention 3.7
+as the per-profile average, not the other way round. Both are numbers about this
+iteration and this set of four hundred people, which is why neither is the figure
+quoted in the abstract.
 
-The second is a control I did not run. Four adapters is four times the trainable
-capacity of one, so part of the gain may be capacity rather than the group
-information itself. Training a single adapter carrying as many trainable
-numbers as the four together, on the same data, would have separated the two,
-and I would run that comparison
-first if I picked the work up again. My expectation is that most of the effect
-is the grouping, because the ablations of the failed run showed the model
-extracting nothing at all from the group when it arrived as a token rather than
-as a routing decision; but an expectation is not a measurement.
+The second is a control I did not run. Four sets of trained numbers is four times
+the trainable capacity of one, so part of the gain may be capacity rather than
+the sorting itself. Training a single set carrying as many trainable numbers as
+the four together, on the same data, would have separated the two, and I would
+run that comparison first if I picked the work up again. My expectation is that
+most of the effect is the sorting, because the checks on the failed run showed
+the model extracting nothing at all from the kind of user when it arrived as a
+symbol rather than as a routing decision. But an expectation is not a
+measurement.

@@ -1,11 +1,11 @@
 % T8 -- Context fraction at 1,000 and 2,000 users (slide 60).
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
-\caption{The gain does not come from a long context}
+\caption{The gain does not come from giving the model a long history}
 \label{tab:context-scale}
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
-\textbf{Context} & \textbf{Predictions} & \textbf{Baseline} & \textbf{900 users} & \textbf{1{,}900 users} & \textbf{$\Delta$} \\
+\textbf{Past given} & \textbf{Moments} & \textbf{The rule} & \textbf{900 people} & \textbf{1{,}900 people} & \textbf{Difference} \\
 \midrule
 30\,\% & 5{,}491 & 47.1\,\% & 50.0\,\% \ ($+2.9$) & 51.4\,\% \ ($+4.3$) & $+1.4$ \\
 40\,\% & 4{,}703 & 46.8\,\% & 49.9\,\% \ ($+3.1$) & 51.4\,\% \ ($+4.6$) & $+1.5$ \\
@@ -18,17 +18,33 @@
 \end{tabular}
 
 \figtext{%
-Top-1 against the baseline at every context fraction, for the 900- and
-1{,}900-user tiers, counted in training users drawn from a day-file of 2{,}000.
-The edge is already $+4.3\pt$ when only 30\,\% of the day
-has been seen, so what the model adds is largely independent of how much
-history it is handed. \stwok, with the same 100 held-out users for both tiers;
-gaps to the baseline in brackets.}
+\figpara{What is being varied.}{Two trained models, one on 900 training people
+and one on 1{,}900, both graded on the same 100 held-out people, and each row
+hands them a different amount of that person's day as history. ``30\,\%'' means
+the model sees the first 30\,\% of the day and answers the rest.}
+
+\figpara{How to read a row.}{\textbf{Moments} is how many graded moments that row
+rests on, and it falls as more of the day is given away as history.
+\textbf{The rule} is what ``repeat the last antenna'' scores on those moments.
+The two model columns give the score, with the distance to the rule in brackets.
+\textbf{Difference} is how much the larger training set was worth on that row.}
+
+\figpara{What it shows.}{The 1{,}900-person model is ahead of the rule by 4.3
+even when it has seen only 30\,\% of the day, and by 4.2 when it has seen 80\,\%.
+So what the model contributes is essentially independent of how much history it
+is handed. Whatever it has learned, it is not something that needs a long run-up
+to become useful.}
+
+\figpara{And the last column is the point of the table.}{Going from 900 to
+1{,}900 training people is worth between 0.9 and 1.7 on every row alike. More
+people helps by the same amount whether the model is given a third of somebody's
+day or nine tenths of it, which is one more sign that the two levers are
+independent. \stwok, with the same 100 held-out people for both sizes.}}
 
 \vspace{3pt}
 \begin{minipage}{\textwidth}\footnotesize
-On the full sequence ($n = 7{,}745$) the two tiers score 50.0\,\% and 51.0\,\%
-against a 46.8\,\% baseline.
+Graded over the whole day rather than a cut of it, 7{,}745 moments, the two sizes
+score 50.0\,\% and 51.0\,\% against a rule of 46.8\,\%.
 \end{minipage}
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the context-fraction evaluation at the smaller tiers}
 \end{table}

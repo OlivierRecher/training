@@ -1,62 +1,66 @@
-% F2 -- Anatomy of a cell_id, and why movement is measured on the site root.
-\begin{figure}[t]
+% F2 -- Anatomy of a cell name. A schema: almost no text inside the drawing.
+\begin{figure}[!htbp]
 \centering
 \fitwidth{%
 \begin{tikzpicture}[font=\small,
-  seg/.style={draw=clrule,minimum height=0.85cm,inner xsep=6pt,align=center},
-  note/.style={draw=clrule,fill=clsoft,rounded corners=2pt,align=left,
-               inner sep=5pt,text width=3.85cm,font=\footnotesize},
+  seg/.style={draw=clrule,minimum height=1.0cm,inner xsep=8pt,align=center},
+  tag/.style={align=center,font=\footnotesize,text width=3.0cm},
   ar/.style={-{Stealth[length=4pt]},clrule},
-  chip/.style={draw=clrule,fill=white,rounded corners=2pt,inner sep=3pt,font=\footnotesize\ttfamily},
+  chip/.style={draw=clrule,fill=white,rounded corners=2pt,inner sep=4pt,
+               font=\footnotesize\ttfamily},
 ]
-% --- the anatomy, top left ----------------------------------------------
-\node[seg,fill=clmodel!14] (t) at (1.35,0) {\ttfamily\large B};
-\node[seg,fill=clink!18,right=0pt of t] (root) {\ttfamily\large SOCHO};
-\node[seg,fill=clmove!18,right=0pt of root] (z) {\ttfamily\large 1};
+% ---------------- the name, taken apart ----------------
+\node[seg,fill=clmodel!14] (t)                  at (2.2,0) {\ttfamily\LARGE B};
+\node[seg,fill=clink!18,right=0pt of t]  (root) {\ttfamily\LARGE SOCHO};
+\node[seg,fill=clmove!18,right=0pt of root] (z) {\ttfamily\LARGE 1};
 
-% --- four ids, one place, top right -------------------------------------
-\begin{scope}[xshift=8.15cm,yshift=0.42cm]
-  \node[chip] (c1) at (0,0)      {BKVCHE1};
-  \node[chip] (c2) at (1.95,0)   {BKVCHE4};
-  \node[chip] (c3) at (0,-0.62)  {UKVCHE102};
-  \node[chip] (c4) at (1.95,-0.62){UKVCHE201};
-  \node[font=\scriptsize,anchor=west,text=clrule] at (2.95,0)      {2G, sectors 1 and 4};
-  \node[font=\scriptsize,anchor=west,text=clrule] at (2.95,-0.62)  {3G, zones 1 and 2};
-  \node[draw=clink,fill=clink!12,rounded corners=2pt,inner sep=4pt,
-        font=\footnotesize,text width=5.4cm,align=center] (share) at (2.1,-1.28)
-        {all four share the site root \cid{KVCHE} = \textbf{the same location}};
+\node[tag,anchor=north] (nt)    at (0.9,-1.05)
+  {\textbf{2G or 3G}\\ \cid{B}, \cid{D} = 2G\\ \cid{U}, \cid{V} = 3G};
+\node[tag,anchor=north] (nroot) at (4.5,-1.05)
+  {\textbf{which mast}\\ \emph{this, and only this,}\\ \emph{is a place}};
+\node[tag,anchor=north] (nz)    at (8.1,-1.05)
+  {\textbf{which antenna}\\ of that mast\\ (one digit, or three)};
+
+\draw[ar] (t.south)    -- ++(0,-0.25) -| (nt.north);
+\draw[ar] (root.south) -- ++(0,-0.25) -| (nroot.north);
+\draw[ar] (z.south)    -- ++(0,-0.25) -| (nz.north);
+
+% ---------------- four names, one mast ----------------
+\begin{scope}[xshift=11.35cm,yshift=0.65cm]
+  \node[chip] (c1) at (0,0)       {BKVCHE1};
+  \node[chip] (c2) at (2.15,0)    {BKVCHE4};
+  \node[chip] (c3) at (0,-0.72)   {UKVCHE102};
+  \node[chip] (c4) at (2.15,-0.72){UKVCHE201};
+  \node[draw=clink,fill=clink!12,rounded corners=2pt,inner sep=5pt,
+        font=\footnotesize,text width=4.4cm,align=center] (share) at (1.07,-2.05)
+        {four names, one mast: \cid{KVCHE}};
+  \draw[ar,clink] (c3.south) -- ++(0,-0.30) -| (share.north);
+  \draw[ar,clink] (c4.south) -- ++(0,-0.30) -| (share.north);
 \end{scope}
-
-% --- the three notes, in a row across the page --------------------------
-\node[note,anchor=north west] (nt)    at (0,-2.15)
-  {\textbf{1. Radio technology}\\ 2G: starts with \cid{B} or \cid{D}\\
-   3G: starts with \cid{U} or \cid{V}};
-\node[note,anchor=north west] (nroot) at (5.15,-2.15)
-  {\textbf{2. Site root}, the physical antenna. \emph{This, and only this, is a place.}};
-\node[note,anchor=north west] (nz)    at (10.3,-2.15)
-  {\textbf{3. Zone / sector} of that antenna\\ 2G: one digit \cid{0}--\cid{9}\\
-   3G: zone \cid{1}/\cid{2} + sector \cid{01}--\cid{09}};
-
-\draw[ar] (t.south)    -- ++(0,-0.75) -| (nt.north);
-\draw[ar] (root.south) -- ++(0,-0.75) -| ([xshift=-1.2cm]nroot.north);
-\draw[ar] (z.south)    -- ++(0,-0.95) -| ([xshift=-1.4cm]nz.north);
-
-% --- the 12.4% point ----------------------------------------------------
-\node[draw=clrule,fill=white,rounded corners=2pt,align=left,inner sep=6pt,
-      text width=13.9cm,font=\footnotesize,anchor=north west] at (0,-4.45)
-  {\textbf{Why this matters for every measurement in this report.} On the day
-   used for the behavioural analysis, \textbf{12.4\,\%} of all
-   consecutive-event pairs are ``same site root, different \cid{cell\_id}'':
-   the handset re-attached to another cell of the same antenna while the person
-   did not go anywhere. Counting that as movement would blur the very
-   distinction the behavioural profiles of Chapter~\ref{ch:groups} exist to
-   capture, so mobility is always computed on the site root, never on the raw
-   \cid{cell\_id}.};
 \end{tikzpicture}}
-\caption{Anatomy of a \cid{cell\_id}}
+\caption{What the name of an antenna contains}
 \label{fig:cellid-anatomy}
 \figtext{%
-A \cid{cell\_id} is not an opaque location token: it is a technology letter, a
-site root and a zone/sector index. Two different \cid{cell\_id} values can
-denote the same physical place.}
+\figpara{The name is not a code, it is a description.}{On the left, the antenna
+name \cid{BSOCHO1} taken apart. The first letter says which generation of radio
+served the phone, 2G or 3G. The middle letters name the mast, and that middle
+part is the only piece of the name that corresponds to a location on a map. The
+last digits say which antenna of that mast the phone was on, and since a mast
+carries three or four antennas pointing in different directions, those digits
+change without anybody going anywhere.}
+
+\figpara{The consequence, on the right.}{The same mast in the town of Cheb
+appears in the data under four different names, because it carries two
+generations of radio and several antennas each. A phone switching from
+\cid{BKVCHE1} to \cid{UKVCHE102} has changed name and not changed place.}
+
+\figpara{Why this decides how everything else is measured.}{On the day used for
+the analysis of Chapter~\ref{ch:groups}, \textbf{12.4 out of every 100}
+back-to-back records are exactly that: a new antenna name, the same mast, and a
+person who did not move. Counting those as movement would inflate every mobility
+figure in this report by about a quarter and would scramble the four kinds of
+user of Chapter~\ref{ch:groups}, whose entire purpose is to separate people who
+move from people who do not. So whenever this report measures \emph{movement},
+it compares masts. What the model has to \emph{predict}, on the other hand, stays
+the full antenna name, because that is the question the operator asked.}}
 \end{figure}

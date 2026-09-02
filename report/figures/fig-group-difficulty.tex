@@ -1,9 +1,9 @@
 % F12 -- The group label predicts difficulty, and it can be read from the past alone.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
-\replegend{\swatch{clmove}~average site-change rate over the day \qquad
-           \swatch{clbase}~persistence baseline \qquad
-           \swatch{clmodel}~detection agreement}
+\replegend{\swatch{clmove}~how often that kind changes location \qquad
+           \swatch{clbase}~score of the one-line rule on that kind \qquad
+           \swatch{clmodel}~how often the kind is correctly identified}
 \plotlink{\nbllm}{\fitwidth{%
 \begin{tikzpicture}
 \begin{groupplot}[
@@ -12,46 +12,63 @@
   title style={font=\footnotesize,yshift=1pt},
 ]
 % ---- (a) mobility vs predictability ----
-\nextgroupplot[title={(a) the ranking is exactly inverted},
+\nextgroupplot[title={(a) the more they move, the worse the rule does},
   symbolic x coords={G0,G1,G2,G3},
+  xticklabels={G0 stay-at-home,G1 steady,G2 evening,G3 morning},
+  x tick label style={font=\scriptsize,rotate=35,anchor=east},
   ymin=0, ymax=78, ytick={0,20,40,60},
-  ylabel={\%}, /pgf/bar width=10pt]
+  ylabel={per 100}, /pgf/bar width=10pt]
 \addplot[fill=clmove,draw=none] coordinates {(G0,33)(G1,42)(G2,51)(G3,52)};
 \addplot[fill=clbase,draw=none] coordinates {(G0,56.3)(G1,41.7)(G2,19.7)(G3,17.8)};
 %
 % ---- (b) detection from the context prefix ----
-\nextgroupplot[title={(b) group recovered from the past alone},
+\nextgroupplot[title={(b) can the kind be read from the past alone?},
   symbolic x coords={ca,cb,cc,cd},
   xticklabels={30\%,50\%,80\%,90\%},
-  xlabel={context fraction at question time},
+  xlabel={share of the day available as history},
   ymin=0, ymax=118, ytick={0,25,...,100},
-  ylabel={agreement (\%)}, /pgf/bar width=13pt]
+  ylabel={correctly identified (\%)}, /pgf/bar width=13pt]
 \addplot[fill=clnonsig,draw=none] coordinates {(ca,44)(cb,61)};
 \addplot[fill=clmodel,draw=none] coordinates {(cc,92)(cd,92)};
 \node[font=\scriptsize,text=clmodel,anchor=south,align=center] at (axis cs:cc,104) {reference protocol};
 \end{groupplot}
 \end{tikzpicture}}}
-\caption{Group difficulty and group detectability}
+\caption{The kind of user predicts difficulty, and can be read from the past}
 \label{fig:group-difficulty}
 \figtext{%
-(a)~The group label is not merely descriptive: it says in advance how hard a
-user will be. The orange bar is a group's average site-change rate over the
-day and the grey-blue bar its persistence baseline, read against each other
-rather than on a common scale. G0 changes site about a third of the time and
-``repeat the last cell'' is already right 56.3\,\% of the time for them; G3
-changes site half again as often and the same rule is right only 17.8\,\% of
-the time. The ranking of persistence is exactly the inverse of the ranking of
-mobility, which is worth verifying rather than assuming. (b)~At inference only
-a user's past exists, so the group must be computed from the context prefix
-and never from the target, or the whole idea is circular. The bars give how
-often the group detected from the prefix alone agrees with the group computed
-from the full sequence, at four context fractions. At the reference 80\,\%
-context the pipeline recovers the right group for 92 of the 100 held-out users
-unaided, and 90\,\% context gives the same figure; below roughly 60\,\% of the
-day it collapses, 61\,\% agreement at half a day and 44\,\% at 30\,\%, which
-is what the two pale bars mean. The mechanism is therefore worth using on a
-user with most of a day behind them and worth nothing on a cold start, which
-is exactly the case in which an operator has the least information and would
-most want a prediction. \smob{}, 400 train / 100 test users.}
+\figpara{Panel (a): the label says in advance how hard somebody will be.}{Two
+bars per kind of user, and they are not on a common scale, so read each one
+against its own neighbours rather than against the other colour. The orange bar
+is how often that kind of user changes location over the day. The grey-blue bar
+is what the one-line rule scores on them.}
+
+\figpara{And the two rankings are exact opposites.}{The stay-at-home user changes
+location about a third of the time, and ``repeat the last antenna'' is already
+right 56.3\,\% of the time for them. The morning-moving user changes location half
+again as often, and the same rule is right only 17.8\,\% of the time. Moving from
+left to right, the orange bars rise and the grey-blue bars fall, with no
+exception. That is what one would hope for, and it is worth verifying rather than
+assuming, because it is what makes the label useful before any model runs.}
+
+\figpara{Panel (b): the constraint that makes the whole idea usable.}{At the
+moment a prediction is asked for, only the person's past exists. So the kind of
+user has to be worked out from that past alone, never from the part being
+predicted, or the whole exercise is circular. These bars measure how often the
+kind identified from the past alone matches the kind computed from the complete
+day.}
+
+\figpara{It works, but only with most of a day in hand.}{Given 80\,\% of the day,
+the pipeline identifies the right kind for 92 of the 100 held-out people, unaided,
+and 90\,\% gives the same figure. Below roughly 60\,\% it collapses: 61\,\% at
+half a day, 44\,\% at 30\,\%. There is simply not enough history to tell a
+morning mover from an evening mover.}
+
+\figpara{Which is an uncomfortable place for the limit to fall.}{The mechanism is
+worth using on somebody with most of a day behind them, and worth nothing on
+somebody who has just appeared. That is exactly the case in which an operator has
+the least information and would most want a prediction, and
+Chapter~\ref{ch:conclusion} returns to it. \smob, 400 training and 100 held-out
+people.}}
+
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the group-detection and per-group baseline cells}
 \end{figure}

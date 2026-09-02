@@ -1,0 +1,85 @@
+% F5a -- The tools, as a stack: what sits on top of what, and who does what.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  lay/.style={draw=clrule,rounded corners=2pt,align=center,inner sep=6pt,
+              minimum height=1.35cm,text width=11.4cm,anchor=center},
+  box/.style={draw=clrule,rounded corners=2pt,align=center,inner sep=6pt,
+              minimum height=1.75cm,text width=3.35cm,font=\footnotesize,anchor=center},
+  wide/.style={box,text width=5.35cm},
+  side/.style={draw=clrule,fill=white,rounded corners=2pt,align=center,
+               inner sep=6pt,text width=3.3cm,font=\footnotesize,anchor=center},
+  tag/.style={font=\scriptsize,text=clrule,anchor=east},
+]
+% --- layer 4: my own code -------------------------------------------------
+\node[lay,fill=clmodel!12,draw=clmodel] (mine) at (0,4.75)
+  {\textbf{My notebook}\\[2pt]\footnotesize
+   the custom training loop: which mistakes count more, which set of numbers
+   answers for which kind of user, and the whole grading};
+\node[tag] at (-6.1,4.75) {written by me};
+
+% --- layer 3: the three libraries ----------------------------------------
+\node[box,fill=clsoft] (tr)   at (-3.95,2.55)
+  {\textbf{Transformers}\\[2pt] loads the model and runs a standard training
+   loop};
+\node[box,fill=clsoft] (peft) at (0,2.55)
+  {\textbf{PEFT}\\[2pt] freezes the model and adds the small trainable part};
+\node[box,fill=clsoft] (trl)  at (3.95,2.55)
+  {\textbf{TRL}\\[2pt] the format the training file is written in};
+\node[tag] at (-6.1,2.55) {the libraries};
+
+% --- layer 2: model + 4-bit storage --------------------------------------
+\node[wide,fill=clink!14] (qwen) at (-2.95,0.35)
+  {\textbf{Qwen2.5-0.5B}\\[2pt] the model itself, 500 million numbers,
+   downloaded already trained on general text};
+\node[wide,fill=clink!14] (bnb) at (2.95,0.35)
+  {\textbf{bitsandbytes}\\[2pt] stores those frozen numbers in 4 bits each
+   instead of 16, so they fit};
+\node[tag] at (-6.1,0.35) {what is trained};
+
+% --- layer 1: the machine -------------------------------------------------
+\node[lay,fill=clnonsig!35] (colab) at (0,-1.65)
+  {\textbf{Google Colab, free tier: one NVIDIA T4 graphics card, 16\,GB}\\[2pt]
+   \footnotesize rented in the browser, a few hours a day, and liable to
+   disconnect};
+\node[tag] at (-6.1,-1.65) {where it runs};
+
+% --- the side column: analysis -------------------------------------------
+\node[side,anchor=west] (an) at (6.55,1.45)
+  {\textbf{pandas}\\ \textbf{scikit-learn}\\ \textbf{scipy}\\[4pt]
+   preparing the files, splitting people into train and test, and checking the
+   split is fair.\\[3pt] No modelling here.};
+
+\draw[clrule,dashed] (6.15,-2.45) -- (6.15,5.55);
+\end{tikzpicture}}
+\caption{The tools, and what each one does}
+\label{fig:toolchain}
+\figtext{%
+\figpara{Read the stack from the bottom up.}{At the bottom is the machine:
+a graphics card rented for free through a browser, which is the constraint
+behind almost every choice in this chapter. Above it sit the model itself and
+the trick that makes it fit in that card's memory. Above that, three
+off-the-shelf libraries do three separate jobs. And at the top is the only layer
+I wrote myself.}
+
+\figpara{The three libraries, in one line each.}{\textbf{Transformers} knows how
+to load a published model and run a standard training loop over it.
+\textbf{PEFT} is what makes training affordable: it freezes the model's 500
+million numbers and adds a small set of new ones beside them, which are the only
+ones ever modified. \textbf{TRL} contributes nothing conceptual at all; I use it
+for the format its files are written in, which is why it survived to the end
+while everything else in its toolbox was replaced.}
+
+\figpara{Why the top layer had to be mine.}{Everything this report is about
+lives there. Making a mistake at seven in the evening count more than a mistake
+at two in the afternoon, and sending one kind of user to one set of numbers and
+another kind to another, cannot be expressed by changing a setting. Both require
+reaching inside the training step, and that is the single property the whole
+stack was chosen for in the first week.}
+
+\figpara{The column on the right.}{Three standard libraries that never touch the
+model. They read and reshape the files, split the people into a training group
+and a test group, and run the statistical checks that decide, in
+Chapter~\ref{ch:scale}, whether a difference between two runs is real.}}
+\end{figure}

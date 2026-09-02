@@ -1,16 +1,16 @@
 % F13 -- Where the gain lands once the group physically routes the sequence.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
-\replegend{\swatch{clbase}~persistence baseline \qquad
-           \swatch{clmodel}~model, group routed to its own adapter}
+\replegend{\swatch{clbase}~the one-line rule \qquad
+           \swatch{clmodel}~my model, each kind of user routed to its own numbers}
 \plotlink{\nbllm}{\fitwidth{%
 \begin{tikzpicture}
 \begin{axis}[repbar, width=\linewidth, height=5.8cm,
   symbolic x coords={G0,G1,G2,G3,MEAN}, xtick=data,
-  xticklabels={G0 homebody,G1 steady,G2 evening,G3 morning,mean of the four},
+  xticklabels={G0 stay-at-home,G1 steady,G2 evening,G3 morning,average of the four},
   /pgf/bar width=15pt,
   ymin=0, ymax=80, ytick={0,10,...,60},
-  ylabel={top-1 accuracy (\%)},
+  ylabel={correct answers per 100},
   x tick label style={font=\small},
 ]
 \addplot[fill=clbase,draw=none]  coordinates {(G0,56.0)(G1,42.0)(G2,19.7)(G3,17.8)(MEAN,33.9)};
@@ -22,30 +22,39 @@
 \node[font=\small,text=clgain,anchor=south] at (axis cs:MEAN,49.5) {$+3.7$};
 \end{axis}
 \end{tikzpicture}}}
-\caption{Per-group gain after routing the group to its own adapter}
+\caption{Where the gain lands, once each kind of user has its own numbers}
 \label{fig:group-gain}
 \figtext{%
-The gain ranks in exactly the reverse order of the baseline. One pair of bars
-per group, plus the unweighted mean of the four, with the persistence baseline
-in grey-blue and the model in dark blue, scored on the same positions of the
-same 100 held-out users over the full sequence. Nothing separates this run
-from the one that scored $-1.8\pt$ except which weights were allowed to answer
-(Figure~\ref{fig:adapter-routing}). G0, whom repetition already predicts
-56.0\,\% of the time, gains $+0.8\pt$ and has almost nothing left to win; G3,
-whom repetition predicts less than one time in five, gains $+6.4\pt$. The
-ordering is exact, with no exception among the four, which is the claim; over
-four points a correlation coefficient would add nothing to it. Read against
-Chapter~\ref{ch:user} this is the
-same finding arriving from the other direction: difficulty lives in the user,
-and a model earns its cost precisely where the trivial rule fails. Two
-qualifications belong with the headline. The $+3.7\pt$ is the unweighted mean
-over four profiles counted once each; weighted by how many users each actually
-holds it is $+3.3\pt$, which is the figure an operator would experience,
-because 28\,\% of the population sits in the group that needed no model. And
-the whole mechanism depends on the group being detectable, which
-Figure~\ref{fig:group-difficulty}(b) shows collapsing below roughly 60\,\% of
-a day of history. A third qualification, that four adapters are also four
-times the trainable capacity and the control was never run, is in
-Section~\ref{sec:retro-groups}.}
+\figpara{How to read it.}{One pair of bars per kind of user, plus the plain
+average of the four on the right. Grey-blue is the one-line rule, dark blue is my
+model, both scored on exactly the same moments of the same 100 held-out people,
+over every position of their day. The number above each pair is the distance
+between the two bars.}
+
+\figpara{The result is the ordering, and it is exact.}{The gain ranks in the
+precise reverse order of the rule, with no exception among the four. The
+stay-at-home user, whom repetition already predicts 56.0\,\% of the time, gains
+0.8 and has almost nothing left to win. The morning-moving user, whom repetition
+predicts less than one time in five, gains 6.4. In between, the steady user gains
+2.3 and the evening-moving user 5.4. Over four points a correlation coefficient
+would add nothing to that statement, so none is quoted.}
+
+\figpara{Why this is the report's central picture.}{Nothing separates this run
+from the one that scored 1.8 \emph{behind} the rule except which numbers were
+allowed to answer (Figure~\ref{fig:adapter-routing}). And read against
+Chapter~\ref{ch:user}, it is that chapter's finding arriving from the other
+direction: difficulty lives in the person, and a model earns its cost precisely
+where the trivial rule fails.}
+
+\figpara{Two qualifications belong with the headline.}{The 3.7 is the plain
+average over four kinds counted once each. Weighted by how many people each kind
+actually holds, it is 3.3, and that is the figure an operator would experience,
+because 28\,\% of the population sits in the kind that needed no model at all.
+And the whole mechanism depends on the kind of user being identifiable, which
+Figure~\ref{fig:group-difficulty}(b) shows collapsing below roughly 60\,\% of a
+day of history. A third qualification, that four sets of numbers are also four
+times the capacity and the control was never run, is in
+Section~\ref{sec:retro-groups}.}}
+
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the per-group adapter-routing run}
 \end{figure}

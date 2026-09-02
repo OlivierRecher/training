@@ -1,0 +1,67 @@
+% F0 -- The whole project on one line, before any vocabulary is introduced.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  st/.style={draw=clrule,fill=clsoft,rounded corners=3pt,align=center,
+             inner sep=7pt,text width=3.15cm,minimum height=3.55cm,anchor=north},
+  ar/.style={-{Stealth[length=6pt]},clrule,very thick},
+  num/.style={circle,draw=clmodel,fill=white,inner sep=1.4pt,
+              font=\scriptsize\bfseries,text=clmodel},
+]
+\node[st] (s1) at (0,0)
+  {{\footnotesize\bfseries\color{clmodel} 1. One day of\\ one person}\\[4pt]\footnotesize
+   The network writes down which antenna the phone was on, and at what time,
+   all day long.};
+\node[st] (s2) at (4.35,0)
+  {{\footnotesize\bfseries\color{clmodel} 2. Rewritten\\ as a list}\\[4pt]\footnotesize
+   That day becomes an ordered list of \emph{antenna, hour} pairs, one line
+   per person.};
+\node[st] (s3) at (8.70,0)
+  {{\footnotesize\bfseries\color{clmodel} 3. A language\\ model reads it}\\[4pt]\footnotesize
+   The same kind of model that finishes a sentence, retrained on those lists
+   instead of on text.};
+\node[st] (s4) at (13.05,0)
+  {{\footnotesize\bfseries\color{clmodel} 4. It names the\\ next antenna}\\[4pt]\footnotesize
+   Out of the 369 antennas of the study area, it ranks the likeliest one
+   first.};
+
+\draw[ar] (s1.east) -- (s2.west);
+\draw[ar] (s2.east) -- (s3.west);
+\draw[ar] (s3.east) -- (s4.west);
+\node[num] at (s1.north west) {1}; \node[num] at (s2.north west) {2};
+\node[num] at (s3.north west) {3}; \node[num] at (s4.north west) {4};
+
+% --- the competitor, underneath -----------------------------------------
+\node[draw=clbase,dashed,fill=clbase!8,rounded corners=3pt,align=center,
+      inner sep=7pt,text width=14.1cm,font=\small,anchor=north]
+      (rule) at (6.52,-4.25)
+  {\textbf{The thing to beat, on the very same question:} answer
+   \emph{``the same antenna as a moment ago''}, every time. No model, no
+   training, one line of code.\\[2pt]
+   On an ordinary day of records it is right \textbf{69 times out of 100}.};
+\draw[ar,clbase] (s4.south) -- (13.05,-4.25);
+\end{tikzpicture}}
+\caption{What this internship built, in four steps}
+\label{fig:overview}
+\figtext{%
+\figpara{What the picture says.}{Reading left to right: the mobile network
+records, all day, which antenna each phone is attached to. I turn one person's
+day into a plain ordered list. A small language model, the same kind of program
+that predicts the next word of a sentence, is retrained on thousands of those
+lists. Asked to continue one of them, it names which antenna the person will be
+on next, and it does so by ranking all 369 antennas of the area from the most
+to the least likely.}
+
+\figpara{Why a language model, for a problem with no language in it.}{Because
+the shape of the problem is the same. A sentence is an ordered list of words
+drawn from a fixed vocabulary, and the model's job is to guess the next one. A
+day of movement is an ordered list of antennas drawn from a fixed set of 369,
+and the job is exactly the same. Nothing else about language is used here.}
+
+\figpara{The dashed box is the real difficulty.}{A competitor with no model at
+all, ``the person is still where they were'', is already right about seven times
+out of ten, because people mostly stay put. Every number in this report is the
+distance between my model and that rule, measured on the same people, on the
+same moments of their day.}}
+\end{figure}

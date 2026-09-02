@@ -2,43 +2,48 @@
 \addcontentsline{toc}{chapter}{Abstract}
 \thispagestyle{plain}
 
-This report asks whether a large language model, fine-tuned on anonymised 2G/3G
-mobile-network traces, can predict a user's next \cid{cell\_id} better than the
-rule ``repeat the last cell seen''. That rule, the \emph{persistence baseline},
-is the yardstick for every claim made here, and it is a hard one: on a raw day
-of records it is correct 69.2\,\% of the time, and for five of the eleven
+A mobile phone is always attached to one antenna, and the operator writes a line
+down each time it changes. This report asks whether a language model, retrained
+on those anonymous lines, can guess which antenna a person's phone will be
+attached to next, better than the rule ``it is still on the same one as a moment
+ago''. That rule, called the \emph{persistence baseline} here, is the yardstick
+for every claim made in this document, and it is a hard one: on an ordinary day
+of records it is right 69.2 times out of a hundred, and for five of the eleven
 iterations of this internship nothing I trained beat it.
 
-The work was carried out on fifteen daily exports covering the Karlovy Vary
-study area, 369 radio cells over 113 physical base stations, with one day of
-records per user. Three results came out of it. First, a fine-tuned
-Qwen2.5-0.5B with LoRA adapters clears the baseline by \textbf{+4.3 points} of
-top-1 accuracy, 54.5\,\% against 50.2\,\% on the 1{,}000 held-out users of the
-largest corpus, and the same configuration measures $+4.2$ points on a second,
-independent test set. What made the difference was neither model capacity nor
-data volume but conditioning on \emph{who the user is}: grouping users by the
-hours at which their physical site actually changes, and routing each group to
-its own weights. Second, the value of population size is exhausted early: the
-edge grows from $+0.6$ to $+4.2$ points between 400 and 1{,}900 training users,
-and a further ten-fold increase to 21{,}000 users buys $+0.1$ point, with zero
-inside every paired-bootstrap confidence interval. One mechanism fits the
-timing, the smallest of the four behavioural profiles crosses roughly a hundred
-members exactly there. Third, and most robustly, difficulty lives in the user
-rather than in the dataset: 22.4 points separate the most sedentary behavioural
-profile from the most mobile one, against four tenths of a point across the
-entire training-size ladder.
+The material is fifteen daily exports covering the Karlovy Vary study area, 369
+antennas mounted on 113 masts, with one day of records per person. Three results
+came out of it.
+
+First, a fine-tuned language model answers correctly \textbf{4.3 more times out
+of a hundred} than the one-line rule, 54.5\,\% against 50.2\,\% on the 1{,}000
+people held out of the largest corpus, and 4.2 more out of a hundred on a
+second, independent group. What made the difference was neither a bigger model
+nor more data, but conditioning on \emph{who the person is}: sorting people by
+the hours at which they genuinely change location, and giving each kind of
+person its own trained numbers.
+
+Second, the value of population size runs out early. The edge grows from 0.6 to
+4.2 correct answers per hundred as the training population goes from 400 to
+1{,}900 people, and a further ten-fold increase to 21{,}000 buys 0.1, with zero
+inside every confidence interval. One explanation fits the timing: the smallest
+of the four kinds of user crosses roughly a hundred members exactly there.
+
+Third, and most robustly, difficulty lives in the person rather than in the
+dataset. 22.4 correct answers per hundred separate the calmest kind of user from
+the most restless one, against 0.4 across the entire range of training sizes.
 
 A secondary finding concerns measurement rather than modelling. The three
-largest single improvements of the internship were reading the best checkpoint
-instead of the last ($+15.5$ points), recognising that the context cut belongs
-to the measurement rather than to the model, and choosing a corpus on which the
-trivial rule does not already score 69\,\%. On a task whose honest yardstick is
-a one-line heuristic, the measurement deserves to be audited before the
-architecture is.
+largest single improvements of the internship were reading the best save of a
+training run instead of the last one, worth 15.5 correct answers per hundred;
+recognising that where a day is cut in two belongs to the measurement rather
+than to the model; and choosing a group of people on which the trivial rule does
+not already score 69\,\%. On a task whose honest yardstick is a one-line rule,
+the measurement deserves to be audited before the model is.
 
 \vspace{1em}
 \noindent\textbf{Keywords:} human mobility prediction, call detail
-records,\footnote{\textbf{CDR}: \emph{call detail record}. The row an operator
-writes whenever a handset and the network interact: a pseudonymous identifier, a
-timestamp, and the serving cell. No content of any kind.} next-cell prediction,
-large language models, LoRA, QLoRA, behavioural clustering, scaling.
+records,\footnote{\textbf{CDR}, \emph{call detail record}: the line an operator
+writes whenever a phone and the network interact. It holds an anonymous
+identifier, a time, and the antenna in use. No content of any kind.} next-cell
+prediction, large language models, LoRA, QLoRA, behavioural clustering, scaling.

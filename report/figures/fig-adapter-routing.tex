@@ -1,5 +1,5 @@
 % F12b -- Group token vs. adapter routing: the change that worked.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \fitwidth{%
 \begin{tikzpicture}[font=\small,
@@ -12,23 +12,23 @@
   ar/.style={-{Latex[length=4pt]},clrule},
 ]
 % ================= (a) the group as a token: it failed =================
-\node[lbl,anchor=south] at (2.4,2.35) {\textbf{(a) What failed:} the group is one token in the text};
+\node[lbl,anchor=south] at (2.4,2.35) {\textbf{(a) What failed:} the kind of user is one symbol in the text};
 \node[gtok] (g) at (0,1.7) {\cid{<G2>}};
 \node[seq,right=2pt of g] (s1) {\cid{<H07>}};
 \node[seq,right=2pt of s1] (s2) {\cid{BSOCHO1}};
 \node[seq,right=2pt of s2] (s3) {\dots};
 \node[seq,right=2pt of s3] (s4) {\scriptsize $\dots$500 tokens};
-\node[base] (b1) at (2.4,0.45) {one shared adapter};
+\node[base] (b1) at (2.4,0.45) {one shared set of numbers};
 \draw[ar] (2.4,1.4) -- (b1.north);
 \node[lbl,anchor=north,text width=8.2cm] at (2.4,-0.15)
-  {Ablation: correct group 41.3\,\%, \emph{wrong} group 41.2\,\%, \emph{no}
-   group 41.1\,\%. Three conditions within $0.2\pt$ means the model never read
-   the token. One symbol among five hundred is free to ignore.};
+  {Correct kind 41.3\,\%, \emph{wrong} kind 41.2\,\%, \emph{no} kind 41.1\,\%.
+   Three conditions within two tenths of each other: the model never read the
+   symbol. One symbol among five hundred is free to ignore.};
 
 % ================= (b) the group as a routing decision =================
-\node[lbl,anchor=south] at (12.1,2.35) {\textbf{(b) What worked:} the group chooses which weights run};
+\node[lbl,anchor=south] at (12.1,2.35) {\textbf{(b) What worked:} the kind of user chooses which numbers run};
 \node[gtok] (g2) at (8.9,1.7) {G2};
-\node[lbl,anchor=south,text=clGtwo] at (8.9,2.05) {detected from the past};
+\node[lbl,anchor=north,text=clGtwo] at (8.9,1.32) {identified from the past};
 \node[seq,right=2pt of g2] (r1) {\cid{<H07>}};
 \node[seq,right=2pt of r1] (r2) {\cid{BSOCHO1}};
 \node[seq,right=2pt of r2] (r3) {\dots};
@@ -39,28 +39,42 @@
 \node[ad]    (a2) at (12.75,-0.35) {\textbf{G2}};
 \node[adoff] (a3) at (14.15,-0.35) {G3};
 \draw[ar] (b2.south) -- (12.1,0.05);
-\draw[-{Latex[length=4pt]},clgain,thick] (g2.south) .. controls +(0,-1.4) and +(0,0.8) .. (a2.north);
+\draw[-{Latex[length=4pt]},clgain,thick] (g2.south) ++(0,-0.55) .. controls +(0,-1.0) and +(0,0.8) .. (a2.north);
 \node[lbl,anchor=north,text width=8.2cm] at (12.1,-0.85)
-  {Four independent LoRA adapters on the same frozen base. The group is no
-   longer text attention may dilute, it physically selects the weights that
-   answer. Same data, same baseline: $-1.8\pt \rightarrow +3.7\pt$.};
+  {Four independent sets of added numbers on the same frozen model. The kind of
+   user is no longer text that can be diluted, it physically selects which
+   numbers answer. Same people, same rule: from 1.8 behind to 3.7 ahead.};
 \end{tikzpicture}}
 
-\caption{The group as a token, and the group as a routing decision}
+\caption{The kind of user as a piece of text, and as a switch}
 \label{fig:adapter-routing}
 \figtext{%
-The change that turned the project's main idea from a failure into its best
-result, and it is plumbing rather than modelling. (a)~In the first attempt the
-behavioural group was written into the input as one extra symbol, \cid{<G0>}
-to \cid{<G3>}, at the head of a sequence of up to five hundred tokens.
-Attention is free to look at it, and it did not: feeding the correct group, a
-deliberately wrong group, or no group at all gave 41.3, 41.2 and 41.1\,\%,
-three numbers inside two tenths of a point of one another. Ignoring the token
-cost the training loss almost nothing, so the optimiser ignored it. (b)~In the
-second attempt the group is not information but a switch. Four LoRA adapters
-are trained on the same frozen base, one per group, and the group detected
-from a user's past decides which one runs, so there is nothing left to dilute.
-On the same users, the same protocol and the same architecture, the gap to the
-persistence baseline moves from $-1.8\pt$ to $+3.7\pt$ (Figure~\ref{fig:group-gain}). Four adapters are also four times the trainable capacity, and the
-control separating the two effects was not run (Section~\ref{sec:retro-groups}).}
+\figpara{This is plumbing, not modelling, and it is what turned the project
+around.}{The two panels are the same idea, delivered through two different
+channels. Nothing else differs between them: same people, same protocol, same
+model, same emphasised hours.}
+
+\figpara{Panel (a): the kind of user as a piece of text.}{In the first attempt the
+kind of user was written into the input as one extra symbol, \cid{<G0>} to
+\cid{<G3>}, placed at the head of a sequence of up to five hundred symbols. The
+model is free to look back at it from every later position, and it simply did
+not. Feeding the correct kind, a deliberately wrong kind, or no kind at all gave
+41.3, 41.2 and 41.1\,\%: three numbers inside two tenths of each other. Ignoring
+that symbol cost the training almost nothing, so it was ignored.}
+
+\figpara{Panel (b): the kind of user as a switch.}{In the second attempt the kind
+of user is not information at all. Four separate sets of added numbers are trained
+on the same frozen model, one per kind, and the kind identified from a person's
+past decides which set runs. There is nothing left to dilute, because the
+information never enters the text in the first place.}
+
+\figpara{What that one change was worth.}{On the same people, the same protocol
+and the same architecture, the distance to the one-line rule moved from 1.8
+behind to 3.7 ahead (Figure~\ref{fig:group-gain}).}
+
+\figpara{One caveat, stated plainly.}{Four sets of added numbers are also four
+times the trainable capacity of one, so part of that move may be extra capacity
+rather than the sorting itself. The control that would separate the two was not
+run (Section~\ref{sec:retro-groups}).}}
+
 \end{figure}

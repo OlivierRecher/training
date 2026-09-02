@@ -1,11 +1,11 @@
 % T3 -- The context/target split swept on two datasets (slides 27 and 37).
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
-\caption{The context/target split, swept on two datasets}
+\caption{Moving the cut moves the ruler with it}
 \label{tab:context-sweep}
 \begin{tabular}{@{}lrrrrrrc@{}}
 \toprule
-\textbf{ctx / target} & \textbf{Val.} & \textbf{Test} & \textbf{Baseline} & \textbf{Gap} & \textbf{top-3} & \textbf{top-5} & \textbf{Beats?} \\
+\textbf{past / rest} & \textbf{Valid.} & \textbf{Model} & \textbf{Rule} & \textbf{Distance} & \textbf{top-3} & \textbf{top-5} & \textbf{Beats it?} \\
 \midrule
 \multicolumn{8}{@{}l}{\textit{\sfilt}, three separate trainings, one per cut}\\
 \addlinespace[2pt]
@@ -26,19 +26,41 @@
 \end{tabular}
 
 \figtext{%
-Moving the cut between context and target, with everything else frozen. On
-\sfilt, exactly one split clears the baseline; on \smob, none does. The
-baseline changes from row to row because moving the cut changes which cell
-counts as ``the last one seen'', so each row must be read against the baseline
-on its own line, never against the accuracy above it. Qwen2.5-0.5B + QLoRA,
-100 held-out users.}
+\figpara{What was varied.}{Only one thing: where each person's day is cut into
+the part the model reads and the part it has to produce. ``70 / 30'' means the
+model sees the first 70\,\% of the day and is graded on the last 30\,\%.
+Everything else is frozen.}
+
+\figpara{The columns.}{\textbf{Valid.} is the score on people held back during
+training, used only to decide when to stop. \textbf{Model} is the score on the
+test people. \textbf{Rule} is what ``repeat the last antenna'' scores on those
+very same moments. \textbf{Distance} is the model minus the rule, and it is the
+only column that means anything. Top-3 and top-5 read the same predictions less
+strictly.}
+
+\figpara{The point of the table.}{The \textbf{Rule} column changes from row to
+row, and that is the whole lesson. Moving the cut changes which antenna counts as
+``the last one seen'', so it changes the competitor too. Each row must therefore
+be read against the rule printed on its own line, never against the model score
+on the line above.}
+
+\figpara{The upper block, and the mistake it contains.}{On \sfilt, exactly one
+cut out of three clears the rule, by 1.1. The other two lose ground, by 0.3 and
+by 2.4. One favourable cell in a table of three is not a result, and the next
+iteration made it disappear.}
+
+\figpara{The lower block.}{On \smob, no cut clears the rule at all. The model's
+score climbs steadily from 41.5 to 47.6\,\% as it is given more history, which
+looks like progress until one notices that the rule climbs just as fast on the
+same rows. Qwen2.5-0.5B with QLoRA, 100 held-out people.}}
 
 \vspace{4pt}
 \begin{minipage}{\textwidth}\footnotesize
-Gaps are in points. Each \sfilt{} row is a separate training, early-stopped on
-its own plateau (best validation at epoch 5, 6 and 4 respectively); the constant
-validation column of the \smob{} block is the tell that its seven rows are one
-trained model read seven times.
+Each \sfilt{} row is a separate training run, stopped on its own plateau, with
+its best pass being the fifth, the sixth and the fourth respectively. The
+\smob{} block is one single trained model read seven times, and the giveaway is
+its \textbf{Valid.} column: the same 43.0\,\% on all seven rows, because there is
+only one model behind them.
 \end{minipage}
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the context-fraction sweeps}
 \end{table}

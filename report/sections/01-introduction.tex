@@ -1,156 +1,173 @@
-\chapter{Introduction and context}
+\chapter{Introduction}
 \label{ch:intro}
 
-\section{Where the work took place}
+\section{Where I worked}
 
 This report covers a second-year engineering internship carried out from
 29 June to 28 August 2026 at the \host, under the supervision of \supervisor.
-The host laboratory holds a corpus of anonymised mobile-network signalling
-records\footnote{\textbf{Signalling record}: a row written by the operator each time a
-handset and a base station exchange a message. It is produced by the network,
-not by the user, so an untouched phone still generates them: a record is not a
-movement.} donated by a Czech operator, and hosts a small group of interns
-analysing it from different angles.
+The laboratory holds a large set of anonymous records donated by a Czech mobile
+operator, and hosts a small group of interns who study it from different angles.
 
-\section{The corpus, and the team around it}
+The records contain no names, no phone numbers and no message of any kind. Each
+line says only this: an anonymous number standing for one person, and the list
+of antennas their phone was attached to during one day, with the time of each.
+That is the entire material of this internship.
 
-The material is described in detail in Chapter~\ref{ch:data}; in one sentence, it
-is fifteen daily exports covering 12 to 26 March 2014 for the Karlovy Vary study
-area, holding between 80{,}217 and 99{,}504 users per day, where each row records
-one person's whole day as a list of (cell, timestamp) pairs. The area is served
-by 369 distinct radio \textbf{cells}\footnote{\textbf{Cell}: the area covered by one antenna pointing in one direction.
-\textbf{Base station} (or \emph{site}, \emph{mast}): the installation
-carrying several such antennas, typically three or four. A phone can therefore
-change cell without the person moving.} mounted on 113 physical base stations.
+\section{The goal}
 
-Four colleagues were working on that same corpus when I arrived, with different
-instruments, and the division of labour is worth stating because it determines
-what is mine and what is not (Figure~\ref{fig:team-context}). Nino was pursuing
-his own descriptive analysis of the corpus, on questions of his own: the
-classification of home and activity cells, and the characterisation of users who
-are mobile and present in the recording area across the day. He had built
-tooling for that analysis, and he very kindly used it to produce the per-day
-extracts and the user selections I asked for, which was a considerable help and
-without which most of the experiments reported here would not have been
-practical. Tiphain and Benjamin were pursuing the
-prediction side of it by \emph{prompting}\footnote{\textbf{Prompting}: getting an answer from a model by writing an
-instruction for it, leaving its internal numbers untouched. \textbf{Fine-tuning}, taken here, instead lets the data change them. Figure~\ref{fig:prompting} is one such instruction.} a frozen language model, that is, by writing
-better instructions rather than changing any weights. Reda was working on the
-same corpus alongside them.
+A mobile phone is always attached to one antenna, the one that currently gives
+it the best signal. As the person walks, drives or takes a train, the phone lets
+go of one antenna and attaches to the next. The operator writes a line down each
+time that happens, and also at regular intervals when nothing happens at all.
 
-\input{figures/fig-team-context}
+The question I was given is short: \emph{from the beginning of somebody's day,
+can I predict which antenna their phone will be attached to next?} An operator
+wants to know this because it decides where capacity is needed, and because a
+connection that is prepared before it is required is a connection that does not
+drop.
 
-\section{The question I was given}
+Two words are worth fixing right away, because they are not synonyms and the
+whole report depends on the difference.\footnote{\textbf{Base station}, also
+called a \emph{site} or a \emph{mast}: one physical installation. \textbf{Cell}:
+the area covered by one antenna of that installation, pointing in one
+direction.} A \textbf{base station} is a physical mast standing somewhere in the
+landscape. It carries several antennas pointing in different directions, and
+each of those is called a \textbf{cell}. The study area of this report has
+\textbf{369 cells} mounted on \textbf{113 base stations}, so a mast carries three
+or four cells on average. What I predict is a cell, not a mast, which is a
+slightly harder question than predicting a place, and Chapter~\ref{ch:data}
+explains why.
 
-My branch was the other one: \emph{can a large
-language model,\footnote{\textbf{LLM}, \emph{large language model}: a neural
-network trained to predict the next symbol of a sequence. Nothing in that
-definition is specific to language, which is why one can be pointed at a
-trajectory.} fine-tuned on
-these traces, predict a user's next \cid{cell\_id}\footnote{\cid{cell\_id}: the
-identifier of one radio cell, e.g.\ \cid{BSOCHO1}. It is a structured string
-rather than an opaque token, and Figure~\ref{fig:cellid-anatomy} takes it
-apart.}?} Fine-tuning means the
-model's weights\footnote{\textbf{Weights}: the hundreds of millions of numbers inside the model that
-turn an input into an output. ``Frozen'' means left exactly as its original
-authors trained them.} are actually modified by the data, as opposed to prompting, where they
-are frozen and only the instructions change. The two approaches answer
-different questions and neither supersedes the other.
+\section{What I built}
 
-Why a language model at all, for a problem with no language in it? Because the
-shapes match. A trajectory is an ordered sequence of symbols drawn from a small
-closed vocabulary,\footnote{\textbf{Vocabulary}: the fixed set of symbols a
-language model can read and produce. For a general model that is tens of
-thousands of word fragments; here 369 cell identifiers are \emph{added} to it,
-so that each cell becomes one symbol of its own.} 369 cell identifiers, and
-next-symbol prediction over a sequence is precisely what these models are built
-to do. Adapting one to this task is mostly a matter of teaching it that a
-\cid{cell\_id} is a symbol rather than a string of characters, which
-Chapter~\ref{ch:tools} describes.
+Figure~\ref{fig:overview} is the whole project in four steps, and it is the one
+picture worth looking at before anything else.
 
-What makes the question genuinely hard is not the model. It is the competitor.
-The rule \emph{``predict that the next cell is the last one seen''}, one line of
-code, no parameters, no training, is right 69.2\,\% of the time on a raw day of
-this corpus (Chapter~\ref{ch:data}). That rule is called the
-\textbf{persistence baseline} throughout this report, and beating it is the only
-result that means anything. For five of the eleven iterations, nothing I
-trained managed to.
+\input{figures/fig-overview}
 
-Figure~\ref{fig:worked-example} is the whole task on two positions of one day,
-and it is worth looking at before anything else, because it shows where the
-competitor cannot be beaten and where it can. When a user stays where they are,
-repeating the last cell is correct and both predictors score the point for
-nothing. When a user leaves, the rule necessarily fails, and the answer has to
-come from somewhere else. Every point reported in this document is won on
-positions of that second kind.
+The instrument is a \textbf{language model}.\footnote{\textbf{Language model}: a
+program trained to guess the next symbol of a sequence. Nothing in that
+description mentions language, which is why one can be pointed at a day of
+movement instead.} These are the programs behind the writing assistants everyone
+has now used: given the beginning of a sentence, they produce the word most
+likely to come next. Nothing in how they work is specific to words. They take an
+ordered list of symbols drawn from a fixed set and continue it. A day of
+movement is an ordered list of cells drawn from a fixed set of 369, so the two
+problems have exactly the same shape, and a model built for one can be pointed
+at the other.
+
+I do not use such a model as it comes. I \textbf{fine-tune} it, which means the
+numbers inside it are modified by my data until it stops being a general-purpose
+writer of English and becomes a predictor of movement in one Czech region.
+Chapter~\ref{ch:tools} describes how, in detail and with pictures; the sentence
+above is enough to read the rest of this introduction.
+
+The other branch of the same problem, which two colleagues took, leaves those
+numbers untouched and instead writes better instructions for a general model.
+That is called \textbf{prompting}, and the two approaches answer different
+questions rather than competing with each other. Mine is the fine-tuning one.
+
+\section{The rule I have to beat}
+
+What makes the question hard is not the model. It is the competitor.
+
+Consider the rule \emph{``the person is still on the same cell as a moment
+ago''}. It has no model, no training and no settings; it is one line of code. On
+an ordinary day of these records it is right \textbf{69.2 times out of a
+hundred}, simply because people spend most of their time not going anywhere.
+This rule is called the \textbf{persistence baseline} throughout the report, and
+beating it is the only result that means anything here. For five of the eleven
+iterations of this internship, nothing I trained managed to.
+
+Figure~\ref{fig:worked-example} shows why on two moments of a single day, and it
+also shows where the competitor can and cannot be beaten.
 
 \input{figures/fig-worked-example}
 
-\section{The spine of this report}
+When the person stays put, repeating the last cell is correct, and both the rule
+and my model collect the point for free. When the person leaves, the rule is
+guaranteed to be wrong, and the answer has to come from somewhere else. Every
+number reported in this document was won on moments of that second kind.
 
-Two ideas hold the whole document together, and stating them here means the
-reader can check every later claim against them.
+\section{What I found, in three sentences}
 
-\begin{enumerate}
-  \item \textbf{Every result is a gap to the persistence baseline, measured on
-        the same data.} The corpus changed four times over the internship, each
-        time because a new approach needed data the previous files did not
-        carry, and the difficulty of the test users changed with it. An absolute
-        accuracy therefore describes the population it was measured on more than
-        it describes the model; only the distance to the matching baseline
-        survives.
-  \item \textbf{The score is set by the user; the model moves the residual.}
-        Per-user accuracy on this task varies from 0\,\% to 100\,\%, and what
-        explains it is how repetitive that person's mobility already is. The
-        model's genuine contribution is concentrated in the volatile minority,
-        which is also the minority that owns the smallest share of the
-        evaluation volume. This is the finding that reorganised the second half
-        of the internship, and it is why results here are reported per segment
-        rather than as a single number.
-\end{enumerate}
+Read against that competitor, the outcome of nine weeks is modest and solid.
 
-Read against those two ideas, the outcome of the nine weeks is a modest but
-solid one. A fine-tuned model clears the persistence baseline by \textbf{+4.3
-points}\footnote{\textbf{Point} means \emph{percentage point} throughout: an
-accuracy of 54.5\,\% against a baseline of 50.2\,\% is $+4.3$ points, not
-$+4.3$ percent. Every headline number in this report is a difference of two
-accuracies.} of top-1
-accuracy\footnote{\textbf{Top-1 accuracy}: the share of predictions whose
-highest-ranked candidate is the correct \cid{cell\_id}. \textbf{Top-3} and
-\textbf{top-5} ask whether it is among the three or five highest-ranked: the
-same predictions read at three depths.} on the largest corpus, and $+4.2$ points
-on a second, independent held-out test set.\footnote{\textbf{Held-out test set}:
-users set aside before training and never shown to the model, on which the
-reported score is measured. Here train and test users are always disjoint
-people, so the model is graded only on strangers.} The data needed for that is
-bounded: the edge grows from $+0.6$ to $+4.2$ points between 400 and 1{,}900
-training users, and a further ten-fold increase buys $+0.1\pt$ and no measurable
-gain. And the difficulty is not where I expected it to be, 22.4 points separate
-the behavioural profiles of the population against four tenths of a point across
-the entire scaling ladder.
+A fine-tuned model gets \textbf{4.3 more answers right out of every hundred}
+than the one-line rule: 54.5\,\% against 50.2\,\% on a thousand people the model
+had never seen, and 4.2 more out of a hundred on a second, separate group of
+people.\footnote{\textbf{Held-out people}: users set aside before training and
+never shown to the model, on which the reported score is measured. Training and
+test users are always different people here.} What produced that gain was
+neither a bigger model nor more data, but \emph{sorting people by the hours at
+which they actually move} and giving each kind of person its own set of trained
+numbers.
+
+The amount of data needed for it is small, and the report measures where it
+stops paying: the edge grows from 0.6 to 4.2 more correct answers per hundred as
+the training population goes from 400 to 1{,}900 people, and multiplying that
+population by ten again buys 0.1, which is nothing.
+
+And the difficulty is not where I expected it. \textbf{22.4} correct answers per
+hundred separate the calmest kind of user from the most restless one, against
+\textbf{0.4} across the entire range of training sizes. Who the person is
+matters more than how much data was used, by a factor of fifty.
+
+\subsection*{How a gain is written in this report}
+
+Every headline figure above is a \emph{difference between two percentages},
+never a percentage of a percentage. When I write that the model gains 4.3\,\%
+over the rule, I mean it answers correctly 54.5 times out of a hundred where
+the rule answers correctly 50.2 times, so 4.3 more correct answers out of a
+hundred. The two scores are always measured on the same people and on the same
+moments of their day, so the difference between them is the only quantity that
+is fair to compare from one chapter to the next.
+
+That last point is worth stating on its own, because it is a rule the report
+never departs from. The set of people I trained and tested on changed four times
+over the internship, each time because a new idea needed data the earlier files
+did not carry, and the difficulty of the test group changed with it. An absolute
+accuracy therefore describes the people it was measured on more than it
+describes the model. Only the distance to the one-line rule, measured on those
+same people, survives that.
+
+\section{The team around me}
+
+Four colleagues were working on the same records when I arrived, with different
+instruments, and saying who did what makes clear what is mine and what is not
+(Figure~\ref{fig:team-context}).
+
+Nino was pursuing his own description of the corpus: classifying which cell is
+somebody's home and which is where they spend their day, and characterising
+people who genuinely move around the area. He had built tooling for that, and he
+very kindly used it to produce the daily extracts and the user selections I
+asked for. That was a considerable help, and none of it was his own assignment.
+Tiphain and Benjamin were taking the prompting branch described above, and Reda
+was working on the same records on a question of his own.
+
+\input{figures/fig-team-context}
 
 \section{How to read this report}
 
 The chapters are organised by \emph{question}, not by week.
-Chapter~\ref{ch:sota} sets out what is already
-known about how predictable a person is, what has been used to predict it, and
-what that leaves open at the point this work starts. Chapter~\ref{ch:data}
-establishes what the data is and what it permits. Chapter~\ref{ch:tools} settles
-the instrument, which fine-tuning regime, which model, which representation.
-Chapter~\ref{ch:first} sets out three measurement principles that cost more, in
-points, than most of the modelling that followed. Chapter~\ref{ch:user}
-establishes that the user, not the model, sets the score.
-Chapters~\ref{ch:time} and~\ref{ch:groups} are one continuous argument: adding
-time of day to the input works as a mechanism but fails on the hours I guessed,
-and grouping users by \emph{when} they move is what turns that mechanism into
-the project's only substantial gain. Chapter~\ref{ch:scale} asks how many users
+Chapter~\ref{ch:sota} sets out what is already known about how predictable a
+person is, and what that leaves open. Chapter~\ref{ch:data} says what the data
+is and what it permits. Chapter~\ref{ch:tools} settles the instrument: which
+model, which training method, and how a day is written down for it.
+Chapter~\ref{ch:first} sets out three rules about \emph{measuring} that were
+worth more, in correct answers, than most of the modelling that followed.
+Chapter~\ref{ch:user} establishes that the person, not the model, sets the
+score. Chapters~\ref{ch:time} and~\ref{ch:groups} are one continuous argument:
+giving the model the time of day works as a mechanism but fails on the hours I
+guessed, and sorting people into kinds of user is what turns that mechanism into
+the project's only substantial gain. Chapter~\ref{ch:scale} asks how many people
 that requires, and finds the answer sooner than expected.
-Chapter~\ref{ch:conclusion} consolidates.
+Chapter~\ref{ch:conclusion} consolidates, and says what I did not have time to
+do.
 
 Each of Chapters~\ref{ch:data} to~\ref{ch:scale} closes with a short
-\emph{Retrospective} giving my own view of that step with hindsight. The
+\emph{Looking back} section giving my own view of that step with hindsight. The
 chronology, which the thematic organisation deliberately breaks, is preserved in
-Appendix~\ref{app:timeline}; Appendix~\ref{app:repro} gives the configuration of
-every run and the provenance of every headline number, and
-Appendix~\ref{app:glossary} a short glossary of the terms that recur from
-chapter to chapter.
+Appendix~\ref{app:timeline}; Appendix~\ref{app:repro} gives the settings of every
+run and the origin of every headline number, and Appendix~\ref{app:glossary} is
+a short glossary of the terms that recur.

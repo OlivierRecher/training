@@ -1,30 +1,38 @@
 % T13 -- Which artefact produces which headline number.
 \begin{minipage}{\textwidth}
 \centering\footnotesize
-\captionof{table}{Provenance of the headline numbers}
+\captionof{table}{Where each number quoted in the report comes from}
 \label{tab:provenance}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.5cm}ll>{\raggedright\arraybackslash}p{6.0cm}@{}}
 \toprule
-\textbf{Headline} & \textbf{Data} & \textbf{Iter.} & \textbf{Produced by} \\
+\textbf{Number quoted in the report} & \textbf{Data} & \textbf{Iter.} & \textbf{Which run produced it} \\
 \midrule
 16.87\,\% first signal              & \sraw & 1  & single-notebook Mistral-7B QLoRA run, 100 steps \\
-48.7\,\% $\rightarrow$ 64.4\,\%     & \sraw & 2  & same notebook, best-checkpoint selection added \\
-$r=-0.971$ on the switch rate       & \textsc{raw day}, 500 users & 2 & per-user analysis of the 1{,}173-user evaluation \\
-$+1.1\pt$ at 80/20                  & \sfilt & 4  & filtered-corpus training run \\
-No split beats the baseline         & \smob & 5  & one trained model, seven evaluation passes \\
-$-3.0\pt$ hour-shuffle ablation     & \smob & 6  & ablation pass over the trained checkpoint \\
-$+2.6\pt$ at 18--20h                & \smob & 6  & targeted-sampling run, full-sequence evaluation \\
-$-27.4$ pp window separation        & \smob & 7  & behavioural-group analysis of the training file \\
-$+3.7\pt$, first run over the baseline & \smob & 8 & per-group adapter routing \\
-$+4.2\pt$ at 1{,}900 training users & \stwok & 9  & scaling run on the 2{,}000-user day \\
-$-1.6\pt$ on levelled sequences     & \slev & 9 & 200-record resampling run \\
-$+4.3\pt$ flat from 5{,}000 to 21{,}000 & \seleven & 10 & four-tier scaling notebook, constant step budget \\
-Paired bootstrap intervals          & \seleven & 10 & 2{,}000 paired resamples over the test users \\
-0/7 weekday trainings               & \seleven & 11 & seven-day notebook; the session crashed after 5\,h \\
+48.7\,\% $\rightarrow$ 64.4\,\%     & \sraw & 2  & same notebook, keeping the best saved copy \\
+$r=-0.971$ on the switch rate       & \textsc{raw day}, 500 people & 2 & per-person analysis of the 1{,}173-person grading \\
+$+1.1$ at the 80/20 cut             & \sfilt & 4  & training run on the filtered day \\
+No cut beats the rule               & \smob & 5  & one trained model, seven grading passes \\
+$-3.0$ from shuffling the hours     & \smob & 6  & re-grading the same trained copy \\
+$+2.6$ at 18--20h                   & \smob & 6  & the targeted-sampling run, whole day graded \\
+$27.4$ separation of the derived hours & \smob & 7 & analysis of the kinds of user on the training file \\
+$+3.7$, first run above the rule    & \smob & 8  & routing each kind of user to its own numbers \\
+$+4.2$ at 1{,}900 training people   & \stwok & 9  & scaling run on the 2{,}000-person day \\
+$-1.6$ on stretched days            & \slev & 9  & the 200-record levelling run \\
+$+4.3$, flat from 5{,}000 to 21{,}000 & \seleven & 10 & four-size scaling notebook, constant training time \\
+The resampling intervals            & \seleven & 10 & 2{,}000 paired resamples over the test people \\
+0 of 7 weekday trainings finished   & \seleven & 11 & seven-day notebook; the session crashed after 5\,h \\
 \bottomrule
 \end{tabular}
 
 \figtext{%
-Where each figure quoted in the report comes from. ``Iteration'' is the
-numbered iteration of Appendix~\ref{app:timeline}.}
+\figpara{What this table is for.}{Every number quoted anywhere in the body can be
+traced back to one run through this table. The \textbf{Data} column names the set
+of people it was measured on, described in Table~\ref{tab:datasets}, and
+\textbf{Iter.} is the numbered iteration of Appendix~\ref{app:timeline}.}
+
+\figpara{Why the data column matters as much as the number.}{Two rows measured on
+different sets of people are not comparable on their absolute scores, only on
+their distances to the rule of that row's own data. Reading this table alongside
+Table~\ref{tab:datasets} is what makes that check possible.}}
+
 \end{minipage}

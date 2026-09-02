@@ -1,0 +1,71 @@
+% F5d -- How one training run actually works, step by step.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  st/.style={draw=clrule,fill=clsoft,rounded corners=3pt,align=center,
+             inner sep=6pt,text width=2.85cm,minimum height=2.75cm},
+  ar/.style={-{Stealth[length=5pt]},clrule,very thick},
+  num/.style={circle,draw=clmodel,fill=white,inner sep=1.2pt,
+              font=\scriptsize\bfseries,text=clmodel},
+]
+\node[st] (a) at (0,0)
+  {{\footnotesize\bfseries\color{clmodel} Take a slice}\\[2pt]\footnotesize
+   a stretch of one training person's day: hour, antenna, hour, antenna};
+\node[st] (b) at (3.55,0)
+  {{\footnotesize\bfseries\color{clmodel} Hide the next antenna}\\[2pt]\footnotesize
+   the model reads the slice and names what it thinks comes next};
+\node[st] (c) at (7.10,0)
+  {{\footnotesize\bfseries\color{clmodel} Measure the surprise}\\[2pt]\footnotesize
+   compare with the antenna really visited; a confident wrong answer costs more
+   than a hesitant one};
+\node[st] (d) at (10.65,0)
+  {{\footnotesize\bfseries\color{clmodel} Nudge the small part}\\[2pt]\footnotesize
+   only the added numbers move; the 500 million original ones never do};
+
+\draw[ar] (a) -- (b); \draw[ar] (b) -- (c); \draw[ar] (c) -- (d);
+\node[num] at (a.north west) {1}; \node[num] at (b.north west) {2};
+\node[num] at (c.north west) {3}; \node[num] at (d.north west) {4};
+
+% --- the loop back --------------------------------------------------------
+\draw[ar] (d.south) -- ++(0,-0.65) -- ++(-10.65,0) -- (a.south);
+\node[font=\scriptsize,text=clrule] at (5.32,-2.42)
+  {repeat, slice after slice, until every training person has been read once:
+   that is \textbf{one pass}};
+
+% --- the checkpoint rule --------------------------------------------------
+\node[draw=clgain,fill=clgain!10,rounded corners=3pt,align=center,inner sep=6pt,
+      text width=13.4cm,font=\small,anchor=north] (ck) at (5.32,-2.85)
+  {{\footnotesize\bfseries\color{clgain} 5. At the end of every pass: grade the
+    model on people it is not training on, save a copy, and keep only the best
+    copy of the whole run}\\[2pt]\footnotesize
+   On this task the best copy arrives between the fourth and the ninth pass, and
+   everything after it is worse. Keeping the last copy instead of the best one
+   costs 15.5 correct answers per hundred (Chapter~\ref{ch:first}).};
+\end{tikzpicture}}
+\caption{How one training run works}
+\label{fig:training-loop}
+\figtext{%
+\figpara{Steps 1 to 4 are the whole of training.}{A slice of somebody's day is
+shown to the model with the next antenna hidden. The model names an antenna. The
+answer is compared with the truth and turned into a single number measuring how
+surprised the model was, so that being confidently wrong costs more than
+hesitating. That number is then used to nudge the model's adjustable numbers
+very slightly in the direction that would have made it less wrong. Then the next
+slice.}
+
+\figpara{Only a small part of the model ever moves.}{Step 4 is where the method
+of Figure~\ref{fig:lora} bites. The 500 million numbers the model was published
+with are frozen and never touched; the nudging applies only to a small set of
+numbers added beside them, about 2 out of every 100. That is what makes a
+training run fit in half an hour on a free graphics card.}
+
+\figpara{Step 5 is not an optimisation, it is a safety rule.}{Left to itself, a
+model trained on a few hundred short days stops learning the habits of the
+population and starts learning the days themselves by heart. When that happens
+its score on people it has never seen turns around and falls, while its score on
+its own training data keeps improving, so the training figures alone will happily
+report success for another forty passes. Grading on separate people after each
+pass, and keeping the best copy rather than the last, is what prevents that, and
+it was the largest single improvement of the whole internship.}}
+\end{figure}

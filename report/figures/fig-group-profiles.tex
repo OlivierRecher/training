@@ -1,5 +1,5 @@
 % F11 -- The four behavioural profiles, hour by hour.
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \fitwidth{%
 \begin{tikzpicture}
@@ -9,52 +9,73 @@
   rep, ybar, width=0.46\linewidth, height=3.9cm,
   /pgf/bar width=4.6pt, ymin=0, ymax=95, ytick={0,25,50,75},
   xmin=6.3, xmax=20.7, xtick={7,9,...,19},
-  xlabel={hour of activity}, ylabel={site-change rate (\%)},
+  xlabel={hour of the day}, ylabel={changes of location per 100 records},
+  y label style={font=\scriptsize},
   title style={font=\footnotesize,yshift=1pt},
   grid=major, ymajorgrids, xmajorgrids=false,
   enlarge x limits=false,
 ]
-\nextgroupplot[title={\textcolor{clGzero}{$\blacksquare$} \textbf{G0} homebody, 28\,\% of users}]
+\nextgroupplot[title={\textcolor{clGzero}{$\blacksquare$} \textbf{G0} the stay-at-home user, 28\,\% of people}]
 \addplot[fill=clGzero,draw=none] coordinates {
 (7,33.6)(8,27.7)(9,29.2)(10,27.4)(11,28.0)(12,32.7)(13,31.3)(14,32.1)(15,31.3)(16,31.7)(17,35.0)(18,33.8)(19,29.3)(20,28.8)};
 \node[font=\scriptsize,anchor=south,text=clGzero] at (axis cs:17,36) {35\,\%};
 %
-\nextgroupplot[title={\textcolor{clGone}{$\blacksquare$} \textbf{G1} steady, 35\,\%}]
+\nextgroupplot[title={\textcolor{clGone}{$\blacksquare$} \textbf{G1} the steady user, 35\,\%}]
 \addplot[fill=clGone,draw=none] coordinates {
 (7,48.4)(8,46.5)(9,44.1)(10,49.4)(11,47.2)(12,44.8)(13,42.3)(14,44.7)(15,42.1)(16,46.7)(17,48.7)(18,50.9)(19,46.4)(20,58.0)};
 \node[font=\scriptsize,anchor=south east,text=clGone] at (axis cs:20,59) {58\,\%};
 %
-\nextgroupplot[title={\textcolor{clGtwo}{$\blacksquare$} \textbf{G2} evening mover, 14\,\%}]
+\nextgroupplot[title={\textcolor{clGtwo}{$\blacksquare$} \textbf{G2} the evening-moving user, 14\,\%}]
 \addplot[fill=clGtwo,draw=none] coordinates {
 (7,54.6)(8,57.9)(9,52.3)(10,39.9)(11,44.1)(12,53.4)(13,71.4)(14,73.1)(15,73.8)(16,79.7)(17,80.4)(18,81.9)(19,84.0)(20,79.2)};
 \node[font=\scriptsize,anchor=south east,text=clGtwo] at (axis cs:19.6,85) {84\,\%};
 %
-\nextgroupplot[title={\textcolor{clGthree}{$\blacksquare$} \textbf{G3} morning mover, 23\,\%}]
+\nextgroupplot[title={\textcolor{clGthree}{$\blacksquare$} \textbf{G3} the morning-moving user, 23\,\%}]
 \addplot[fill=clGthree,draw=none] coordinates {
 (7,77.1)(8,74.5)(9,71.1)(10,77.4)(11,79.0)(12,74.1)(13,71.4)(14,71.1)(15,73.0)(16,69.8)(17,72.0)(18,59.7)(19,40.6)(20,29.5)};
 \node[font=\scriptsize,anchor=south,text=clGthree] at (axis cs:11,80) {79\,\%};
 \end{groupplot}
 \end{tikzpicture}}
-\caption{Hourly site-change profile of the four behavioural groups}
+\caption{The four kinds of user, hour by hour}
 \label{fig:group-profiles}
 \figtext{%
-What a behavioural group is: a shape in time, not a level. Within each panel
-the horizontal axis is the hour of day and each bar is the share of that
-hour's back-to-back record pairs in which the \emph{site root} changed, that
-is, the share of moments at which these users actually went somewhere; the
-percentage in the title is the share of users, not of records. Nobody labelled
-these groups. Users were described by their site-change rate over four bands
-of the day, and a clustering algorithm was asked for four average profiles. G0
-is flat and low all day, peaking at 35\,\% at 17h; G1 moves at a constant
-moderate rate with a single late peak at 58\,\%; G2 has a calm morning then
-climbs all afternoon to 84\,\% at 19h; G3 peaks at 79\,\% before noon then
-settles for the evening down to 29\,\%. G2 and G3 are near mirror images and
-hold 37\,\% of the population between them, so any hour that is hard for one
-is easy for the other: a window upweighting 18--20h for everybody helps G2 and
-actively misleads G3. Four bands were used rather than eight because a user
-with three night-time events cannot support a finer estimate, and each band is
-drawn towards that user's global rate for the same reason. \smob{}, 400
-training users. The four labelled peaks are the values printed on the source
-chart; the remaining bars are recovered from its shape geometry and carry
-about $\pm1\pt$.}
+\figpara{What each bar is.}{Within a panel, the horizontal axis is the hour of
+the day and each bar counts, out of every 100 back-to-back records written during
+that hour, how many landed on a \emph{different mast} from the one before. In
+other words: how often, at that hour, these people actually went somewhere. The
+percentage in each title is the share of \emph{people} in that kind, not the
+share of records.}
+
+\figpara{Nobody labelled these four kinds.}{Each person was described by how
+often they change location over four broad stretches of the day, and an automatic
+procedure was asked for four average shapes. The names below are mine, given
+afterwards, once the shapes were on the screen.}
+
+\figpara{G0, the stay-at-home user.}{Flat and low from morning to night, around
+30 changes per 100 records and never above 35. There is no hour at which this
+person is noticeably more likely to move, which is why they will turn out to need
+no special treatment at all.}
+
+\figpara{G1, the steady user.}{Also flat, but higher: about 45 changes per 100
+records all day, clearly above G0 and far below the peaks of the last two, with a
+single late rise to 58. What defines this kind is the absence of a peak rather
+than the level.}
+
+\figpara{G2 and G3, and why they are the whole point.}{G2 has a calm morning then
+climbs all afternoon to 84 at seven in the evening. G3 does the exact opposite:
+79 before noon, then settles down to 29 by evening. They are near mirror images
+of each other, they hold 37\,\% of the population between them, and \emph{any
+hour that is hard for one is easy for the other}. A single stretch of the day
+emphasised for everybody helps one of them and actively misleads the other, which
+is precisely the failure of Chapter~\ref{ch:time}.}
+
+\figpara{Why four stretches of the day and not eight.}{Because each stretch must
+hold enough events for its number to mean anything. Somebody with three
+night-time events would otherwise be assigned a night-time rate of 0 or 100\,\%,
+which is noise dressed as a profile, so each stretch is also pulled towards that
+person's own all-day rate in proportion to how thin it is. \smob, 400 training
+people. The four labelled peaks are the values printed on the source chart; the
+remaining bars are recovered from its shape and carry about one point of reading
+error.}}
+
 \end{figure}

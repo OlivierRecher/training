@@ -1,37 +1,60 @@
 % T7 -- Per-group transition windows vs the single global guess (slides 51, 54).
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
-\caption{Per-group transition windows, and what they separate}
+\caption{Hours derived per kind of user, and whether they land on the hard moments}
 \label{tab:group-windows}
 \begin{tabular}{@{}l>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{6.1cm}@{}}
 \toprule
-\textbf{Group} & \textbf{Derived windows (loss weight)} & \textbf{Reading} \\
+\textbf{Kind of user} & \textbf{Hours derived from the data (cost multiplier)} & \textbf{What it says} \\
 \midrule
-G0 homebody      & \textit{none} & flat day, a uniform weight of 1.0 is the correct answer \\
-G1 steady        & 18--19h $\times1.4$, \ 20--21h $\times1.7$ & mild, and late \\
-G2 evening mover & 13--14h $\times1.7$, \ 16--21h $\times2.5$ & the five-hour block was later narrowed to 18--21h \\
-G3 morning mover & 07--08h $\times2.0$, \ 10--13h $\times2.3$ & the mirror image of G2 \\
+G0 stay-at-home user & \textit{none} & a flat day has no hours worth emphasising \\
+G1 steady user & 18--19h $\times1.4$, \ 20--21h $\times1.7$ & mild, and late in the day \\
+G2 evening-moving user & 13--14h $\times1.7$, \ 16--21h $\times2.5$ & the five-hour block was later narrowed to 18--21h \\
+G3 morning-moving user & 07--08h $\times2.0$, \ 10--13h $\times2.3$ & the mirror image of G2, and almost disjoint from it \\
 \midrule
-\multicolumn{3}{@{}l}{\textbf{Does the window target hard positions?} Persistence inside vs outside, full test sequences}\\
+\multicolumn{3}{@{}l}{\textbf{Do those hours actually mark the hard moments?} Score of the one-line rule, inside versus outside}\\
 \addlinespace
-\multicolumn{2}{@{}l}{Global guess, 04--06h / 18--20h} & 43.6\,\% inside vs 43.4\,\% outside: \ $+0.2$ pp, \textbf{separates nothing} \\
-\multicolumn{2}{@{}l}{Per-group windows}               & 19.0\,\% inside vs 46.4\,\% outside: \ $\mathbf{-27.4}$ \textbf{pp}, the hard hours \\
+\multicolumn{2}{@{}l}{The guess of Ch.~\ref{ch:time}, 04--06h / 18--20h} & 43.6 inside vs 43.4 outside: a difference of \textbf{0.2}, so it \textbf{marks nothing} \\
+\multicolumn{2}{@{}l}{The hours derived per kind of user} & 19.0 inside vs 46.4 outside: a difference of $\mathbf{27.4}$, \textbf{the genuinely hard hours} \\
 \bottomrule
 \end{tabular}
 
 \figtext{%
-The windows are not chosen: they are derived from the training data as the
-contiguous hours where a group's own persistence falls furthest below its own
-average, that is, where ``repeat the last cell'' stops working \emph{for that
-profile}. A flat group legitimately receives no window at all. The lower block
-is the test that matters: whether a window actually lands on hard positions.}
+\figpara{Where these hours come from.}{They are not chosen. For each kind of
+user, I look at the score of the one-line rule hour by hour \emph{on that kind
+alone}, and keep the run of consecutive hours where it falls furthest below that
+same kind's own average. In plain terms: the hours at which ``repeat the last
+antenna'' stops working \emph{for that sort of person}. The multiplier says how
+much more a mistake costs there.}
+
+\figpara{The first row is the one a hand-made rule could never produce.}{The
+stay-at-home user gets no emphasised hours at all, because their day is flat and
+there is nothing to emphasise. Leaving every hour at its ordinary cost is the
+correct answer for 28\,\% of the population, and a single window chosen for
+everybody structurally cannot say that.}
+
+\figpara{The last two rows are almost disjoint in time.}{The evening-moving user
+is emphasised late, the morning-moving user early. That is the mirror-image fact
+of Figure~\ref{fig:group-profiles} restated in the language of the training
+procedure, and it is why one shared set of hours was doomed.}
+
+\figpara{The lower block is the test that justifies the whole detour.}{An
+emphasised stretch of the day is only useful if it actually lands on hard
+moments. The guess of Chapter~\ref{ch:time} separates the rule by two tenths,
+which is to say not at all: the moments inside it are exactly as easy as the
+moments outside. The hours derived per kind of user separate it by 27.4, marking
+moments on which the trivial rule is right 19\,\% of the time against 46\,\%
+elsewhere. Whatever the model then makes of that emphasis, it is at least being
+aimed at the right places.}}
 
 \vspace{4pt}
 \begin{minipage}{\textwidth}\footnotesize
-The global guess I started from was not merely imprecise, it was misplaced:
-04--06h is \emph{easier} than average for all four profiles (persistence
-49--64\,\% inside it, against 20--57\,\% on average), so upweighting it spent
-the training effort on positions the baseline already gets right. It survives only as the
-fallback used when the groups are switched off or the data carries no hours.
+The guess I started from was not merely imprecise, it was misplaced. 04--06h is
+\emph{easier} than average for all four kinds of user: the one-line rule scores
+between 49 and 64\,\% inside it, against 20 to 57\,\% on average. Emphasising it
+therefore spent the training effort on moments the rule already gets right, which
+is the most expensive mistake available on a task like this one. It survives in
+the code only as the fallback used when the sorting is switched off or the data
+carries no hours.
 \end{minipage}
 \end{table}

@@ -12,17 +12,17 @@
   dot/.style={circle,fill=clmodel,inner sep=1.3pt},
 ]
 \foreach [count=\j from 0] \date/\body in {%
-  {3--8 Jul}/{\textbf{1. Documentation, and a first signal.} Which fine-tuning regime fits a free cloud GPU? Chose QLoRA over full fine-tuning and plain LoRA, built the cleaning and formatting pipeline. \textbf{16.87\,\%} next-cell accuracy on a Mistral-7B run that saw 1.2\,\% of the data.},
-  {9--14 Jul}/{\textbf{2. The baseline appears, and the model is under it.} Abandoned Mistral-7B (5.5\,h, best validation 41.1\,\%) for Qwen2.5-0.5B. Engineering-only fixes lifted test top-1 \textbf{48.7\,\% $\rightarrow$ 64.4\,\%} and cut GPU time by 60\,\%, but the persistence baseline of that data sits at \textbf{69.2\,\%}.},
-  {14--17 Jul}/{\textbf{3. Who is hard, and why.} Per-user analysis on the held-out users: accuracy correlates with the cell-switch rate at \textbf{$r=-0.97$}, and 10\,\% of users carry 59\,\% of the evaluation signal. The model's value-add lives in the segment that barely counts.},
-  {17--21 Jul}/{\textbf{4. Filter the corpus, and win once.} Removed users with too few records or a 4-hour hole in their activity period. \textbf{80.1\,\% vs a 79.0\,\% baseline: $+1.1\pt$}, the first time the model cleared it, and only at one context split out of three.},
-  {21--24 Jul}/{\textbf{5. A cleaner corpus, and the win evaporates.} Moved to the mobile, non-absent users Nino extracted for me. Swept the context fraction from 30\,\% to 90\,\%: \emph{no} split beats the baseline (best $-0.3\pt$). Per-user diagnosis: some users collapse to 0\,\% precisely at the end of the day.},
-  {27--29 Jul}/{\textbf{6. Give the model the clock.} Added one hour token per event and a heavier loss inside 04--06h / 18--20h. The hour \emph{is} read (shuffling it costs $-3.0\pt$). Targeted sampling then won the windows (\textbf{$+2.6\pt$} at 18--20h) and lost everywhere else ($-2.6\pt$).},
-  {29 Jul -- 2 Aug}/{\textbf{7. Group users by behaviour.} Four profiles cut on the hourly \emph{site}-change rate, detected from the context prefix alone (92\,\% agreement). The old global window was shown to separate nothing ($+0.2$ pp) while per-group windows separate $-27.4$ pp. First cross-training run: \textbf{inconclusive}, ablations showed the model ignored both the group and the hour.},
-  {2--7 Aug}/{\textbf{8. Make the group unignorable.} Four changes; the structural one routes each group to its own adapter instead of prepending a token. \textbf{46.8\,\% vs 43.1\,\%: $+3.7\pt$}, the first run of the project to clear the baseline. Gains rank inversely to group difficulty, without exception.},
-  {12--17 Aug}/{\textbf{9. More users.} 900 / 1{,}400 / 1{,}900 training users on a new day-file: \textbf{$+2.8$, $+3.5$, $+4.2\pt$}. Also tested levelling every user to 200 records: 74.9\,\% looks spectacular against a baseline that reaches 76.5\,\% on the same data, the gap changes sign.},
-  {18--19 Aug}/{\textbf{10. Much more users.} 5{,}000 to 21{,}000 users at constant compute: $+4.3$, $+4.4$, $+4.7$, $+4.3\pt$. Every paired bootstrap interval contains zero. Meanwhile \textbf{22.4\pt} separate the four behavioural profiles, against $0.4\pt$ across the whole ladder.},
-  {19 Aug}/{\textbf{11. Why it climbs, then stops.} Three regimes on one curve: imitation at 400 users, generalisation from 400 to 1{,}900 ($+3.6\pt$), saturation above ($+0.1\pt$). One mechanism fits the timing: the smallest profile crosses $\approx100$ members exactly between the two tiers where the score moves.}}
+  {3--8 Jul}/{\textbf{1. Read up, and get a first signal.} Which training method fits a free graphics card? Chose QLoRA over the two alternatives, and built the cleaning and formatting pipeline. \textbf{16.87\,\%} correct next-antenna answers on a Mistral-7B run that saw 1.2\,\% of the data.},
+  {9--14 Jul}/{\textbf{2. The one-line rule appears, and the model is below it.} Abandoned Mistral-7B (5.5\,h, best 41.1\,\%) for Qwen2.5-0.5B. Fixes to the training machinery alone lifted the score \textbf{48.7\,\% $\rightarrow$ 64.4\,\%} and cut the waiting time by 60\,\%, but the one-line rule on that data sits at \textbf{69.2\,\%}.},
+  {14--17 Jul}/{\textbf{3. Who is hard, and why.} Looked at the held-out people one at a time: the score tracks how often somebody changes antenna at \textbf{$r=-0.97$}, and 10\,\% of people carry 59\,\% of the graded moments. What the model adds lives in the segment that barely counts.},
+  {17--21 Jul}/{\textbf{4. Filter the data, and win once.} Removed people with too few records or a four-hour hole in their day. \textbf{80.1\,\% against a 79.0\,\% rule: $+1.1$}, the first time the model cleared it, and only at one cut out of three.},
+  {21--24 Jul}/{\textbf{5. Cleaner data, and the win evaporates.} Moved to the people who move and stay in the area, extracted by Nino. Swept the cut from 30\,\% to 90\,\%: \emph{no} cut beats the rule, the closest being 0.3 short. Looking person by person, some collapse to 0\,\% precisely at the end of the day.},
+  {27--29 Jul}/{\textbf{6. Give the model the time of day.} Added one hour symbol per event and made mistakes cost more inside 04--06h and 18--20h. The hour \emph{is} read: shuffling it costs 3.0. Showing those slices more often then won the chosen hours (\textbf{$+2.6$} at 18--20h) and lost everywhere else ($-2.6$).},
+  {29 Jul -- 2 Aug}/{\textbf{7. Sort people into kinds of user.} Four profiles cut on how often the \emph{mast} changes, hour by hour, and identified from the person's past alone (92\,\% agreement). The old global hours were shown to separate nothing (0.2) while the derived ones separate 27.4. First attempt at cross-training: \textbf{inconclusive}, and the checks showed the model ignoring both the kind of user and the hour.},
+  {2--7 Aug}/{\textbf{8. Make the kind of user impossible to ignore.} Four changes; the structural one sends each kind of user to its own set of trained numbers instead of writing it into the text. \textbf{46.8\,\% against 43.1\,\%: $+3.7$}, the first run of the project to clear the rule. The gains rank inversely to difficulty, without exception.},
+  {12--17 Aug}/{\textbf{9. More people.} 900 / 1{,}400 / 1{,}900 training people on a new day file: \textbf{$+2.8$, $+3.5$, $+4.2$}. Also tested stretching every day to 200 records: 74.9\,\% looks spectacular against a rule that reaches 76.5\,\% on the same data, and the result changes sign.},
+  {18--19 Aug}/{\textbf{10. Many more people.} 5{,}000 to 21{,}000 people at constant computing time: $+4.3$, $+4.4$, $+4.7$, $+4.3$. Every resampling interval contains zero. Meanwhile \textbf{22.4} separate the four kinds of user, against 0.4 across the whole ladder.},
+  {19 Aug}/{\textbf{11. Why it climbs, then stops.} Three regions on one curve: imitation at 400 people, generalisation from 400 to 1{,}900 ($+3.6$), saturation above ($+0.1$). One mechanism fits the timing: the smallest kind of user crosses about a hundred members exactly between the two sizes where the score moves.}}
 {
   \ifnum\j=0
     \node[wk] (wk\j) at (0.42,0) {{\color{clrule}\scriptsize\date}\quad\body};
@@ -42,9 +42,20 @@
 \captionof{figure}{Timeline of the eleven iterations}
 \label{fig:timeline}
 \figtext{%
-The eleven iterations, with the question each one asked and the number it
-produced. Read the gaps to the baseline, never the absolute accuracies: the
-corpus changed four times over the period, and with it the difficulty of the
-test users.}
+\figpara{What this is.}{The eleven iterations of the internship in order, with
+the question each one asked and the number it produced. The body of the report is
+organised by question rather than by date, so this is where the chronology
+lives.}
+
+\figpara{How to read the numbers.}{Read the \emph{distances} to the one-line
+rule, never the absolute scores. The set of people changed four times over the
+period, and with it the difficulty of the test group, so 64.4\,\% in iteration 2
+and 46.8\,\% in iteration 8 are not comparable at all, whereas ``4.8 behind the
+rule'' and ``3.7 ahead of it'' are.}
+
+\figpara{The shape of the whole thing.}{Five iterations below the trivial rule,
+one accidental win at iteration 4 that the next iteration removed, and a real one
+from iteration 8 onward.}}
+
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{iterations 1--8; iterations 9--11 come from \href{\repourl/\nbfinal}{\texttt{train\_cellid\_final.ipynb}} and \href{\repourl/\nbweek}{\texttt{train\_cellid\_week.ipynb}}, and every number is traced in Table~\ref{tab:provenance}}
 \endgroup

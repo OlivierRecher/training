@@ -1,227 +1,230 @@
-\chapter{The data, and what it allows}
+\chapter{The data}
 \label{ch:data}
 
-\section{The question}
+\section{The goal}
 
-Before anything can be predicted, one has to know what the corpus actually
-contains. The question that opens this report is therefore not ``how well can a
-model predict the next cell?'' but the more modest one that has to be answered
-first: \emph{what does a record in this dataset represent, and what kind of
-claim can it support?} The answer shaped every experiment that follows, and two
-of its consequences, that a record is not a movement, and that a
-\cid{cell\_id} is not a place, are the reason several later results look
-counter-intuitive at first sight.
+Before anything can be predicted, one has to know what the data actually
+contains. So the first question of this report is not ``how well can a model
+predict the next antenna?'' but the more modest one that has to be answered
+first: \emph{what does one line of this dataset represent, and what kind of
+claim can it support?}
 
-\section{The corpus}
+The answer shaped every experiment that follows. Two of its consequences, that
+\textbf{a record is not a movement} and that \textbf{the name of an antenna is
+not a place}, are the reason several later results look surprising at first
+sight. This chapter establishes both, and ends with the list of the six sets of
+people I trained and tested on.
 
-The material is a set of fifteen daily CSV\footnote{\textbf{CSV}:
-\emph{comma-separated values}, the simplest tabular text format: one row per
-line, fields separated by a delimiter. Here the delimiter is a semicolon and the
-rows are ragged, since each user contributes as many (cell, timestamp) pairs as
-they produced that day.} exports of anonymised mobile-network signalling
-records, covering 12 to 26 March 2014 in the Karlovy Vary study area
-of north-west Bohemia, the area referred to as \cid{cd\_142} in the working
-files, and the only one of the three available zones the team used. One row is
-one user for one day, from \texttt{00:00:00} to \texttt{23:59:59}. The number
-of rows varies from 80{,}217 to 99{,}504 depending on the day; the day used for
-most of the work reported here, 12 March 2014, holds 85{,}946 users.
+\section{What one line of the data looks like}
 
-A row begins with eight fixed metadata columns, an anonymous user identifier,
-age, gender, an unexplained five-digit number, a behaviour class, a ``home
-cell'', an ``activity cell'' and the number of records that follow, and then
-alternates \cid{cell\_id} and timestamp for as many records as that user
-produced that day. The timestamp is expressed in seconds since local midnight
-and always \emph{follows} the \cid{cell\_id} it belongs to, so that
-\begin{equation}
-  h \;=\; \left\lfloor \frac{\mathit{ts}}{3600} \right\rfloor
-  \label{eq:hour}
-\end{equation}
-gives the hour of day of that event. The minutes and seconds are
-discarded on purpose, for the reason given in Chapter~\ref{ch:tools}. Only
-the user identifier, the record count and the (\cid{cell\_id}, timestamp) pairs
-are used in this work; the remaining metadata carries known aberrations, ages
-of 1078, negative values, and is not needed for a next-cell prediction.
+The material is fifteen daily files covering 12 to 26 March 2014 in the Karlovy
+Vary study area of north-west Bohemia. They are plain text
+files\footnote{\textbf{CSV}, \emph{comma-separated values}: the simplest tabular
+text format, one row per line with the fields separated by a delimiter. Here the
+delimiter is a semicolon.} in which \textbf{one line is one person for one day},
+from midnight to midnight. Depending on the day, a file holds between 80{,}217
+and 99{,}504 lines; the day used for most of the work reported here, 12 March
+2014, holds 85{,}946 people.
+
+A line starts with eight fixed columns, then repeats a pair of values for as
+many records as that person produced during the day:
+
+\begin{itemize}
+  \item the \textbf{eight fixed columns} are an anonymous number standing for the
+        person, their age, their gender, an unexplained five-digit number, a
+        behaviour class, a ``home antenna'', an ``activity antenna'' and the
+        number of records that follow;
+  \item then, over and over, \textbf{the name of an antenna followed by a time},
+        the time always coming just after the antenna it belongs to. The time is
+        written as a number of seconds since midnight, from 0 to 86{,}399, so
+        dividing it by 3{,}600 and dropping what remains gives the hour of the
+        day at which the record was written.
+\end{itemize}
+
+Only the anonymous number, the record count and the antenna-and-time pairs are
+used in this work. The remaining columns carry known aberrations, including ages
+of 1078 and negative values, and none of them is needed to predict a next
+antenna.
 
 \subsection*{A record is not a movement}
 
-This is the single most important property of the corpus, and it is easy to
-miss. A record is produced whenever a handset\footnote{\textbf{Handset}: the
-telephone. \textbf{Re-signalling} (or \emph{periodic location update}): the
-network asking every attached handset to announce itself on a fixed cycle, so
-that it knows where to route an incoming call. It happens whether or not anyone
-touches the phone.} and a base station communicate. That includes the case where
-nothing happens at all: a base station re-signals to the handsets attached to it
-on a regular cycle, typically every four hours on 2G and every two hours on
-3G.\footnote{\textbf{2G}, \textbf{3G}: the second and third generations of
-mobile radio. Both are present in this corpus, and which one served a handset is
-readable from the first letter of the cell identifier, as
-Figure~\ref{fig:cellid-anatomy} shows.} A user who spends the whole day in one place
-therefore still produces records, at a rate set by the network rather than by
-the person. Two consequences follow immediately:
+This is the single most important property of the data, and it is easy to miss.
+
+A record is written whenever a phone and a mast exchange a message. That
+includes the case where nothing happens at all: a mast asks every phone attached
+to it to announce itself on a fixed cycle, typically every four hours on 2G and
+every two hours on 3G,\footnote{\textbf{Re-signalling}, or \emph{periodic
+location update}: the network asking every attached phone to announce itself on
+a fixed cycle, so that it knows where to route an incoming call. It happens
+whether or not anyone touches the phone.} so that it knows where to route an
+incoming call. A person who spends the whole day in one place therefore still
+produces a stream of records, at a rate set by the network rather than by
+themselves.
+
+Two consequences follow immediately, and both matter for the rest of the report.
 
 \begin{itemize}
-  \item The number of records a user has is only partly a property of that
-        person. It also depends on the radio technology their handset attaches
-        to and on how much they actually used the phone.
-  \item A long run of identical \cid{cell\_id} values in a trajectory is the
-        normal case, not an anomaly. Any predictor that simply repeats the last
-        value seen will be right very often, entirely for free.
+  \item \textbf{How many records a person has is only partly about that person.}
+        It also depends on which generation of radio their phone attached to, and
+        on how much they used it.
+  \item \textbf{A long run of the same antenna name is the normal case}, not an
+        anomaly. Any predictor that simply repeats the last name it saw will be
+        right very often, entirely for free.
 \end{itemize}
 
-That second point is what creates the yardstick this whole report is measured
-against, and it is worth stating precisely before any model appears.
+\section{The rule I have to beat, and why it moves}
 
-\section{The yardstick: the persistence baseline}
+The second point above is what creates the yardstick this whole report is
+measured against, so it is worth stating precisely before any model appears.
 
-\emph{The persistence baseline} is the rule ``predict that the next
-\cid{cell\_id} is the last one seen''. It contains no model, no training and no
-parameters. It is scored on exactly the same positions as the model, in exactly
-the same way, the measurement is set out in Chapter~\ref{ch:first}, so the
-two are directly comparable.
+The \textbf{persistence baseline} is the rule ``the next antenna is the last one
+seen''. It contains no model, no training and no settings. It is scored on
+exactly the same moments as my model, in exactly the same way, so the two are
+directly comparable.
 
-Its value is not a constant, and this is the second thing that is easy to
-miss. It is a property of the data. On a day-file taken as it comes, where a
-large share of users barely move, ``repeat the last cell'' is right 69.2\,\% of
-the time. Once the corpus is restricted to users who actually move, the same
-rule falls to 45.5\,\%. Nothing about the rule changed; the population did. For
-this reason every result in this report is stated as a \textbf{gap}, model
-minus persistence baseline, both measured on the same users and the same scored
-positions, and never as a bare accuracy. Whenever a chapter introduces a new
-data regime, the value of its baseline is stated with it, and the reader should
-resist comparing an accuracy in one chapter with an accuracy in another.
+Its value is not a constant, and this is the second thing that is easy to miss.
+It is a property of the people being scored. On a day file taken as it comes,
+where a large share of people barely move, ``repeat the last antenna'' is right
+69.2\,\% of the time. Once the data is restricted to people who actually move
+around, the very same rule falls to 45.5\,\%. Nothing about the rule changed;
+the population did.
 
-\section{A \cid{cell\_id} is not a place}
+This is why every result in this report is stated as a \textbf{distance}, my
+model minus the rule, both measured on the same people and the same moments, and
+never as a bare accuracy. Whenever a chapter introduces a new set of people, the
+value of the rule on them is stated with it, and the reader should resist
+comparing an accuracy in one chapter with an accuracy in another.
 
-A \cid{cell\_id} such as \cid{BSOCHO1} looks like an opaque location token. It
-is not. It decomposes into three parts, shown in
-Figure~\ref{fig:cellid-anatomy}: a letter giving the radio technology
-(\cid{B} or \cid{D} for 2G, \cid{U} or \cid{V} for 3G), a \emph{site
-root}\footnote{\textbf{Site root}: the middle letters of a \cid{cell\_id}, naming the
-physical mast: \cid{KVCHE} in \cid{UKVCHE102}. \textbf{Sector} (or
-\emph{zone}): the trailing digits, naming which antenna of that mast served
-the handset.} identifying the physical antenna, and
-trailing digits identifying the zone or sector of that antenna. The study area contains \textbf{369 distinct
-cells over 113 site roots}, 112 distinct coordinate pairs, split into 224
-2G cells and 145 3G cells. In other words, the same physical mast appears in the
-data under three or four different names.
+\section{The name of an antenna is not a place}
+
+An antenna name such as \cid{BSOCHO1} looks like an opaque location code. It is
+not, and this is the point at which the technical name for it can safely be
+introduced: in the working files this string is called the
+\textbf{\cid{cell\_id}}, and it is used with that name in the rest of the report.
+
+It decomposes into three parts, which Figure~\ref{fig:cellid-anatomy} takes
+apart: a letter giving the generation of radio, a middle part naming the
+\emph{mast},\footnote{\textbf{Site root}: the middle letters of a
+\cid{cell\_id}, naming the physical mast, \cid{KVCHE} in \cid{UKVCHE102}.
+\textbf{Sector}: the trailing digits, naming which antenna of that mast served
+the phone.} and trailing digits naming which antenna of that mast was in use.
+The study area contains \textbf{369 distinct antennas over 113 masts}, split
+into 224 antennas on 2G and 145 on 3G. In other words, the same physical mast
+appears in the data under three or four different names.
 
 \input{figures/fig-cellid-anatomy}
 
-The practical consequence is measurable. On the day used for the behavioural
-analysis of Chapter~\ref{ch:groups}, 43.6\,\% of all consecutive-event pairs
-repeat the same \cid{cell\_id} outright, 44.0\,\% are a genuine change of
-physical site, and \textbf{12.4\,\%} fall in between: the handset re-attached
-to a different cell of the \emph{same} antenna without the person going
-anywhere (Figure~\ref{fig:transition-composition}). Counting that middle band as
-mobility would inflate every movement statistic by roughly a quarter and, worse,
-would scramble the behavioural profiles of Chapter~\ref{ch:groups}, whose whole
-purpose is to separate users who move from users who do not.
+The practical consequence is measurable, and Figure~\ref{fig:transition-composition}
+measures it. On the day used for the analysis of Chapter~\ref{ch:groups}, out of
+every hundred back-to-back records: 43.6 carry the very same antenna name;
+44.0 are a genuine change of mast, so the person really went somewhere; and
+\textbf{12.4} fall in between, the phone having re-attached to a different
+antenna of the \emph{same} mast without the person moving at all.
 
 \input{figures/fig-transition-composition}
 
-Every mobility measurement in this report is therefore taken on the
-\textbf{site root}, never on the raw \cid{cell\_id}. The prediction target, on
-the other hand, remains the raw \cid{cell\_id}: that is the quantity the
-original problem asks for, and coarsening it to the site root would be answering
-an easier question than the one that was posed.
+Every measurement of \emph{movement} in this report is therefore taken on the
+mast, never on the raw antenna name. The \emph{prediction target}, on the other
+hand, remains the raw antenna name. That is the quantity the original question
+asks for, and coarsening it to the mast would be answering an easier question
+than the one that was posed.
 
-\section{From a raw export to a training sequence}
+\section{From a raw file to training material}
 
-Turning a day-file into material a language model can be trained on takes four
-conceptual stages, sketched in Figure~\ref{fig:data-flow}: keep the columns that
-constitute a trajectory, convert each timestamp into an hour of day, emit one
-ordered sequence of events per user, and split the users into a training and a
-test group.
+Turning a day file into something a language model can be trained on takes four
+steps, drawn in Figure~\ref{fig:data-flow}: keep only the columns that make up a
+trajectory, turn each time into an hour of the day, write one ordered sequence
+of events per person, and split the people into a training group and a test
+group.
 
 \input{figures/fig-data-flow}
 
 Two choices inside that pipeline deserve to be stated, because they change how
 later results should be read.
 
-\paragraph{The split is by user, and it is stratified.} Train and test users are
-disjoint: the model is graded only on people it has never seen. The assignment
-is stratified\footnote{\textbf{Stratified split}: instead of throwing users
-into train or test at random, they are first sorted into bands by sequence
-length and the split is made inside each band, which guarantees that both sides
-contain the same mix of short and long users.} on the number of records per user
-rather than taken at random, and once the split is made the two sets of
-sequence lengths are compared to confirm that the two sides really are
-consistent with each other. Without that precaution, a train/test split can
-silently hand the easier, longer users to one side.
+\paragraph{The split is by person, and it is balanced.} Training and test people
+are different people: the model is graded only on strangers. The assignment is
+not made at random but is \emph{balanced} on the number of records per
+person,\footnote{\textbf{Stratified split}: people are first sorted into bands by
+how many records they have, and the split is made inside each band, so both
+sides end up with the same mix of short and long histories.} and once the split
+is made the two sides are compared to confirm that they really are consistent
+with each other. Without that precaution, a split can silently hand all the
+easier, longer histories to one side.
 
-\paragraph{Cleaning removes users, not events.} Three successive filtering
-decisions were made over the internship, each in response to a result rather
-than in advance:
+\paragraph{Cleaning removes people, not records.} Three successive filtering
+decisions were made over the internship, each one in response to a result rather
+than in advance.
+
 \begin{itemize}
-  \item \textbf{Nothing at first.} The earliest runs used the day-file as it
-        came. This turned out to be the reason the baseline sat at 69.2\,\%: a
-        large share of users produce a handful of records from a single cell, so
-        the evaluation was dominated by positions where there was nothing to
+  \item \textbf{Nothing at first.} The earliest runs used the day file exactly as
+        it came. This turned out to be why the rule sat at 69.2\,\%: a large
+        share of people produce a handful of records from a single antenna, so
+        the evaluation was dominated by moments where there was nothing to
         predict.
-  \item \textbf{More than ten records, and no four-hour hole during the
-        activity period.} The four-hour threshold is the corpus's own
-        convention: because a base station re-signals at least every four hours,
-        a gap longer than that means the user was outside the recording area
-        rather than idle inside it. Filtering those out removes users whose
-        trajectory has a hole in the middle of it.
-  \item \textbf{Mobile, non-absent users only}, using the per-day selection
-        prepared by a colleague. This is the corpus used for most of the
-        modelling work, and it is where the baseline drops to the mid-forties.
+  \item \textbf{More than ten records, and no four-hour hole.} The four-hour
+        threshold is the corpus's own convention: since a mast re-signals at
+        least every four hours, a gap longer than that means the person was
+        outside the recording area rather than sitting still inside it.
+  \item \textbf{People who move, and who stay in the area}, using the per-day
+        selection prepared by a colleague. This is the data on which most of the
+        modelling rests, and it is where the rule drops to the mid-forties.
 \end{itemize}
 
-Each of these makes the \emph{task} harder and the \emph{baseline} lower, which
-is exactly the point: a benchmark on which a one-line heuristic already scores
-69\,\% leaves almost nothing to measure.
+Each of these makes the \emph{task} harder and the \emph{rule} weaker, which is
+exactly the point. A benchmark on which one line of code already scores 69\,\%
+leaves almost nothing to measure.
 
-\section{The datasets used, and what separates them}
+\section{The six sets of people I used}
 
-Table~\ref{tab:datasets} lists every data regime used over the eleven
-iterations, with the counts measured on the files themselves and the baseline
-each one produces. Seven regimes for one problem may look like indiscipline; it
-is the direct consequence of the point above, that each new approach needed data
-the previous files did not carry. Adding the hour of day required regenerating
-the sequences with their timestamps preserved. Testing whether more users help
-required a day-file with more users. Testing whether \emph{many} more users help
-required concatenating\footnote{\textbf{Concatenating} day-files: stacking
-them end to end into one training file, which adds \emph{people} rather than
-adding days to the people already there.} eleven day-files. Each regeneration
-produced a new set of test users, and therefore a new baseline.
+Table~\ref{tab:datasets} lists every set of people used over the eleven
+iterations, with the counts measured on the files themselves and the score the
+one-line rule reaches on each. Six sets for one problem may look like
+indiscipline; it is the direct consequence of the point above, that each new
+idea needed data the earlier files did not carry. Adding the time of day
+required regenerating the sequences with their times kept. Testing whether more
+people help required a day file with more people in it. Testing whether
+\emph{many} more people help required stacking eleven day files end to
+end.\footnote{\textbf{Stacking} day files: putting them one after another into a
+single training file, which adds \emph{people} rather than adding days to the
+people already there.} Each regeneration produced a new test group, and
+therefore a new value for the rule.
 
 \input{tables/tab-datasets}
 
-\section{What the data does not allow}
+\section{What the data cannot answer}
 
-Two limits follow from the corpus itself, and neither can be fixed by better
+Two limits follow from the data itself, and neither can be fixed by better
 modelling.
 
 \paragraph{The unit is one day.} The question posed at the start of this
 internship is a within-day one: predict the rest of a person's day from its
-beginning. The corpus is built for exactly that, one user is one day, and every
-experiment reported here answers that question. Predicting tomorrow from the days
-before is a different question, and the natural continuation of this work;
+beginning. The data is built for exactly that, one person is one day, and every
+experiment reported here answers that question. Predicting tomorrow from the
+days before is a different question, and the natural continuation of this work;
 Chapter~\ref{ch:conclusion} returns to it.
 
-\paragraph{The world is small.} 369 cells over 113 sites, with a median user
-visiting on the order of twenty distinct cells. Test-set vocabulary coverage\footnote{\textbf{Vocabulary coverage}: the share of cells appearing in the test
-users' days that also appeared in the training users'. At 100\,\% no remaining
-error can be blamed on a cell the model had never seen.} is already 98.9\,\% at the smallest training tier and reaches 100\,\%
-from 5{,}000 users onward, so ``discovering cells it had never seen'' cannot be a source of
-improvement beyond that point. Any remaining gain has to come from better
-estimates of the transitions between cells that are already known.
+\paragraph{The world is small.} 369 antennas over 113 masts, with a typical
+person visiting on the order of twenty distinct antennas. Already at the
+smallest training size, 98.9\,\% of the antennas appearing in the test people's
+days had also appeared in the training people's, and from 5{,}000 people onward
+the figure is 100\,\%. So ``discovering an antenna it had never seen'' cannot be
+a source of improvement beyond that point, and any remaining gain has to come
+from better estimates of the moves between antennas that are already known.
 
-\section{Retrospective}
+\section{Looking back}
 \label{sec:retro-data}
 
-Looking back, the decision that mattered most in this chapter was not a
-modelling decision at all, it was accepting that the raw day-file could not
-support the question being asked. Moving to the mobile, non-absent selection
-Nino extracted for me was the first real lever of the internship, and I would
-describe it as a data-quality result rather than a modelling one: it gave
-trajectories on which \emph{analysing the past in order to predict the rest} is
-a meaningful exercise at all. It cost the comfortable-looking accuracies of the
-early runs, and that is precisely what made every chapter after it measurable.
+The decision that mattered most in this chapter was not a modelling decision at
+all. It was accepting that the raw day file could not support the question being
+asked. Moving to the selection of mobile, non-absent people that Nino extracted
+for me was the first real lever of the internship, and I would describe it as a
+data-quality result rather than a modelling one: it produced trajectories on
+which \emph{analysing the past in order to predict the rest} is a meaningful
+exercise at all. It cost the comfortable-looking accuracies of the early runs,
+and that is precisely what made every chapter after it measurable.
 
 The one thing I would sequence differently is the order of those two steps. I
-spent the first iterations improving the training harness on a corpus that could
-not answer the question, and only then changed the corpus. Settling the data
-regime first would have reached the same conclusions sooner.
+spent the first iterations improving the training machinery on data that could
+not answer the question, and only then changed the data. Settling that first
+would have reached the same conclusions sooner.
