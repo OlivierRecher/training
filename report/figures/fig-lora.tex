@@ -43,31 +43,18 @@
 \caption{What LoRA and QLoRA do}
 \label{fig:lora}
 \figtext{%
-\figpara{The grey square is the model.}{A language model is essentially a stack
-of very large tables of numbers, and adapting one to a new task means changing
-numbers in those tables. The three panels are the three ways of doing it, drawn
-at the same scale.}
-
-\figpara{(a) Change everything.}{Every number in the table is modified. This has
-the highest ceiling in principle, but while the run lasts each number has to be
-held in the graphics card's memory together with about three more used to keep
-track of how to adjust it. The whole thing is several times larger than the
-model, and it does not fit on a free card.}
-
-\figpara{(b) LoRA: leave the table alone and add two thin ones beside
-it.}{\cite{hu2022lora} The big table is frozen and never touched. Two narrow
-tables are added next to it, and only those are trained. Two narrow tables
-standing in for a change to a wide one is the whole of the idea, and here it
-means about 2 numbers in every 100 are ever allowed to move.}
-
-\figpara{(c) QLoRA: the same, with the frozen table compressed.}{\cite{dettmers2023qlora}
-This is the method used throughout the report. On top of LoRA, the frozen table
-is stored with four bits per number instead of sixteen, which quarters the memory
-it occupies. The compression is safe precisely because those numbers are frozen:
-they are read, never updated. The added tables stay at full precision.}
-
-\figpara{Why this decides the shape of the whole internship.}{Not accuracy, but
-waiting time. With (c), one training run fits in half an hour on a free graphics
-card, so nine weeks buy thirty experiments instead of two.}}
+\figpara{Three ways to adapt a model, at the same scale.}{The grey square is the
+model, a stack of very large tables of numbers. In (a) every number is modified,
+which has the highest ceiling in principle but requires holding each number in
+memory together with about three more used to track how to adjust it, several
+times the size of the model, and it does not fit on a free card. LoRA (b)
+\cite{hu2022lora} freezes the big table and trains two narrow ones added beside
+it, so about 2 numbers in every 100 ever move. QLoRA (c)
+\cite{dettmers2023qlora}, used throughout this report, does the same and stores
+the frozen table with four bits per number instead of sixteen, which quarters the
+memory it occupies; that is safe precisely because those numbers are read and
+never updated. What this decides is not accuracy but waiting time: with (c) one
+run fits in half an hour on a free graphics card, so nine weeks buy thirty
+experiments instead of two.}}
 
 \end{figure}

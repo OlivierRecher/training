@@ -18,33 +18,19 @@
 \end{tabular}
 
 \figtext{%
-\figpara{What is being varied.}{Two trained models, one on 900 training people
-and one on 1{,}900, both graded on the same 100 held-out people, and each row
-hands them a different amount of that person's day as history. ``30\,\%'' means
-the model sees the first 30\,\% of the day and answers the rest.}
+\figpara{What is being varied, and how to read a row.}{Two trained models, one on
+900 training people and one on 1{,}900, both graded on the same 100 held-out
+people, and each row hands them a different amount of that person's day as
+history. \textbf{Moments} is how many graded moments the row rests on, which
+falls as more of the day is given away. \textbf{The rule} is what ``repeat the
+last antenna'' scores on those moments, the two model columns give the score with
+the distance to the rule in brackets, and \textbf{Difference} is how much the
+larger training set was worth on that row.}
 
-\figpara{How to read a row.}{\textbf{Moments} is how many graded moments that row
-rests on, and it falls as more of the day is given away as history.
-\textbf{The rule} is what ``repeat the last antenna'' scores on those moments.
-The two model columns give the score, with the distance to the rule in brackets.
-\textbf{Difference} is how much the larger training set was worth on that row.}
-
-\figpara{What it shows.}{The 1{,}900-person model is ahead of the rule by 4.3
-even when it has seen only 30\,\% of the day, and by 4.2 when it has seen 80\,\%.
-So what the model contributes is essentially independent of how much history it
-is handed. Whatever it has learned, it is not something that needs a long run-up
-to become useful.}
-
-\figpara{And the last column is the point of the table.}{Going from 900 to
-1{,}900 training people is worth between 0.9 and 1.7 on every row alike. More
-people helps by the same amount whether the model is given a third of somebody's
-day or nine tenths of it, which is one more sign that the two levers are
-independent. \stwok, with the same 100 held-out people for both sizes.}}
-
-\vspace{3pt}
-\begin{minipage}{\textwidth}\footnotesize
-Graded over the whole day rather than a cut of it, 7{,}745 moments, the two sizes
-score 50.0\,\% and 51.0\,\% against a rule of 46.8\,\%.
-\end{minipage}
+\figpara{Two independent levers.}{The 1{,}900-person model is ahead of the rule
+by 4.3 having seen only 30\,\% of the day, and by 4.2 having seen 80\,\%, so what
+it contributes is essentially independent of how much history it is handed. And
+going from 900 to 1{,}900 training people is worth between 0.9 and 1.7 on every
+row alike. \stwok, same 100 held-out people for both sizes.}}
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the context-fraction evaluation at the smaller tiers}
 \end{table}

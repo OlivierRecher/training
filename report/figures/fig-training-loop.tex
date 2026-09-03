@@ -47,25 +47,19 @@
 \label{fig:training-loop}
 \figtext{%
 \figpara{Steps 1 to 4 are the whole of training.}{A slice of somebody's day is
-shown to the model with the next antenna hidden. The model names an antenna. The
+shown to the model with the next antenna hidden. The model names an antenna, the
 answer is compared with the truth and turned into a single number measuring how
-surprised the model was, so that being confidently wrong costs more than
-hesitating. That number is then used to nudge the model's adjustable numbers
-very slightly in the direction that would have made it less wrong. Then the next
-slice.}
-
-\figpara{Only a small part of the model ever moves.}{Step 4 is where the method
-of Figure~\ref{fig:lora} bites. The 500 million numbers the model was published
-with are frozen and never touched; the nudging applies only to a small set of
-numbers added beside them, about 2 out of every 100. That is what makes a
-training run fit in half an hour on a free graphics card.}
+surprised the model was, and that number is used to nudge the model's adjustable
+numbers in the direction that would have made it less wrong. Only a small part
+ever moves: the 500 million numbers the model was published with are frozen, and
+the nudging applies to about 2 in every 100 added beside them.}
 
 \figpara{Step 5 is not an optimisation, it is a safety rule.}{Left to itself, a
 model trained on a few hundred short days stops learning the habits of the
-population and starts learning the days themselves by heart. When that happens
-its score on people it has never seen turns around and falls, while its score on
-its own training data keeps improving, so the training figures alone will happily
-report success for another forty passes. Grading on separate people after each
-pass, and keeping the best copy rather than the last, is what prevents that, and
-it was the largest single improvement of the whole internship.}}
+population and starts learning the days by heart. Its score on people it has
+never seen then turns around and falls while its score on its own training data
+keeps improving, so the training figures alone will happily report success for
+another forty passes. Grading on separate people after each pass, and keeping the
+best copy rather than the last, was the largest single improvement of the whole
+internship.}}
 \end{figure}

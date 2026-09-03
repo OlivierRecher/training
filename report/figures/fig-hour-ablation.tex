@@ -89,41 +89,25 @@
 \caption{Does the model actually read the hour?}
 \label{fig:hour-ablation}
 \figtext{%
-\figpara{The question this figure answers.}{Feeding the hour to a model does not
-prove the model uses it. It might be reading it and learning something, or it
-might be ignoring it entirely, and the two look identical from the outside. The
-way to tell is to break the input and see whether the score notices.}
+\figpara{Panels (a) and (b): breaking the hour, and only the hour.}{Each event
+enters the sequence as an hour symbol followed by an antenna name, and mistakes
+in two chosen stretches of the day were made to count more, twice as much at 04h
+and 05h and four times as much at 18h and 19h. Panel (b) then re-grades the same
+trained model on the same people three more times, never touching the list of
+antennas: the hours are shuffled, so they are real hours attached to the wrong
+events; or all replaced by one value, which deletes the information; or all moved
+forward by twelve, so the ordering survives but every label is wrong.}
 
-\figpara{Panel (a): where the extra weight was put.}{Each event enters the
-sequence as an hour symbol followed by an antenna name. On top of that, mistakes
-made during two chosen stretches of the day were made to count more, twice as
-much at 04h and 05h and four times as much at 18h and 19h. The bounds are
-half-open, so ``04--06h'' means the hours 4 and 5. Nothing is duplicated; the
-optimiser is simply told those mistakes are more expensive. Whether those were
-the right hours to choose is the subject of the rest of the chapter.}
-
-\figpara{Panel (b): three ways to break the hour, and only the hour.}{The same
-trained model is re-graded on the same people three more times. The list of
-antennas is never touched. The first line is the reference. In the second the
-hour symbols are shuffled, so they are still real hours but attached to the wrong
-events. In the third every hour is replaced by the same value, which removes the
-information completely. In the fourth every hour is moved forward by twelve, so
-the ordering survives but every label is wrong.}
-
-\figpara{Panel (c): the argument is the gap between two of these bars.}{Removing
-the hour altogether, by setting them all to 12h, costs 0.7 correct answers per
-hundred. Merely shuffling them costs 3.0, which is more than four times as much.
-That comparison is the whole point. If the hour symbol were just occupying a slot
-in the sequence, then destroying its \emph{ordering} could not possibly cost more
-than deleting it. It costs four times more, so the model has genuinely learned
-which hour goes with which antenna.}
+\figpara{Panel (c): the argument is the gap between two bars.}{Deleting the hour
+costs 0.7 correct answers per hundred. Merely shuffling it costs 3.0, more than
+four times as much. If the hour symbol were just occupying a slot, destroying its
+\emph{ordering} could not cost more than deleting it altogether, so the model has
+genuinely learned which hour goes with which antenna.}
 
 \figpara{Panel (d): the informative failure.}{Moving every hour forward by twelve
-barely changes the overall score, $+0.5$, which at first looks like the model
-ignoring the whole thing. It is not. The near-zero hides a swap. Inside the two
-upweighted stretches the score \emph{falls} from 42.7 to 39.7, while outside them
-it \emph{rises} from 45.3 to 47.1. The two halves of the day exchanged their
-difficulty along with their labels, which is only possible if the model had
-attached specific behaviour to specific hours. \smob, 80\,\% of each day given as
+changes the overall score by only $+0.5$, which looks like indifference and is
+not: inside the two upweighted stretches the score falls from 42.7 to 39.7 while
+outside them it rises from 45.3 to 47.1. The two halves of the day exchanged
+their difficulty along with their labels. \smob, 80\,\% of each day given as
 history, 1{,}747 graded moments.}}
 \end{figure}

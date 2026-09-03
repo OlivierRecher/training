@@ -16,36 +16,22 @@
 \end{tabular}
 
 \figtext{%
-\figpara{The question.}{Between two training sizes the score moves a little. Is
-that movement the model genuinely improving, or is it the luck of which thousand
-people happened to be in the test set?}
+\figpara{The question, and how it is tested.}{Between two training sizes the
+score moves a little. Is that the model genuinely improving, or the luck of which
+thousand people happened to be in the test set? A thousand people are drawn at
+random from the thousand held-out ones, with replacement. Both models are scored
+on exactly that draw and the difference noted; that is repeated two thousand
+times, and the middle 95\,\% of the differences is the range in the third column.
+Because both models always see the same draw, the luck of the sample cancels.}
 
-\figpara{How it is tested.}{A thousand people are drawn at random from the
-thousand held-out ones, with replacement, so some appear twice and others not at
-all. Both models are scored on exactly that draw and the difference is noted. That
-is repeated two thousand times, and the middle 95\,\% of the two thousand
-differences is the range printed in the third column. Because both models always
-see the same draw, the luck of the sample cancels and only the difference between
-the models is left.}
-
-\figpara{How to read a row.}{If the range contains zero, then ``no difference at
-all'' is a perfectly ordinary outcome of this experiment, and the two sizes
-cannot be told apart. Every row here contains zero, including the last one, which
-spans the entire ladder from 5{,}000 to 21{,}000 people and whose best estimate
-is 0.04.}
-
-\figpara{What that licenses me to say.}{Not ``the gain from more people is
-small''. \emph{No gain was measured at all} above 5{,}000 people. \seleven,
-1{,}000 test people, 2{,}000 resamples.}}
-
-\vspace{3pt}
-\begin{minipage}{\textwidth}\footnotesize
-The fitted scaling law says the same thing: a slope of $+0.18\pt$ per ten-fold
-increase in users, and a line that accounts for only 12\,\% of the spread of
-the eight points it is fitted to. At that slope one extra point would require
-about 1.5 billion users, the absurdity that shows the curve is flat rather
-than merely slow. The correct statement is not ``the gain is small'' but
-``no gain was measured''.
-\end{minipage}
+\figpara{What that licenses me to say.}{If a range contains zero, ``no
+difference at all'' is a perfectly ordinary outcome and the two sizes cannot be
+told apart. Every row contains zero, including the last, which spans the whole
+ladder from 5{,}000 to 21{,}000 people and whose best estimate is 0.04. So the
+claim is not ``the gain is small'' but \emph{no gain was measured}. The fitted
+scaling law agrees: a slope of $+0.18\pt$ per ten-fold increase in users, on a
+line accounting for only 12\,\% of the spread of the eight points, which at that
+rate would need about 1.5 billion users to buy one further correct answer per
+hundred.}}
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the paired-bootstrap cells, 2,000 resamples}
 \end{table}

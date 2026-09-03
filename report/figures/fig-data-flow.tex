@@ -52,22 +52,14 @@
 \caption{From a raw file to training material, in four steps}
 \label{fig:data-flow}
 \figtext{%
-\figpara{The raw line, at the top.}{This is one person's whole day as it arrives
-from the operator. The first eight fields are administrative; everything after
-them alternates the name of an antenna and the time, in seconds since midnight,
-at which the phone was seen on it.}
-
-\figpara{The four steps.}{\textbf{(1)} Throw away everything that is not a
-trajectory and keep the anonymous number, the record count and the
-antenna-and-time pairs. \textbf{(2)} Turn each time into the hour of day it
-falls in, so that 23{,}822 seconds becomes ``hour 6''. \textbf{(3)} Write one
-line per person: their day as an ordered list of events. \textbf{(4)} Split the
-people into those the model studies and those it is graded on.}
-
-\figpara{The two circles.}{They hold different people, never the same ones, and
-the split is balanced so that both sides get the same mix of short and long
-histories. The 400 and 100 shown here are the figures for the mobile-user day;
-the other rows of Table~\ref{tab:datasets} go through the same four steps with
-different counts.}}
+\figpara{The raw line, and the four steps.}{At the top is one person's whole day
+as it arrives from the operator: eight administrative fields, then the name of an
+antenna and the time in seconds since midnight, over and over. \textbf{(1)} Throw
+away everything that is not a trajectory. \textbf{(2)} Turn each time into the
+hour of day it falls in, so 23{,}822 seconds becomes ``hour 6''. \textbf{(3)}
+Write one line per person, their day as an ordered list of events. \textbf{(4)}
+Split the people into those the model studies and those it is graded on. The two
+circles hold different people, never the same ones, and the split is balanced so
+that both sides get the same mix of short and long histories.}}
 
 \end{figure}

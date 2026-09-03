@@ -20,24 +20,19 @@
 
 \figtext{%
 \figpara{What is compared.}{The same 100 held-out people and the same grading,
-before and after the three changes described in the text. Each row is one cut:
+before and after the three changes described above. Each row is one cut:
 ``30\,\%'' means the model was given the first 30\,\% of each person's day as
-history. These are the moments \emph{outside} the two emphasised stretches of the
-day, which is to say the great majority of them.}
-
-\figpara{The columns.}{\textbf{Distance before} and \textbf{Distance after} are
-the model minus the one-line rule, in correct answers per hundred, on that row's
-moments. A negative number means the model is behind the rule.
-\textbf{Change} is how much that distance moved, and every value in it is
-negative. The last two columns read the same predictions less strictly.}
+history. These are the moments \emph{outside} the two emphasised stretches, which
+is the great majority of them. \textbf{Distance before} and \textbf{after} are
+the model minus the one-line rule, in correct answers per hundred; a negative
+number means the model is behind the rule.}
 
 \figpara{Why seven rows and not one.}{A single degraded measurement would be
-noise. Seven of them, at seven different cuts, all moving the same way, is a
-model that has been narrowed: it got better at the hours it was told to care
-about and worse everywhere else. Top-3 and top-5 fall by between 2.6 and 4.8
-across the board, so this is not a matter of the right answer slipping from first
-to second place. It has left the shortlist entirely. \smob, 100 held-out
-people.}}
+noise. Seven, at seven different cuts, all moving the same way, is a model that
+has been narrowed: better at the hours it was told to care about and worse
+everywhere else. Top-3 and top-5 fall by between 2.6 and 4.8 across the board, so
+this is not the right answer slipping from first to second place. It has left the
+shortlist entirely.}}
 
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the targeted-sampling run, evaluated at seven cuts}
 \end{table}

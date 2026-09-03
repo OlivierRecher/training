@@ -1,0 +1,77 @@
+% F -- Where the published ceilings sit, where the one-line rule sits, and how
+% thin the band left to work in actually is.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[x=0.132cm,y=1cm,font=\small,
+  rowlab/.style={anchor=south west,font=\footnotesize,text=clmodel},
+  val/.style={anchor=west,font=\footnotesize\bfseries},
+]
+% --- the scale ----------------------------------------------------------
+\draw[clrule] (0,0) -- (100,0);
+\foreach \xx in {0,20,40,60,80,100}{
+  \draw[clrule] (\xx,0) -- (\xx,-0.14);
+  \node[anchor=north,font=\scriptsize,text=clrule] at (\xx,-0.18) {\xx};
+}
+\node[anchor=north,font=\scriptsize,text=clrule] at (50,-0.58)
+  {correct answers out of a hundred};
+
+% --- row 1: the famous ceiling -----------------------------------------
+\node[rowlab] at (0,4.26)
+  {\textbf{93\,\%} \ the published ceiling: \emph{where will this person
+   \textbf{be} in the next hour?}~\cite{song2010limits}};
+\fill[clnonsig] (0,3.78) rectangle (93,4.22);
+\node[val,text=clrule] at (94,4.00) {93};
+
+% --- row 2: the honest ceiling -----------------------------------------
+\node[rowlab] at (0,3.16)
+  {\textbf{71\,\%} \ the same ceiling: \emph{where will this person
+   \textbf{go} next?}~\cite{ikanovic2017alternative}};
+\fill[clnonsig!75] (0,2.68) rectangle (71,3.12);
+\draw[clrule,dashed] (71,2.68) rectangle (93,3.12);
+\node[anchor=east,font=\footnotesize\bfseries,text=white] at (70,2.90) {71};
+\node[font=\scriptsize,text=clrule] at (82,2.90) {22: standing still};
+
+% --- row 3: the rule on a raw day --------------------------------------
+\node[rowlab] at (0,2.06)
+  {\textbf{69.2\,\%} \ one line of code, on an ordinary day of my records};
+\fill[clbase] (0,1.58) rectangle (69.2,2.02);
+\node[val,text=clbase] at (70.4,1.80) {69.2};
+
+% --- row 4: the rule and the model, on people who move -----------------
+\node[rowlab] at (0,0.96)
+  {\textbf{50.2\,\%} \ the same line of code on people who genuinely move, and
+   \textbf{54.5\,\%} for my model};
+\fill[clbase] (0,0.48) rectangle (50.2,0.92);
+\fill[clgain] (50.2,0.48) rectangle (54.5,0.92);
+\node[val,text=clgain] at (55.7,0.70) {54.5};
+
+% --- the reading --------------------------------------------------------
+\node[draw=clrule,fill=clsoft,rounded corners=3pt,align=left,inner sep=7pt,
+      text width=13.0cm,font=\footnotesize,anchor=north west] at (0,-0.98)
+  {\textbf{Why the third row is the problem.} The one line of code answers
+   \emph{``the same antenna as a moment ago''}, every time. At 69.2 against an
+   honest ceiling of 71 there is nothing at all left to win: on a day file taken
+   as it comes, one line of code is already at the ceiling. That is why every
+   result in this report is measured on people who genuinely move, where the
+   same line of code drops to 50 and a model has room to show.};
+\end{tikzpicture}}
+\caption{The room a predictor has, once standing still is taken out of it}
+\label{fig:ceiling-ladder}
+\figtext{%
+\figpara{Reading the four bars.}{All four are on one scale, the share of moments
+answered correctly. The two grey bars are published ceilings, the best score any
+predictor could ever reach; the two blue ones are what the trivial rule and my
+model actually score on my data. Song et al.\ put the ceiling at 93\,\%, which
+sounds like an open invitation. Ikanovic and Mollgaard re-ran the same
+measurement after deleting the moments where the person had not moved, and it
+fell to 71\,\%: nearly a quarter of the famous 93 was the passage of time rather
+than anybody's habits, which is the dashed part of the second bar.}
+
+\figpara{The two bottom bars are different sets of people, deliberately.}{An
+ordinary day file and a selection of people who genuinely move are not
+comparable on absolute score, and the point of putting them together is exactly
+that. The rule scores 69.2 on the first and 50.2 on the second without changing
+a character of its own definition. Chapter~\ref{ch:data} makes that move and
+explains it.}}
+\end{figure}

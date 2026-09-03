@@ -1,0 +1,90 @@
+% F -- The eight published works this report leans on, grouped by what each gave.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  band/.style={anchor=north west,align=left,text width=2.35cm,
+               font=\footnotesize\bfseries,text=clmodel},
+  card/.style={anchor=north west,draw=clrule,fill=white,rounded corners=3pt,
+               align=left,inner sep=5pt,text width=3.42cm,minimum height=3.15cm,
+               font=\scriptsize\linespread{0.95}\selectfont},
+]
+\foreach \yy in {0,-3.45,-6.90,-10.35}{ \draw[clrule!60] (0,\yy) -- (14.8,\yy); }
+
+% ---------------- band 1 -------------------------------------------------
+\node[band] at (0,-0.14) {How much room\\ there is};
+\node[card] at (2.70,-0.14)
+  {{\bfseries\color{clmodel}Song et al., 2010}\,\cite{song2010limits}\\[3pt]
+   45{,}000 people, three months. The best score any predictor could ever
+   reach: \textbf{93\,\%}.\\[3pt]
+   {\itshape\color{clgain}Gave me the ceiling, and the hard hours: midday and
+   early evening.}};
+\node[card] at (6.80,-0.14)
+  {{\bfseries\color{clmodel}Ikanovic \& Mollgaard, 2017}\,\cite{ikanovic2017alternative}\\[3pt]
+   Delete the moments where nobody moved, measure again: the ceiling falls to
+   \textbf{71\,\%}.\\[3pt]
+   {\itshape\color{clgain}Gave me my competitor.}};
+
+% ---------------- band 2 -------------------------------------------------
+\node[band] at (0,-3.59) {What to\\ predict with};
+\node[card] at (2.70,-3.59)
+  {{\bfseries\color{clmodel}Luca et al., 2021}\,\cite{luca2021survey}\\[3pt]
+   The survey of the field. The time of day is a standard input; three depths
+   is the standard report.\\[3pt]
+   {\itshape\color{clgain}Gave me the input, and the way to report.}};
+\node[card] at (6.80,-3.59)
+  {{\bfseries\color{clmodel}Wang et al., 2023}\,\cite{wang2023llmmob}\\[3pt]
+   A person's recent stops written out as English and handed to a large model.
+   Nothing trained.\\[3pt]
+   {\itshape\color{clgain}The branch I did not take.}};
+\node[card] at (10.90,-3.59)
+  {{\bfseries\color{clmodel}Qin et al., 2025}\,\cite{qin2025mobllm}\\[3pt]
+   A small open model retrained the same cheap way, over six mobility
+   datasets.\\[3pt]
+   {\itshape\color{clgain}The published work mine is closest to.}};
+
+% ---------------- band 3 -------------------------------------------------
+\node[band] at (0,-7.04) {Who to\\ predict for};
+\node[card] at (2.70,-7.04)
+  {{\bfseries\color{clmodel}Pappalardo et al., 2015}\,\cite{pappalardo2015returners}\\[3pt]
+   A population is not one scale of mobility. It splits into \emph{returners}
+   and \emph{explorers}.\\[3pt]
+   {\itshape\color{clgain}Same idea; my axis is \emph{when} they move, not how
+   far.}};
+\node[card] at (6.80,-7.04)
+  {{\bfseries\color{clmodel}Jeong et al., 2016}\,\cite{jeong2016cluster}\\[3pt]
+   One person's history is too short to learn from. Group people who resemble
+   each other instead.\\[3pt]
+   {\itshape\color{clgain}The mechanism behind Chapter~\ref{ch:groups}.}};
+
+% ---------------- band 4 -------------------------------------------------
+\node[band] at (0,-10.49) {What exactly\\ is predicted};
+\node[card] at (2.70,-10.49)
+  {{\bfseries\color{clmodel}Chen et al., 2013}\,\cite{chen2013nextcell}\\[3pt]
+   Predicts the next \emph{antenna} rather than the next place, from radio
+   measurements.\\[3pt]
+   {\itshape\color{clgain}My target, without their radio measurements.}};
+\node[anchor=north west,draw=clbase,dashed,fill=clbase!8,rounded corners=3pt,
+      align=left,inner sep=6pt,text width=7.4cm,minimum height=3.15cm,
+      font=\footnotesize] at (6.80,-10.49)
+  {\textbf{The gap this report sits in.} Everything above predicts a
+   \emph{place}, except the last card, which predicts an antenna but has radio
+   measurements to do it with. Predicting an antenna from a trace of antennas
+   alone inherits a drawback from each side, and Chapter~\ref{ch:data} measures
+   the price.};
+\end{tikzpicture}}
+\caption{The eight published works, and what each one gave me}
+\label{fig:sota-map}
+\figtext{%
+\figpara{How the four bands are ordered.}{Top to bottom, from the frame every
+later number is read in, down to the exact object being predicted. The first
+band fixes how much room a predictor has at all, and is why this report is
+written against a one-line rule. The second places the instrument. The third is
+the ancestry of the only substantial gain I obtained. The fourth marks the
+boundary between the published task and the one I actually took on.}
+
+\figpara{The italic line on each card is the honest debt.}{None of these works
+was found by looking for support after the fact, except the third band: I sorted
+people into kinds of user before reading Pappalardo and Jeong, and found
+afterwards that both the observation and the mechanism were already published.}}
+\end{figure}

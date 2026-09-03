@@ -9,89 +9,67 @@ part of the answer is the conditions under which that is true.
 
 \section{What the work settles}
 
+\input{figures/fig-results-card}
+
 \paragraph{The model does beat the one-line rule, and it is clear where the gain
 comes from.} A fine-tuned Qwen2.5-0.5B answers correctly \textbf{4.3 more times
-out of a hundred} than ``repeat the last antenna'': 54.5\,\% against 50.2\,\% on
-the 1{,}000 held-out people of the largest corpus, and 4.2 more out of a hundred
-on a second, independent group. That number is not large, and it should not be.
-The competitor is one line of code that is right roughly half the time on people
-who genuinely move, and for five of the eleven iterations nothing I trained beat
-it at all.
-
-What made the difference was neither capacity nor volume but \emph{conditioning
-on who the person is}: sorting people by the hours at which they actually change
-location, and sending each kind of user to its own set of trained numbers. That
-single change took the model from 1.8 behind the rule to 3.7 ahead of it, and the
-gain fell in the exact inverse order of how well repetition already worked for
-each of the four kinds.
+out of a hundred} than ``repeat the last antenna''. That number is not large, and
+it should not be. The competitor is one line of code that is right roughly half
+the time on people who genuinely move, and for five of the eleven iterations
+nothing I trained beat it at all. What made the difference was neither capacity
+nor volume but \emph{conditioning on who the person is}: sorting people by the
+hours at which they actually change location, and sending each kind of user to
+its own set of trained numbers. That single change took the model from 1.8 behind
+the rule to 3.7 ahead of it, and the gain fell in the exact inverse order of how
+well repetition already worked for each of the four kinds.
 
 \paragraph{The amount of data needed is small, and the report says where it stops
-paying.} Population size is a real lever over one narrow stretch, from 400 to
-1{,}900 training people, where the gain grows from 0.6 to 4.2, and is worth
-nothing above it. A further ten-fold increase, to 21{,}000 people, buys 0.1, and
-a resampling test over 1{,}000 held-out people puts zero inside every confidence
-interval, including the one spanning the entire range. One explanation fits the
-timing: the least populated of the four kinds of user crosses roughly a hundred
-members exactly between the two sizes where the score moves. Below that, a kind
-cannot be estimated and the model is right to ignore it.
+paying.} Population size is a real lever from 400 to 1{,}900 training people,
+where the gain grows from 0.6 to 4.2, and is worth nothing above it. One
+explanation fits the timing: the least populated of the four kinds of user crosses
+roughly a hundred members exactly between the two sizes where the score moves.
+Below that, a kind cannot be estimated and the model is right to ignore it.
 
 \paragraph{Difficulty lives in the person, not in the dataset.} This is the
-finding I would keep if I had to keep one. \textbf{22.4} correct answers per
-hundred separate the calmest kind of user from the most restless one, against
-\textbf{0.4} across the whole range of training sizes, a ratio of more than fifty.
-The score of an individual person ranges from zero to one hundred per cent, and
-what predicts it is how repetitive that person's movement already is. An average
-score on this problem is a weighted mixture of segments of wildly different
-difficulty, and quoting it alone hides the only part of the result that is about
-the model.
-
-\paragraph{And a methodological point that cost more than most of the modelling.}
-Three of the largest single improvements of the internship were not modelling
-ideas at all. Reading the best saved copy of a training run instead of the last
-one was worth 15.5 correct answers per hundred. Recognising that where the day is
-cut belongs to the ruler rather than to the model retired a 1.1 ``result'' that
-was noise. And choosing a set of people on which the trivial rule does not already
-score 69\,\% is what made the question measurable at all. On a task whose honest
-yardstick is a one-line rule, the first place to look for improvements is the
-measurement.
+finding I would keep if I had to keep one. The score of an individual person
+ranges from zero to one hundred per cent, and what predicts it is how repetitive
+that person's movement already is. An average score on this problem is a weighted
+mixture of segments of wildly different difficulty, and quoting it alone hides
+the only part of the result that is about the model.
 
 \section{What I did not have time to do}
 
-Some of what follows is unfinished work rather than future research, and it is
-worth separating the two. The first four items are things that could be done in
-under a day each, and that I would do before anything else.
+Some of what follows is unfinished work rather than future research. The first
+four items could each be done in under a day, and I would do them before
+anything else.
 
 \begin{enumerate}
   \item \textbf{Re-score the earlier model on the later test people.} One grading
         pass, no training at all. Because the set of test people changed four
         times over the internship, the 3.7 of iteration 8 and the 4.2 of
-        iteration 9 are two separate measurements of the same effect rather than a
-        progression. Re-scoring puts every row of the project on one axis, and it
-        is the cheapest possible improvement to the report's internal
-        consistency.
+        iteration 9 are two separate measurements of the same effect rather than
+        a progression. Re-scoring puts every row of the project on one axis.
   \item \textbf{Re-measure the switch-rate correlation on the final model.} Also
         one grading pass. The $r = -0.971$ of Chapter~\ref{ch:user} was measured
-        on a model that was imitating the trivial rule, and a model that genuinely
-        helps the restless minority has to break the lockstep between how often
-        somebody moves and how well they are predicted, so that coefficient should
-        come down. It is the cheapest independent test of this report's main
-        claim, taken on a thousand people rather than on four averages, and it
-        would say whether the mechanism reaches individual people or only shows up
-        once they are grouped.
-  \item \textbf{Train the same configuration twice from different random
-        starting points.} About half an hour. The resampling test of
-        Chapter~\ref{ch:scale} covers the luck of which test people are drawn, but
-        not the other source of chance, namely that training itself is not
-        perfectly repeatable. Differences of a few tenths between sizes, and the
-        0.8 measured on the calmest kind of user, therefore sit on a floor nobody
-        measured.
+        on a model that was imitating the trivial rule, and a model that
+        genuinely helps the restless minority has to break the lockstep between
+        how often somebody moves and how well they are predicted. It is the
+        cheapest independent test of this report's main claim, and it would say
+        whether the mechanism reaches individual people or only shows up once
+        they are grouped.
+  \item \textbf{Train the same configuration twice from different random starting
+        points.} About half an hour. The resampling test of
+        Chapter~\ref{ch:scale} covers the luck of which test people are drawn,
+        but not the other source of chance, namely that training itself is not
+        perfectly repeatable. Differences of a few tenths between sizes therefore
+        sit on a floor nobody measured.
   \item \textbf{Run the capacity control for the routing.} Four sets of trained
         numbers are four times the trainable capacity of one, so part of the
         project's main gain may be capacity rather than the sorting itself. A
-        single set carrying as many trainable numbers as the four together, on the
-        same data, separates the two. I expect the sorting to carry most of it,
-        for the reason given in Section~\ref{sec:retro-groups}, but an expectation
-        is not a measurement.
+        single set carrying as many trainable numbers as the four together, on
+        the same data, separates the two. I expect the sorting to carry most of
+        it, for the reason given in Section~\ref{sec:retro-groups}, but an
+        expectation is not a measurement.
 \end{enumerate}
 
 Two experiments were prepared and did not complete. A seven-day comparison, one
@@ -105,15 +83,13 @@ are enough at this budget'' from ``more people never help''.
 
 \section{What I would do next}
 
-Three directions, in increasing order of ambition.
-
 \paragraph{Make the conditioning work on a short history.} This is the limitation
 I would put first if someone asked what the work is good for. The model's edge is
 largest on people about whom little is known, 4.6 with only 30\,\% of a day in
 hand against 4.3 with 80\,\%, and that cold start is exactly the case an operator
 cares about: predicting the rest of the day for somebody who has just appeared is
-worth more than confirming that a well-known person is still at home. But the kind
-of user is identified correctly for 92 out of 100 people at the reference
+worth more than confirming that a well-known person is still at home. But the
+kind of user is identified correctly for 92 out of 100 people at the reference
 protocol and only 61 and 44 out of 100 when half a day or a third of it is
 available. So the very conditioning that produces the edge decays as the history
 shortens. Building an identifier that works on a short prefix is a smaller and
@@ -130,10 +106,9 @@ list that changes what the problem \emph{is} rather than how well it is measured
 
 \paragraph{And check whether any of this survives a different city.} Every result
 here comes from a single Czech region over fifteen days in March 2014, with 369
-antennas over 113 masts. A denser urban area with thousands of antennas, or one in
-which the model has not already seen every antenna during training, could behave
-differently, and the saturation result in particular partly reflects how small
-this world is.
+antennas over 113 masts. A denser urban area with thousands of antennas could
+behave differently, and the saturation result in particular partly reflects how
+small this world is.
 
 \section{In one paragraph}
 

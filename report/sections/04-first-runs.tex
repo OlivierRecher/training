@@ -6,12 +6,8 @@
 A trained model produces a number. Whether that number means anything depends on
 three things that have nothing to do with the model: which saved copy of the run
 is being read, where the day was cut in two, and how much room the benchmark
-leaves in the first place.
-
-Each of the three cost me a wrong conclusion before it was understood, and each
-turned out to be worth more, in correct answers, than most of the modelling ideas
-that came later. This chapter states the three rules and uses the early runs as
-the evidence for them.
+leaves in the first place. Each of the three cost me a wrong conclusion before it
+was understood.
 
 \paragraph{Where the numbers in this chapter come from.} From the three earliest
 sets of people of Table~\ref{tab:datasets}: \Draw{} taken exactly as the operator
@@ -22,44 +18,30 @@ grading. The one-line rule scores 69.2\,\%, 79.0\,\% and 45.5\,\% on them
 respectively, and that difference between the three is itself the subject of the
 third rule below.
 
+\input{figures/fig-three-rules}
+
 \section{How a prediction is scored}
 
 Everything in this report is scored the same way, and the procedure never
-changes. It has three parts.
-
-\textbf{First, the day is cut in two.} Each test person's day is split once into
-a past, which the model may read, and a rest, which it has to produce.
-Figure~\ref{fig:protocol}(a) draws the cut, and the default is 80/20: the model
-sees the first four fifths of somebody's day and is graded on the last fifth.
-
-\textbf{Second, the rest is answered one moment at a time.} The model is never
-asked to invent a whole afternoon. It is asked for one antenna, then told what
-really happened, then asked for the next one, as in
-Figure~\ref{fig:protocol}(b). So it can neither see the future nor compound its
-own mistakes. The one-line rule is run through exactly the same moments with
-exactly the same history, and answers the last antenna it was shown.
+changes. Each test person's day is cut once into a past the model may read and a
+rest it has to produce, the default being 80/20. The rest is then answered one
+moment at a time: the model is asked for one antenna, told what really happened,
+and asked for the next, so it can neither see the future nor compound its own
+mistakes. The one-line rule is run through exactly the same moments with exactly
+the same history.
 
 \input{figures/fig-protocol}
 
-\textbf{Third, the answers are counted.} This is where a percentage comes from,
-and it is worth spelling out because every figure in the rest of this document is
-one of these counts. At each graded moment, the model produces not a single
-answer but a ranking of all 369 antennas, most likely first. The moment counts as
-correct if the antenna the person really visited is at the top of that ranking.
-The score is then the number of correct moments divided by the number of graded
-moments: ten moments, seven correct, 70\,\%.
-
-Reading the ranking one place down gives \textbf{top-3}, and further down
-\textbf{top-5}. Figure~\ref{fig:topk} shows all of it on one picture.
+At each graded moment the model produces not a single answer but a ranking of all
+369 antennas, most likely first, and the moment counts as correct if the antenna
+the person really visited is at the top of that ranking. Reading the ranking one
+place down gives \textbf{top-3}, and further down \textbf{top-5}.
 
 \input{figures/fig-topk}
 
 The three depths are not three models; they are the same predictions read at
-three levels of strictness. Reporting all three is the convention of the mobility
-literature rather than an idea of mine \cite{luca2021survey,qin2025mobllm}, and it
-exists because an operator that can prepare three antennas in advance is served
-by a correct answer in third place. Top-1 is the strict headline used throughout
-this report; the other two say whether a model that misses is missing narrowly or
+three levels of strictness. Top-1 is the strict headline used throughout this
+report; the other two say whether a model that misses is missing narrowly or
 wildly.
 
 \section{Rule 1: never read the last pass of a run}
@@ -69,18 +51,14 @@ by heart.\footnote{\textbf{Overfitting}: the point past which a model stops
 learning the regularity of the data and starts memorising the examples it was
 shown.} That is not a hypothesis; it is what the curves do.
 
-The clearest evidence in this project is a single run, deliberately allowed to
-continue to a hard ceiling of forty-nine passes over the data. Its training score
-improves the whole way through, but its score on people it had never seen climbs
-for nine passes, peaks, and then declines for the remaining forty.
-Figure~\ref{fig:validation-curves}(a) shows both halves of that sentence at once.
-
 \input{figures/fig-validation-curves}
 
-The important part is not that this happened, which was expected, but how much it
-costs to ignore it. The copy saved at the end of that run scored 48.7\,\% on the
-held-out people. The copy saved at the peak scored 64.2\,\%. Reading the end of
-training instead of its best point therefore throws away \textbf{15.5 correct
+The clearest evidence is a single run, deliberately allowed to continue to a hard
+ceiling of forty-nine passes. Its training score improves the whole way through,
+but its score on people it had never seen climbs for nine passes, peaks, and then
+declines for the remaining forty. The copy saved at the end scored 48.7\,\% on
+the held-out people; the copy saved at the peak scored 64.2\,\%. Reading the end
+of training instead of its best point therefore throws away \textbf{15.5 correct
 answers per hundred}, and spends forty passes of waiting time doing so.
 
 Acting on that, keeping the best copy, stopping on a plateau, and adding three
@@ -89,18 +67,14 @@ mild settings that make memorisation harder,\footnote{Three standard knobs.
 step, so the model cannot lean on any single one. \textbf{Learning rate}: how big
 a step to take when adjusting a number. \textbf{Weight decay}: a mild pull of
 every trainable number back towards zero.} moved the score on unseen people from
-48.7\,\% to \textbf{64.4\,\%}. That is 15.7 more correct answers per hundred for
-the saving rule and the three settings together. It also cut the waiting time
-from seventy-two minutes to twenty-nine, and lifted top-3 from 76.2\,\% to
-82.7\,\%.
+48.7\,\% to \textbf{64.4\,\%}, cut the waiting time from seventy-two minutes to
+twenty-nine, and lifted top-3 from 76.2\,\% to 82.7\,\%.
 
-Panels (b), (c) and (d) of the same figure confirm that this shape is a property
-of the task rather than of one run: on three further sets of people, with rules
-ranging from 43.5\,\% to 79.0\,\%, the peak arrives between the fourth and sixth
-pass and then decays. The peak is always early, which is why every run in this
-report is stopped early and read at its best copy. Two runs are then always
-compared at their respective peaks, which is the only comparison that is not an
-accident of where each one happened to stop.
+Panels (b), (c) and (d) confirm that this shape belongs to the task rather than
+to one run: on three further sets of people, with rules ranging from 43.5\,\% to
+79.0\,\%, the peak arrives between the fourth and sixth pass and then decays. So
+every run in this report is stopped early and read at its best copy, and two runs
+are always compared at their respective peaks.
 
 \section{Rule 2: where the day is cut belongs to the ruler}
 
@@ -108,54 +82,38 @@ The share of the day given to the model, called the \emph{context
 fraction},\footnote{\textbf{Context fraction}: the share of a person's day handed
 to the model before it must produce the rest. Distinct from the \emph{context
 window} of Chapter~\ref{ch:tools}, which is a hard architectural limit.} looks
-like a setting of the experiment. It is not. It is part of the measurement.
-
-Moving the cut changes which antenna counts as ``the last one seen'', so it
-changes the one-line rule too. A model graded at 90\,\% context is not a better
-model than the same model graded at 30\,\%; it is the same model measured against
-an easier ruler.
-
-Table~\ref{tab:context-sweep} is the evidence, and it contains the mistake this
-rule exists to prevent. On \Dfilt{} the model reaches 80.1\,\% at the reference
-80/20 split, against a rule that scores 79.0\,\%: \textbf{1.1 more correct
-answers per hundred}, and the first time in the project that a trained model
-cleared the one-line rule. Read on its own that looks like a result. Read across
-the three rows it is far weaker: at 70\,\% context the model trails by 0.3, and
-at 90\,\% context, where its own score is the \emph{highest} of the three, it
-trails by 2.4. One split out of three passes.
+like a setting of the experiment. It is part of the measurement. Moving the cut
+changes which antenna counts as ``the last one seen'', so it moves the one-line
+rule too. A model graded at 90\,\% context is not a better model than the same
+model graded at 30\,\%; it is the same model measured against an easier ruler.
 
 \input{tables/tab-context-sweep}
 
-The lower block of the same table settles it. On \Dmob{} a single trained model
-was graded at seven cuts from 30\,\% to 90\,\%. Its score rises steadily from
-41.5\,\% to 47.6\,\%, and the one-line rule rises with it, in lockstep, at every
-single value. No cut beats the rule; the closest is 0.3 short and the worst,
-again at 90\,\% context, is 2.1 short. More history helps the model and helps
-``repeat the last antenna'' by the same amount, so a rising accuracy curve across
-cuts carries no information about the model at all.
+That table contains the mistake this rule exists to prevent. On \Dfilt{} the
+model reaches 80.1\,\% at the reference 80/20 split against a rule at 79.0\,\%:
+\textbf{1.1 more correct answers per hundred}, and the first time in the project
+that a trained model cleared the one-line rule. Read on its own that looks like a
+result. Read across the three rows it is far weaker: at 70\,\% context the model
+trails by 0.3, and at 90\,\% context, where its own score is the \emph{highest}
+of the three, it trails by 2.4.
 
 One clarification belongs here, because the two blocks of that table are not the
 same experiment. The \sfilt{} rows are three separate trainings, one per cut. The
 \smob{} rows are one training at 80/20, graded seven times, so what they measure
 is how well a model tolerates being handed more or less history than it was
-trained on, not which cut trains the best model. Both questions are legitimate;
-they are not interchangeable, and the second is the one this report can answer.
+trained on, not which cut trains the best model. Both questions are legitimate,
+and the second is the one this report can answer.
 
 \section{Rule 3: a benchmark has to leave room}
 
-The third rule is the one that took longest to accept.
-
-On a day file taken as it comes, ``repeat the last antenna'' is right 69.2\,\% of
-the time. There is almost nothing above that for a model to win, and most of what
-is left is not mobility at all: it is people with three records from a single
+The third rule took longest to accept. On a day file taken as it comes, ``repeat
+the last antenna'' is right 69.2\,\% of the time, and most of what is left above
+that is not mobility at all: it is people with three records from a single
 antenna. A model scoring 64.4\,\% on such a file has not failed at prediction. It
-has been measured on a benchmark with no room in it.
-
-The same trained architecture, on three sets of people, faces rules of 69.2\,\%,
-79.0\,\% and 45.5\,\%. Nothing about the rule changed between those three
-numbers; the people did. That is why the data decision of Chapter~\ref{ch:data}
-was worth more than any setting: it is what created a benchmark on which the
-question could be measured at all.
+has been measured on a benchmark with no room in it. The same trained
+architecture, on three sets of people, faces rules of 69.2\,\%, 79.0\,\% and
+45.5\,\%. Nothing about the rule changed between those three numbers; the people
+did.
 
 \section{What the three rules settled}
 
@@ -176,29 +134,20 @@ have much to do with the outcome.
 A companion experiment made the same point statistically: on a 100-person version
 of the data, the score per person ranged from 10\,\% to 100\,\% and the model
 never passed 42.1\,\%. One hundred people is not a population; it is a handful of
-anecdotes with an average printed underneath. That is what
-Chapter~\ref{ch:user} sets out to fix.
+anecdotes with an average printed underneath. That is what Chapter~\ref{ch:user}
+sets out to fix.
 
 \section{Looking back}
 \label{sec:retro-first}
 
-Two things stand out with hindsight.
+That 1.1 I presented as a result was not one. One favourable cell in a table of
+three is too weak to carry a conclusion, and the following iteration duly made it
+disappear. What I would ask of that number now is the one thing I did not ask of
+it, which is to repeat it: a second training would have cost half an hour and
+would have said immediately whether there was anything there.
 
-The first is that 1.1. I presented it as a result, and it was not one. Of the
-three cuts tried, one passes and the two others lose ground, and every figure in
-that table comes from a single training. One favourable cell in a table of three
-is too weak to carry a conclusion, and the following iteration duly made it
-disappear: the same architecture on cleaner data beat nothing at all. What I
-would ask of that number now is the one thing I did not ask of it, which is to
-repeat it. A second training, or the same cut on a second set of people, would
-have cost half an hour and would have said immediately whether there was anything
-there.
-
-The second is that the three rules of this chapter arrived one at a time, and
-each of them arrived \emph{after} a conclusion that turned out to be wrong. They
-are not deep ideas; they are hygiene. A short checklist written before the first
-training, read the peak and not the last pass, recompute the rule every time the
-cut moves, check that the benchmark leaves room before spending a week inside it,
-would have caught all three at once, and the modelling work would have started
-two iterations earlier. That checklist is, in effect, what this chapter has
-become.
+The three rules arrived one at a time, and each of them arrived \emph{after} a
+conclusion that turned out to be wrong. A short checklist written before the
+first training would have caught all three at once, and the modelling work would
+have started two iterations earlier. That checklist is, in effect, what this
+chapter has become.

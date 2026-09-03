@@ -77,28 +77,17 @@ each event is preceded by its hour. Only the dark blue positions are graded.\par
 \caption{One person's day, as the model receives it}
 \label{fig:training-example}
 \figtext{%
-\figpara{Panel (a): the file on disk.}{Each person's day is written as a record
-with three slots. Two of them are boilerplate, repeated word for word on every
-line of the file, and the entire trajectory lives in the third. Choosing that
-layout buys nothing conceptually; it buys compatibility with a library that
-already knows how to read it, which is the only reason it is there.}
-
-\figpara{Panel (b): what the model actually reads.}{Reading left to right, the
-grey symbols set the scene and are excluded from the grade. Then the day itself
-arrives as pairs: an orange symbol giving the hour, then a dark blue symbol
-giving the antenna. Each antenna name is a single symbol rather than a spelling,
-which is why the model is choosing among 369 known answers instead of trying to
-spell one letter by letter.}
-
-\figpara{Why the hour is orange and not blue.}{The hour is handed to the model
-for free and never has to be guessed. That is legitimate here and in production
-alike, because the current time is always known at the moment a prediction is
-asked for. Only the blue positions are ever graded.}
-
-\figpara{Why the hour is one symbol rather than a written-out time.}{A day of
-200 events costs 400 symbols in this layout, plus the short opening. Writing
-``07:31:22'' instead of \cid{<H07>} would have cost four or five symbols per
-event, and since the model may only look at 512 symbols at a time, that would
-have cut the visible history by roughly two thirds.}}
+\figpara{Panel (a) is the file on disk; panel (b) is what the model reads.}{Each
+person's day is written as a record with three slots, two of them boilerplate and
+the trajectory in the third, a layout chosen only for compatibility with a
+library that already knows how to read it. In panel (b) the grey symbols set the
+scene and are excluded from the grade; then the day arrives as pairs, an orange
+symbol for the hour and a dark blue symbol for the antenna. Each antenna name is
+a single symbol rather than a spelling, so the model chooses among 369 known
+answers instead of spelling one letter by letter. The hour is handed over for
+free and never guessed, which is legitimate here and in production alike, and it
+costs one symbol rather than five: writing ``07:31:22'' would have cut the
+visible history by roughly two thirds, since the model may only look at 512
+symbols at a time.}}
 
 \end{figure}

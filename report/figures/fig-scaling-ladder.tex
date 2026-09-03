@@ -45,37 +45,31 @@
 \caption{Eight training sizes: the gain climbs, then stops}
 \label{fig:scaling-ladder}
 \figtext{%
-\figpara{What is on each axis.}{Eight separate training runs, differing only in
-how many people they were trained on. The horizontal axis is that number, on a
-logarithmic scale, so equal distances are equal multiples and the stretch from
-400 to 1{,}900 occupies the same width as 4{,}000 to 19{,}000. The vertical axis
-is \emph{not} a score. It is the distance between the model and the one-line rule
-measured on that run's own test people, which is the only quantity that survives
-a change of test set. The dashed line at zero therefore means
-``indistinguishable from repeating the last antenna''.}
+\figpara{What is on each axis.}{Eight training runs differing only in how many
+people they were trained on. The horizontal axis is that number on a logarithmic
+scale, so equal distances are equal multiples. The vertical axis is \emph{not} a
+score: it is the distance between the model and the one-line rule on that run's
+own test people, which is the only quantity that survives a change of test set.
+The dashed line at zero means ``indistinguishable from repeating the last
+antenna''.}
 
-\figpara{The left band: imitation.}{At 400 training people the model gains 0.6,
-which is to say it is doing nothing the trivial rule was not already doing.}
+\figpara{Three bands, and the middle one holds everything.}{At 400 people the
+model gains 0.6, which is to say it does nothing the trivial rule was not already
+doing. Between 400 and 1{,}900 the gain climbs 0.6, 2.8, 3.5, 4.2: a four-fold
+increase in population buys 3.6 more correct answers per hundred, essentially the
+entire benefit this project ever obtained from data volume. The ten-fold increase
+that follows buys 0.1, and not even in an orderly way, since the best size,
+15{,}000, is followed by the worst, 21{,}000. The curve does not slow down. It
+stops.}
 
-\figpara{The middle band: generalisation, and the whole of the benefit.}{Between
-400 and 1{,}900 people the gain climbs 0.6, 2.8, 3.5, 4.2. A four-fold increase
-in population buys 3.6 more correct answers per hundred, and that is essentially
-the entire benefit this project ever obtained from data volume.}
-
-\figpara{The right band: saturation.}{The ten-fold increase that follows buys
-0.1, and not even in an orderly way, since the best size, 15{,}000, is followed
-by the worst, 21{,}000. None of the steps inside that stretch can be told apart
-from zero (Table~\ref{tab:bootstrap}). The curve does not slow down. It stops.}
-
-\figpara{Two things constrain how far this reads.}{First, the points do not all
-come from the same test people: 900 to 1{,}900 are scored on \stwok{} against a
-48.2\,\% rule, 400 is the \smob{} run against 43.1\,\%, and 5{,}000 to 21{,}000
-are scored on \seleven{} against 50.2\,\%. That is exactly why the axis is a
-distance and not a score, and why the small step across that boundary is not a
-measurement. Second, every size received the same budget of training time, so at
-21{,}000 people only 36\,\% of the available training slices were ever read. The
-defensible claim is that 1{,}900 people are already enough \emph{at this training
-budget}, not that more people can never help.}}
+\figpara{Two things constrain how far this reads.}{The points do not all come
+from the same test people: 400 is \smob{} against a 43.1\,\% rule, 900 to
+1{,}900 are \stwok{} against 48.2\,\%, and 5{,}000 to 21{,}000 are \seleven{}
+against 50.2\,\%. That is why the axis is a distance, and why the small step
+across that boundary is not a measurement. And every size received the same
+budget of training time, so at 21{,}000 people only 36\,\% of the available
+training material was ever read. The defensible claim is that 1{,}900 people are
+enough \emph{at this training budget}, not that more can never help.}}
 
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the eight-tier scaling notebook}
 \end{figure}

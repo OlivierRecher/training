@@ -61,38 +61,29 @@
 \caption{The score on unseen people, pass by pass, on four sets of people}
 \label{fig:validation-curves}
 \figtext{%
-\figpara{What is plotted.}{Four separate training runs, on four different sets
-of people. In each panel the horizontal axis counts the passes the run made over
-its training data, and the vertical axis is the score the model obtains on people
-it is \emph{not} training on. The solid line is the model, the star marks its
-best pass, and the dashed line is the score of the one-line rule on that same set
-of people.}
-
-\figpara{The shape is always the same.}{The score on unseen people climbs for
-four to nine passes, peaks, and then declines, sometimes for tens of passes,
-while the model's score on its own training data keeps improving the whole time.
-That divergence is the model switching from learning how the population moves to
-learning its training examples by heart.}
+\figpara{What is plotted.}{Four separate training runs on four different sets of
+people. The horizontal axis counts the passes a run made over its training data;
+the vertical axis is the score on people it is \emph{not} training on. The solid
+line is the model, the star marks its best pass, and the dashed line is the
+one-line rule on that same set of people. In all four the score climbs for four
+to nine passes, peaks, then declines, while the score on the run's own training
+data keeps improving: that divergence is the model switching from learning how
+the population moves to learning its examples by heart.}
 
 \figpara{What it costs to read the wrong pass.}{In panel (a) the best pass scores
-65.0\,\% and the last one 48.1\,\%, so stopping the run and reading its end
-instead of its best point throws away 16.9 correct answers per hundred, plus
-forty passes of waiting time. Measured on the held-out people rather than on the
-validation ones, the same choice costs 15.5. This is the single largest
-improvement of the internship, and it is not a modelling idea.}
+65.0\,\% and the last one 48.1\,\%, so reading the end of the run instead of its
+best point throws away 16.9 correct answers per hundred plus forty passes of
+waiting time. Measured on the held-out people rather than the validation ones the
+same choice costs 15.5, and it is the single largest improvement of the
+internship.}
 
-\figpara{Careful with the dashed line.}{It moves between panels, from 69.2\,\% on
-the unfiltered day to 43.5\,\% once only mobile people are kept, because the
-people themselves are different. The four panels are therefore comparable only on
-the \emph{distance} between the solid line and the dashed one, and in all four
-that distance is negative: none of these four runs beats the one-line rule.}
-
-\figpara{One caveat about the points themselves.}{The per-pass values are
-recovered by reading each run's own curve off the chart, with the vertical scale
-calibrated on the two values printed on it, so an individual point carries about
-one correct answer per hundred of reading error. The figures quoted in the text
-are the reported ones, not the read-off ones. Qwen2.5-0.5B with QLoRA
-throughout.}}
+\figpara{Careful with the dashed line.}{It moves between panels, from 69.2\,\%
+on the unfiltered day to 43.5\,\% once only mobile people are kept, because the
+people are different. The four panels are comparable only on the distance between
+solid and dashed, and in all four that distance is negative: none of these runs
+beats the rule. The per-pass points are read off each run's own chart and carry
+about one correct answer per hundred of reading error; the figures quoted in the
+text are the reported ones.}}
 
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the training loop these per-pass scores come from}
 \end{figure}

@@ -1,0 +1,102 @@
+% F -- The whole report on one page: three findings, three numbers.
+% NB: 'cap' is a reserved TikZ key (line cap); the caption style is 'capt'.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  card/.style={anchor=north west,draw=clrule,fill=white,rounded corners=3pt,
+               inner sep=0pt,minimum width=4.70cm,minimum height=6.65cm},
+  eyeb/.style={anchor=north west,align=left,text width=4.20cm,
+               font=\tiny\bfseries,text=clrule},
+  big/.style={anchor=north west,font=\fontsize{25}{25}\selectfont\bfseries},
+  capt/.style={anchor=north west,align=left,text width=4.20cm,font=\scriptsize,
+               text=clmodel},
+  mic/.style={font=\tiny,text=clrule},
+]
+% ============================ card 1 ====================================
+\begin{scope}
+\node[card] at (0,0) {};
+\node[eyeb] at (0.25,-0.22) {THE MODEL BEATS THE ONE-LINE RULE BY};
+\node[big,text=clgain] at (0.25,-0.92) {+4.3};
+\node[capt] at (0.25,-1.98)
+  {more correct answers per hundred than \emph{``the same antenna as a moment
+   ago''}: 54.5\,\% against 50.2\,\% on a thousand people never seen during
+   training.};
+\fill[clbase] (0.25,-4.34) rectangle (1.56,-4.10);
+\fill[clgain] (1.56,-4.34) rectangle (1.67,-4.10);
+\node[mic,anchor=west,text=clgain] at (1.77,-4.22) {54.5};
+\node[mic,anchor=north west] at (0.25,-4.60)
+  {blue: the rule; orange: the model's gain};
+\node[capt] at (0.25,-5.35)
+  {What produced it was not a bigger model, but sorting people by \emph{when}
+   they move.};
+\end{scope}
+
+% ============================ card 2 ====================================
+\begin{scope}[shift={(5.05,0)}]
+\node[card] at (0,0) {};
+\node[eyeb] at (0.25,-0.22) {MORE PEOPLE STOP PAYING AT};
+\node[big,text=clmodel] at (0.25,-0.92) {1\,900};
+\node[capt] at (0.25,-1.98)
+  {training people. Below that the gain climbs from 0.6 to 4.2. Above it, a
+   ten-fold increase to 21{,}000 buys \textbf{0.1}, and zero is inside every
+   interval.};
+\draw[clrule] (0.25,-4.85) -- (4.15,-4.85);
+\draw[clmodel,very thick]
+  (0.25,-4.74) -- (1.03,-4.35) -- (1.45,-4.22) -- (1.75,-4.09)
+  -- (2.67,-4.08) -- (3.34,-4.06) -- (3.73,-4.00) -- (4.05,-4.08);
+\draw[clloss,dashed] (1.75,-4.85) -- (1.75,-3.90);
+\node[mic,anchor=south,text=clloss] at (1.75,-3.88) {1{,}900};
+\node[mic,anchor=north west] at (0.25,-4.94)
+  {what the model gains, against training people};
+\node[capt] at (0.25,-5.35)
+  {Two thousand people is the operating point; collecting ten times more is
+   not where the next gain lies.};
+\end{scope}
+
+% ============================ card 3 ====================================
+\begin{scope}[shift={(10.10,0)}]
+\node[card] at (0,0) {};
+\node[eyeb] at (0.25,-0.22) {THE PERSON OUTWEIGHS THE DATA BY};
+\node[big,text=clGthree] at (0.25,-0.92) {50$\times$};
+\node[capt] at (0.25,-1.98)
+  {22.4 correct answers per hundred separate the calmest kind of user from the
+   most restless one. Across the whole range of training sizes: 0.4.};
+\fill[clGthree] (0.25,-4.29) rectangle (2.40,-4.05);
+\node[mic,anchor=west,text=clGthree] at (2.50,-4.17) {22.4 between people};
+\fill[clnonsig] (0.25,-4.79) rectangle (0.29,-4.55);
+\node[mic,anchor=west] at (0.39,-4.67) {0.4 between training sizes};
+\node[capt] at (0.25,-5.35)
+  {This is the finding I would keep if I had to keep one.};
+\end{scope}
+
+% ============================ footer ====================================
+\node[anchor=north west,draw=clbase,dashed,fill=clbase!8,rounded corners=3pt,
+      inner sep=7pt,align=left,text width=14.35cm,font=\footnotesize]
+      at (0,-6.95)
+  {\textbf{And the three largest single improvements were about measuring, not
+   modelling.} Reading the best saved copy of a run instead of the last one was
+   worth \textbf{15.5} correct answers per hundred. Recognising that where the
+   day is cut belongs to the ruler retired a \textbf{1.1} ``result'' that was
+   noise. And choosing a set of people on which the trivial rule does not already
+   score 69\,\% is what made the question measurable at all.};
+\end{tikzpicture}}
+\caption{The whole report in three numbers}
+\label{fig:results-card}
+\figtext{%
+\figpara{Why these three and not others.}{Each is the answer to one of the three
+questions the internship actually asked: does a retrained language model beat the
+trivial rule, how much data does that take, and where does the remaining
+difficulty live. They are ordered by how firmly they are established. The
+\textbf{+4.3} is one measurement on one set of people, repeated once on a second
+group. The \textbf{1{,}900} rests on eight training sizes and a resampling test.
+The \textbf{50$\times$} is the most robust of the three, because it appears in
+every chapter that split its results by person.}
+
+\figpara{What the dashed band is doing there.}{It is the uncomfortable part of
+the summary. On a task whose honest yardstick is one line of code, three
+corrections to how things were measured were each worth more than any modelling
+idea I had. That is not a criticism of the modelling; it is where I would tell
+somebody picking this up to look first.}}
+\figsource{\nbfinal}{train\_cellid\_final.ipynb}{with every number traced to its run in Table~\ref{tab:provenance}}
+\end{figure}

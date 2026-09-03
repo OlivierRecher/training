@@ -36,40 +36,30 @@
 \caption{Stretching every day to 200 records: a high score, a worse result}
 \label{fig:resampling}
 \figtext{%
-\figpara{What the technique does.}{Every person's day is stretched to exactly 200
-records by repeating records that are already there, spread evenly along the day.
-The aim is legitimate: without it, the longest quarter of people carries 44\,\% of
-the training material, so a fine-tune spends most of its budget on the heaviest
-users.}
-
-\figpara{Panel (a): a spectacular score, and a result that changed sign.}{Each
-run is shown against \emph{its own} one-line rule, and only the comparison inside
-a pair means anything. The levelled model reaches 74.9\,\%, twenty-eight above
-the natural-length run and by a wide margin the highest absolute score in the
-whole project. But the rule on those same stretched days reaches 76.5\,\%, so the
-distance flips from 3.7 ahead to 1.6 behind. The score went up and the result got
-worse.}
+\figpara{Panel (a): a spectacular score, and a result that changed sign.}{Every
+person's day is stretched to exactly 200 records by repeating records already
+there, so that the longest quarter of people stops carrying 44\,\% of the
+training material. Each run is shown against \emph{its own} one-line rule, and
+only the comparison inside a pair means anything. The levelled model reaches
+74.9\,\%, by a wide margin the highest absolute score of the project, but the
+rule on those same stretched days reaches 76.5\,\%. The distance flips from 3.7
+ahead to 1.6 behind: the score went up and the result got worse.}
 
 \figpara{Panel (b): the reason is arithmetic, not modelling.}{Of the 4{,}000
-graded moments, 100 people times the last 40 of their 200 records, \textbf{2{,}262
-ask for a record that is a copy of the one before}. Any rule that repeats is right
-on all of them by construction, so both the model and the rule are handed those
-answers for free, which is why both rose by about thirty. On the 1{,}738 moments
-that are real decisions the rule scores 45.9\,\% against the model's 42.2\,\%.}
+graded moments, \textbf{2{,}262 ask for a record that is a copy of the one
+before}. Any rule that repeats is right on all of them by construction, which is
+why both bars rose by about thirty. On the 1{,}738 moments that are real
+decisions the rule scores 45.9\,\% against the model's 42.2\,\%. The model bar
+here is derived from the reported 74.9\,\% rather than re-measured, assuming it
+never misses a copy; it rises to 44.8\,\% if it misses 2\,\% of them, and stays
+below the rule at either end.}
 
-\figpara{Why it could not have worked here.}{A copied step never changes location,
-by construction. So levelling compresses the spread between people in how often
-they move by a factor of 2.3 and drags everybody towards the stay-at-home profile.
-That is fatal for this particular pipeline, because telling the four kinds of user
-apart is the mechanism that produced the project's only real gain, and it needs
-that spread to work. The technique does deliver what it promises, the
-longest-to-shortest ratio falling from 200:19 to 1:1 and per-person weight becoming
-perfectly equal, but on this data it removes more information than it
-redistributes.}
-
-\figpara{One honest note on the drawing.}{The model bar in panel (b) is derived
-from the reported 74.9\,\% rather than re-measured. It assumes the model never
-misses a copy, and it rises to 44.8\,\% if it misses 2\,\% of them. Both ends
-stay below the rule.}}
+\figpara{Why it could not have worked here.}{A copied step never changes
+location, so levelling compresses the spread between people in how often they
+move by a factor of 2.3 and drags everybody towards the stay-at-home profile.
+Telling the four kinds of user apart is the mechanism that produced the
+project's only real gain, and it needs that spread. The technique delivers
+exactly what it promises, per-person weight becoming perfectly equal, but on
+this data it removes more information than it redistributes.}}
 
 \end{figure}

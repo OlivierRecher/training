@@ -55,28 +55,15 @@
 \caption{What one prediction is}
 \label{fig:worked-example}
 \figtext{%
-\figpara{How to read it.}{The two rows are two different moments of the same
-person's day, and the three columns are always the same three things. Column A
-is the past the model is allowed to read: four moments, each written as an hour
-and the name of the antenna the phone was on. Column B is the moment I want an
-answer for, with the hour given and the antenna hidden. Column C compares the
-answer of the one-line rule with the answer of my model against the antenna the
-person really visited.}
-
-\figpara{Row 1: nothing happens.}{The person is still on the same antenna at
-13h. Answering ``the same as before'' is correct, so the one-line rule scores a
-point without knowing anything, and my model scores the same point. Moments like
-this one are the majority, which is why a rule with no model in it is right
-about seven times out of ten.}
-
-\figpara{Row 2: the person leaves.}{At 18h they are on a different antenna. The
-rule now has to be wrong, because being wrong is all it can do when someone
-moves. This is the only kind of moment on which a model can gain anything at
-all, and every gain reported in this document was won on moments of this second
-kind. The hour is what makes the second row answerable: 18h is when this
-particular person leaves.}
-
-\figpara{One caution.}{The two rows are drawn to explain the task, not measured
-from a run. The antenna names are real names from the study area; how often each
-of the two cases actually occurs is measured in Chapter~\ref{ch:data}.}}
+\figpara{The two kinds of moment, and why only one of them counts.}{The rows are
+two moments of the same person's day. Column A is the past the model may read,
+each moment written as an hour and an antenna name; column B is the moment I want
+answered, hour given and antenna hidden; column C compares the rule's answer and
+my model's against what really happened. In row 1 the person has not moved, so
+``the same as before'' is correct and the rule scores a point without knowing
+anything. Moments like that are the majority, which is why a rule with no model
+in it is right about seven times out of ten. In row 2 the person has left, and
+the rule now has to be wrong, because being wrong is all it can do when somebody
+moves. That is the only kind of moment on which a model can gain anything, and
+every gain in this document was won there.}}
 \end{figure}

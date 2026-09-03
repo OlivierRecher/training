@@ -5,17 +5,16 @@
 
 Up to this point the model was given a bare list of antennas. Nothing in its
 input said whether an event happened at four in the morning or at seven in the
-evening.
+evening, which is a strange omission for a mobility problem: the reason a person
+changes antenna at all is usually that they are going somewhere, and going
+somewhere happens at particular times of day.
 
-That is a strange omission for a mobility problem. The reason a person changes
-antenna at all is usually that they are going somewhere, and going somewhere
-happens at particular times of day. So the question of this chapter is whether
-\emph{time of day} is the missing signal, and more precisely whether a model can
-be pushed to expect a change of antenna at the hours where a change is likely,
-instead of falling back on the one strategy that is always available to it,
-namely repeating the last antenna it saw.
+So the question of this chapter is whether \emph{time of day} is the missing
+signal, and more precisely whether a model can be pushed to expect a change of
+antenna at the hours where a change is likely, instead of falling back on the one
+strategy always available to it, repeating the last antenna it saw.
 
-\paragraph{Where the numbers in this chapter come from.} All of them come from
+\paragraph{Where the numbers in this chapter come from.} All of them from
 \Dmob{} (Table~\ref{tab:datasets}): 400 people used for training and \textbf{100
 different people}, never seen during training, used for grading. The one-line
 rule scores 45.5\,\% on the last fifth of their day and 43.1\,\% when every
@@ -24,24 +23,14 @@ the second of those two protocols.
 
 \section{The clue: some people collapse at the end of the day}
 
-The pointer came from looking at people one at a time.
-
-Scoring the same trained model with progressively more history, most people
-behave exactly as Chapter~\ref{ch:user} predicts: their score is a trait, roughly
-constant whatever they are given. But one group does something else entirely.
-Given \emph{more} history, their score falls off a cliff, from thirty or forty
-per hundred down to zero. Table~\ref{tab:context-collapse} lists eight people,
-and the bottom four are that group.
+The pointer came from looking at people one at a time. Scoring the same trained
+model with progressively more history, most behave exactly as
+Chapter~\ref{ch:user} predicts: their score is a trait, roughly constant whatever
+they are given. But one group does something else entirely. Given \emph{more}
+history, their score falls off a cliff, from thirty or forty per hundred down to
+zero.
 
 \input{tables/tab-context-collapse}
-
-That is a diagnostic rather than a curiosity, and the reason is which moments are
-being graded. When 80 to 90\,\% of the day is handed over as history, the moments
-left to answer are the ones at the \emph{end} of that person's day. A model that
-follows somebody correctly through the morning and then scores zero on their
-evening is not short of capacity. It is confidently repeating the last antenna it
-saw, in several of these cases with up to 78\,\% confidence, at exactly the
-moment when that person stops staying put.
 
 So the missing ingredient is not more history. It is knowing that the end of the
 day is not the middle of it.
@@ -49,12 +38,9 @@ day is not the middle of it.
 \section{How the time of day enters, and the two bets it carries}
 
 Time enters in the form fixed in Chapter~\ref{ch:tools}: one symbol for the hour
-placed before each event, costing one symbol per event, always given to the model
-and never predicted by it. Panel (a) of Figure~\ref{fig:hour-ablation} shows the
-resulting map of the day.
-
-Two distinct bets were made at once, and it is worth separating them because only
-one of the two survived the chapter.
+placed before each event, always given to the model and never predicted by it.
+Two distinct bets were made at once, and only one of the two survived the
+chapter.
 
 \begin{description}
   \item[Bet 1: the model can use the hour.] Given the hour of every past event
@@ -64,27 +50,21 @@ one of the two survived the chapter.
         windows},\footnote{\textbf{Transition window}: a stretch of hours in which
         a mistake is made to count more, so that a wrong answer at 19h under a
         multiplier of four costs four times a wrong answer at 14h. No data is
-        duplicated.} stretches of the day in which a person is more likely to
-        move between the area they live in and the area they spend the day in. If
+        duplicated.} stretches of the day in which a person is more likely to move
+        between the area they live in and the area they spend the day in. If
         mistakes there are made to count more, the training is forced to get them
         right rather than accepting them as the price of a good average.
 \end{description}
 
 Bet 2 requires knowing which hours those are, and at this stage I did not measure
-them. I \emph{guessed} them, from the time boundaries the team's home-and-activity
-classification already used: \textbf{04--06h} and \textbf{18--20h}. That guess is
-the subject of the end of this chapter.
+them. I \emph{guessed} them, from the time boundaries the team's
+home-and-activity classification already used: \textbf{04--06h} and
+\textbf{18--20h}. That guess is the subject of the end of this chapter.
 
 \section{Bet 1 holds: the model does read the hour}
 
 Whether a model uses an input is not something to assume. It is something to test
 by breaking the input and seeing whether the score notices.
-
-Three corruptions were applied to the same trained copy of the model and the same
-test people, changing \emph{only} the hour symbols and leaving the list of
-antennas untouched: shuffling the hours, replacing them all by the same value,
-and moving every one of them forward by twelve. Figure~\ref{fig:hour-ablation}
-draws what each corruption does and what it costs.
 
 \input{figures/fig-hour-ablation}
 
@@ -94,15 +74,7 @@ costs 0.7 correct answers per hundred. Merely shuffling the hours, so that the
 values are still real hours but attached to the wrong events, costs 3.0, four
 times as much. If the hour symbol were simply occupying a slot in the sequence,
 destroying its \emph{ordering} could not possibly cost more than deleting it
-altogether. It costs four times more, so the model has learned something real
-about which hour goes with which antenna.
-
-The third corruption is the informative one. Moving every hour forward by twelve
-changes the overall score by only $+0.5$, and that near-zero hides a swap.
-Inside the guessed windows the score falls from 42.7 to 39.7, while outside them
-it rises from 45.3 to 47.1. The two halves of the day exchanged their difficulty
-along with their labels, which is only possible if the model had attached
-specific behaviour to specific hours. Bet 1 is established.
+altogether. Bet 1 is established.
 
 \section{Bet 2 half-holds: the hours can be won, at a price}
 
@@ -117,100 +89,70 @@ were made together.
         18--20h was raised to a multiplier of four while 04--06h stayed at two.
   \item \textbf{Ask the question more often.}\footnote{\textbf{Sampler}: the
         component that chooses which slice of training data to show next. Making
-        it \emph{weighted} means some slices are drawn more often. Distinct from
-        a weighted mistake, which changes how much a wrong answer costs rather
-        than how often the question is asked.} Training slices containing at
-        least one in-window move were drawn three times more often than the rest,
-        which raised the share of training batches containing such a move from
-        45.1\,\% to 71.2\,\%, without duplicating a single record.
+        it \emph{weighted} means some slices are drawn more often. Distinct from a
+        weighted mistake, which changes how much a wrong answer costs rather than
+        how often the question is asked.} Training slices containing at least one
+        in-window move were drawn three times more often than the rest, which
+        raised the share of training batches containing such a move from 45.1\,\%
+        to 71.2\,\%, without duplicating a single record.
   \item \textbf{Grade the whole day.} Until then only the last fifth of each test
         person's day was graded. From this point every position is graded, one at
-        a time. This is a strictly harder measurement, because early positions
-        have almost no history behind them, and it is why the one-line rule on
-        these same people is quoted as 43.1\,\% on the full day against 45.5\,\%
-        on the last fifth. Both numbers describe the same people; they answer
-        different questions, and from here on the full-day figure is the one
-        used.
+        a time. This is strictly harder, because early positions have almost no
+        history behind them, and it is why the one-line rule on these same people
+        is quoted as 43.1\,\% on the full day against 45.5\,\% on the last fifth.
 \end{itemize}
 
-The result, in Figure~\ref{fig:targeted-sampling}, is the first positive result of
-the project that is not an artefact of a single cut.
-
 \input{figures/fig-targeted-sampling}
-
-Inside 18--20h, over 604 graded moments, the model reaches 40.6\,\% against a
-rule at 37.9\,\%: \textbf{2.6 more correct answers per hundred}. Over both
-windows combined, 732 moments, 2.3 more. For the first time, a trained model beat
-``repeat the last antenna'' on a segment defined in advance rather than
-discovered afterwards. The 04--06h figure rests on only 128 moments and should be
-read as ``not worse'' rather than as a win.
-
-And then the price, in Table~\ref{tab:after-sampling}. Outside the windows, over
-7{,}893 moments, more than ten times the in-window volume, the model lost 2.6.
-The distance to the rule got worse at \emph{every one} of the seven cuts, and
-top-3 and top-5 fell everywhere by between 2.6 and 4.8. One degraded row would be
-noise; seven consistent rows are a model that has been narrowed.
 
 \input{tables/tab-after-sampling}
 
 \section{What the table above says: right mechanism, wrong hours}
 
-Table~\ref{tab:after-sampling}, just above, is the cost, and
-Figure~\ref{fig:targeted-sampling} before it is the gain. The two results are not
-contradictory. They are the same phenomenon seen from opposite sides, and read
-together they are quite precise.
+The gain and the cost are not contradictory. They are the same phenomenon seen
+from opposite sides, and read together they are quite precise.
 
 Weighting a chosen set of moments does exactly what it is designed to do: it buys
 correct answers there and pays for them elsewhere. The mechanism was never in
 question after the ablation. What was in question, and what I had never checked,
 was whether the moments I had chosen were the hard ones.
 
-They were not, and the measurement is unambiguous. On the full test day, the
+They were not, and the measurement is unambiguous. On the full test day the
 one-line rule scores 43.6\,\% \emph{inside} the guessed windows and 43.4\,\%
-\emph{outside} them. A difference of two tenths. In other words the global window
-04--06h / 18--20h does not separate easy moments from hard moments at all, so
-every extra unit of effort spent there was spent on moments that were no harder
-than average.
+\emph{outside} them. A difference of two tenths. The global window 04--06h /
+18--20h does not separate easy moments from hard moments at all, so every extra
+unit of effort spent there was spent on moments no harder than average.
 
 Worse, broken down by kind of user, 04--06h turns out to be \emph{easier} than
 average for every single kind: the rule scores between 49 and 64\,\% inside it,
-against 20 to 57\,\% on average. Song et al.\ had published exactly that in 2010.
-Their curve of hourly regularity is at its highest during the night and dips
-around midday and in the early evening \cite{song2010limits}, so the window I
-guessed is the one stretch of the day the literature already marked as easy.
-Doubling the cost of a mistake there spent the training effort on moments the
-rule already gets right, which is the most expensive thing one can do on a task
-like this.
+against 20 to 57\,\% on average. Song et al.\ had published exactly that in 2010,
+their curve of hourly regularity being at its highest during the night and
+dipping around midday and in the early evening \cite{song2010limits}. The window I
+guessed is the one stretch of the day the literature already marked as easy, and
+doubling the cost of a mistake there spent the training effort on moments the
+rule already gets right.
 
-The honest summary of the iteration is therefore this. \textbf{The machinery
-worked, and I pointed it at the wrong hours.} The 2.6 won at 18--20h was real,
-because 18--20h happens to be genuinely difficult for one of the four kinds of
-user; the loss on everything else was the cost of upweighting hours that were
-difficult for nobody.
+The honest summary is therefore this. \textbf{The machinery worked, and I pointed
+it at the wrong hours.} The 2.6 won at 18--20h was real, because 18--20h happens
+to be genuinely difficult for one of the four kinds of user; the loss on
+everything else was the cost of upweighting hours that were difficult for nobody.
 
-That conclusion has an obvious consequence, and it is what
-Chapter~\ref{ch:groups} does. If the right hours differ from one person to the
-next, then the remedy is not to pick better hours for everybody. It is to stop
-assuming everybody shares the same hours.
+That has an obvious consequence, and it is what Chapter~\ref{ch:groups} does. If
+the right hours differ from one person to the next, the remedy is not to pick
+better hours for everybody. It is to stop assuming everybody shares the same
+hours.
 
 \section{Looking back}
 \label{sec:retro-time}
 
-The change I would flag from this iteration is the one that looks purely
-technical.
-
-Moving from grading only the last fifth of each test day to grading every
-position was the right methodological choice: the early positions have almost no
-history behind them, and leaving them out was quietly making the task easier than
-the question deserved. But it also moved the one-line rule, on the very same
-people, from 45.5\,\% to 43.1\,\%, and that has a consequence I did not state
-plainly at the time. The runs before the change and the runs after it cannot be
-compared on absolute score at all, only on their respective distances to the
-rule.
-
-It is stated plainly here instead, and it is why every figure and table in this
-report carries the protocol it was measured under. A change of measurement is a
-change of ruler, and a change of ruler invalidates every absolute comparison made
-across it. If I were running the project again I would freeze the grading
-protocol before the first training and treat any later change to it as opening a
-new series of results rather than continuing the old one.
+The change I would flag is the one that looks purely technical. Moving from
+grading only the last fifth of each test day to grading every position was the
+right methodological choice, since the early positions have almost no history
+behind them and leaving them out was quietly making the task easier than the
+question deserved. But it also moved the one-line rule, on the very same people,
+from 45.5\,\% to 43.1\,\%, which means the runs before the change and the runs
+after it cannot be compared on absolute score at all, only on their respective
+distances to the rule. A change of measurement is a change of ruler, and a change
+of ruler invalidates every absolute comparison made across it. If I were running
+the project again I would freeze the grading protocol before the first training
+and treat any later change to it as opening a new series of results rather than
+continuing the old one.

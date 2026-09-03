@@ -10,26 +10,27 @@
   ymin=0, ymax=148, ytick={0,20,...,100},
   ylabel={correct answers per 100 (\%)},
   /pgf/bar width=7pt, xtick=data,
-  x tick label style={font=\scriptsize,rotate=35,anchor=east},
+  x tick label style={font=\scriptsize,align=center,anchor=north},
   title style={font=\footnotesize,yshift=1pt},
+  xlabel style={at={(0.5,-0.22)},anchor=north,font=\scriptsize},
 ]
-\nextgroupplot[title={(a) raw day, 500 people, cut into five equal groups},
+\nextgroupplot[title={(a) a raw day, 500 people},
   symbolic x coords={qa,qb,qc,qd,qe},
-  xticklabels={never changes,0--21\%,21--38\%,38--60\%,60--100\%},
-  xlabel={how often the group changes antenna, calmest on the left}]
+  xticklabels={{never\\changes},{0--21\%},{21--38\%},{38--60\%},{60--100\%}},
+  xlabel={the five groups, calmest on the left}]
 \addplot[fill=clbase,draw=none] coordinates {(qa,100.0) (qb,88.4) (qc,71.7) (qd,52.8) (qe,26.6)};
 \addplot[fill=clmodel,draw=none] coordinates {(qa,100.0) (qb,87.6) (qc,71.6) (qd,56.5) (qe,34.4)};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qd,74) {$+3.7\pt$};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qe,52) {$+7.8\pt$};
 %
-\nextgroupplot[title={(b) \smob, 100 held-out people, cut into four equal groups},
+\nextgroupplot[title={(b) \smob, 100 held-out people},
   symbolic x coords={pa,pb,pc,pd},
-  xticklabels={calmest 25\%,next 25\%,next 25\%,most restless 25\%},
-  x tick label style={font=\scriptsize,rotate=35,anchor=east},
-  xlabel={how often the group changes antenna, calmest on the left}]
+  xticklabels={{calmest\\25\%},{next\\25\%},{next\\25\%},{most\\restless}},
+  x tick label style={font=\scriptsize,align=center,anchor=north},
+  xlabel={the four groups, calmest on the left}]
 \addplot[fill=clbase,draw=none] coordinates {(pa,87.7) (pb,79.6) (pc,66.7) (pd,42.8)};
 \addplot[fill=clmodel,draw=none] coordinates {(pa,80.6) (pb,74.3) (pc,63.3) (pd,43.4)};
-\node[font=\scriptsize,text=clloss,anchor=west,rotate=90,yshift=7pt] at (axis cs:pa,105) {$-7.1\pt$};
+\node[font=\scriptsize,text=clloss,anchor=west,rotate=90,yshift=7pt] at (axis cs:pa,99) {$-7.1\pt$};
 \node[font=\scriptsize,text=clloss,anchor=west,rotate=90,yshift=7pt] at (axis cs:pb,97) {$-5.3\pt$};
 \node[font=\scriptsize,text=clloss,anchor=west,rotate=90,yshift=7pt] at (axis cs:pc,84) {$-3.4\pt$};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:pd,61) {$+0.6\pt$};
@@ -38,40 +39,29 @@
 \caption{The score follows how often the person changes antenna}
 \label{fig:switch-rate}
 \figtext{%
-\figpara{How the groups were made.}{In each panel the people are sorted by how
-often they change antenna, from the calmest to the most restless, and the sorted
-list is then cut into equal groups: five on the left, four on the right. So
-restlessness increases from left to right in both panels. The two panels label
-their horizontal axis differently: on the left the label gives the range of
-switch rates the group actually covers, on the right it simply names the quarter.
-The vertical axis is the number of correct answers per hundred graded moments
-for that group.}
+\figpara{How to read either panel.}{People are sorted by how often they change
+antenna, calmest to most restless, and the sorted list is cut into equal groups,
+five on the left and four on the right; restlessness increases left to right in
+both. The left panel labels each group by the range of switch rates it covers,
+the right one simply names the quarter. Grey-blue is the one-line rule, dark blue
+my model, both scored on exactly the same moments of the same people, and the
+number above each pair is the distance between them.}
 
-\figpara{The two bars in each pair.}{Grey-blue is the one-line rule, dark blue is
-my model, and both are scored on exactly the same moments of the same people. The
-number written above each pair is the distance between them.}
-
-\figpara{Panel (a): a spread of 65, produced by nobody's decision.}{The fifth of
-people who never change antenna are predicted at 100\,\% by both, because for
-them the task is to notice that nothing is happening. The most restless fifth
-plateaus at 34.4\,\%. That is 65 correct answers per hundred separating the two
-ends of the same population, on one single trained model, with no setting
-involved anywhere. Whatever else is true, this is far larger than anything the
-modelling in this report ever moved.}
-
-\figpara{Panel (a), second reading: where the model earns anything.}{In the three
-calmest groups the two bars are the same height. The model only pulls ahead in
-the two hardest groups, by 3.7 and then by 7.8. But those two groups hold 18.5\,\%
-of all the graded moments between them, and the most restless one alone holds
-5.6\,\%, so winning eight answers per hundred there moves the overall average by
-less than half an answer per hundred. Real contribution, invisible average.}
+\figpara{Panel (a): a spread of 65, and where the model earns anything.}{The
+fifth of people who never change antenna are predicted at 100\,\% by both,
+because for them the task is to notice that nothing is happening; the most
+restless fifth plateaus at 34.4\,\%. That is 65 correct answers per hundred
+between the two ends of one population, on one trained model, with no setting
+involved. The two bars are the same height in the three calmest groups: the model
+only pulls ahead in the two hardest, by 3.7 and 7.8. Those two hold 18.5\,\% of
+the graded moments and the most restless one alone 5.6\,\%, so eight answers per
+hundred there move the overall average by less than half an answer.}
 
 \figpara{Panel (b): the same ordering, and less comfortable.}{On a second,
 independent set of people the model \emph{loses} to the rule in the three calmer
 quarters, by 7.1, 5.3 and 3.4, and only draws level in the most restless one, by
-0.6. The ordering is identical and the mechanism is the same; the overall result
-is negative. This is exactly how a model can be genuinely useful on hard people
-and still be worse than one line of code on average. The rule is recomputed for
-each person, on the same moments the model is scored on.}}
+0.6. Same ordering, same mechanism, negative result overall. That is how a model
+can be genuinely useful on hard people and still be worse than one line of code
+on average.}}
 
 \end{figure}

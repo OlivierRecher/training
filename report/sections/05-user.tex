@@ -4,31 +4,28 @@
 \section{The goal}
 
 The same trained model, on the same run, predicts one person perfectly and
-another not at all. That observation makes an average score almost uninformative,
-and it replaces the project's question with a sharper one: \emph{what property of
-a person decides whether that person is predictable?}
+another not at all. That makes an average score almost uninformative, and it
+replaces the project's question with a sharper one: \emph{what property of a
+person decides whether that person is predictable?}
 
 If the answer is a property of the model, there is a model to improve. If it is a
-property of the person, then the average score is largely fixed before any
-training begins, and the only honest way to report progress is to say \emph{where
-in the population} it happened. This chapter establishes that it is the second.
+property of the person, the average score is largely fixed before any training
+begins, and the only honest way to report progress is to say \emph{where in the
+population} it happened. This chapter establishes that it is the second.
 
 \paragraph{Where the numbers in this chapter come from.} Two sets of people, both
-described in Table~\ref{tab:datasets}. The first is a day file taken as it comes,
-on which 1{,}173 people were scored. The second is \Dmob, where 400 people were
-used for training and \textbf{100 different people}, never seen during training,
-were used for grading. Wherever a figure below says ``100 held-out people'', it
-means those hundred strangers. Every score is obtained exactly as
-Chapter~\ref{ch:first} describes: each graded moment is answered, marked right or
-wrong, and the percentage is the count of right answers over the count of
-moments.
+in Table~\ref{tab:datasets}. The first is a day file taken as it comes, on which
+1{,}173 people were scored. The second is \Dmob, where 400 people were used for
+training and \textbf{100 different people}, never seen during training, for
+grading. Wherever a figure says ``100 held-out people'', it means those hundred
+strangers.
 
 \section{Which property of a person decides it}
 
-The candidates are all things that can be computed from a person's own day
-without any model: how often they change antenna, how much of their time is spent
-on one dominant antenna, how many different antennas they visit, how irregular
-their changes are, and how many records they have.
+The candidates are all things computable from a person's own day without any
+model: how often they change antenna, how much of their time is spent on one
+dominant antenna, how many different antennas they visit, how irregular their
+changes are, and how many records they have.
 
 Each candidate was compared against that person's own score using the
 \textbf{Pearson correlation}, written $r$. It is a single number saying how
@@ -44,68 +41,52 @@ tightly two quantities move together across a population:
 
 Here $n$ is the number of people; $x_i$ is the candidate property measured on
 person $i$, for instance how often they change antenna; $y_i$ is that same
-person's score; and $\bar{x}$ and $\bar{y}$ are the averages of those two
-quantities over everybody. The numerator is large when people who are above
-average on one quantity are also above average on the other, and the denominator
-simply rescales the result so that it always lands between $-1$ and $+1$.
-
-Reading it is straightforward. \textbf{$r = +1$} means the two quantities rise
-together in perfect lockstep. \textbf{$r = -1$} means one falls exactly as the
-other rises. \textbf{$r = 0$} means they have nothing to do with each other.
-Figure~\ref{fig:concentration} gives $r$ for every candidate.
+person's score; and $\bar{x}$ and $\bar{y}$ are the averages of those two over
+everybody. The numerator is large when people above average on one quantity are
+also above average on the other, and the denominator rescales the result to land
+between $-1$ and $+1$. So $r = +1$ means the two rise together in lockstep,
+$r = -1$ that one falls exactly as the other rises, and $r = 0$ that they have
+nothing to do with each other.
 
 \input{figures/fig-concentration}
 
 The ranking is not close, and the winner needs a definition before it can be
-used.
+used. Take one person's day and walk through their records in order, comparing
+each with the one just before. The \textbf{cell-switch rate} is the share of
+those comparisons in which the antenna is not the same: out of every hundred
+back-to-back records, how many land on a different antenna. Somebody who spends
+the whole day at home has a rate near 0\,\%, somebody constantly on the move near
+100\,\%. It is a measure of restlessness, computed from the person's own day with
+no model involved.
 
-\paragraph{What a cell-switch rate is.} Take one person's day and walk through
-their records in order, comparing each one with the one just before it. The
-\textbf{cell-switch rate} is simply the share of those comparisons in which the
-antenna is not the same. Out of every hundred back-to-back records, how many land
-on a different antenna? A person who spends the whole day at home and produces
-sixty records from the same antenna has a switch rate near 0\,\%. A person
-constantly on the move has one near 100\,\%. It is a measure of restlessness, and
-it is computed from the person's own day, with no model involved.
+That quantity reaches $r = -0.971$ on the 1{,}173 people of the raw day and
+$-0.773$ on the 100 held-out people of \Dmob. The sign is negative, which means
+exactly what one would expect: \emph{the more often somebody changes antenna, the
+worse they are predicted}. The two other strong rows, how spread out a person's
+time is over their antennas\footnote{\textbf{Normalised entropy}: how spread out
+a person's time is over the antennas they visit, on a scale where 0 means they
+never left one and 1 that they split their time evenly between all of them.}
+($-0.811$) and how much of it sits on a single dominant antenna ($+0.696$), are
+the same information from other angles.
 
-That quantity reaches $r = -0.971$ on the 1{,}173 people of the raw day, and
-$-0.773$ on the 100 held-out people of \Dmob, a different set of people with a
-different rule. The sign is negative, which means exactly what one would expect:
-\emph{the more often somebody changes antenna, the worse they are predicted}. The
-two other strong rows, how spread out a person's time is over their
-antennas\footnote{\textbf{Normalised entropy}: how spread out a person's time is
-over the antennas they visit, on a scale where 0 means they never left one and 1
-that they split their time evenly between all of them.} ($-0.811$) and how much
-of it sits on a single dominant antenna ($+0.696$), are the same information seen
-from other angles.
-
-Two things have to be said about that $-0.971$ before it is used for anything,
-because taken alone it is the weakest number in this chapter.
-
-The first is that it is very nearly arithmetic. The cell-switch rate is, by
-construction, the mirror image of how often ``repeat the last antenna'' is
-correct on the same moments: a person who changes antenna once in ten steps hands
-the one-line rule nine easy answers out of ten. Any predictor that behaves like
-that rule is therefore guaranteed a strong negative $r$ against the switch rate
-before anything at all is measured.
-
-The second is that this particular model was behaving like it. Both measurements
-were taken on runs scoring at or below their own rule, so what the coefficient
-really quantifies is how closely the run was imitating the thing it was supposed
-to beat. That reading is more useful than the one I gave it at the time: a model
-that genuinely helped the restless minority would show a \emph{weaker}
-coefficient, because it would break the lockstep between somebody's switch rate
-and their score. Nobody re-measured it once the change of Chapter~\ref{ch:groups}
-finally cleared the rule; it remains the cheapest unfinished check in the
-project.
+That $-0.971$ is the weakest number in this chapter, for two reasons. It is very
+nearly arithmetic: the cell-switch rate is by construction the mirror image of
+how often ``repeat the last antenna'' is correct on the same moments, so any
+predictor behaving like that rule is guaranteed a strong negative $r$ before
+anything is measured. And this particular model was behaving like it, since both
+measurements were taken on runs scoring at or below their own rule. What the
+coefficient really quantifies is how closely the run was imitating the thing it
+was supposed to beat; a model that genuinely helped the restless minority would
+show a \emph{weaker} one. Nobody re-measured it once the change of
+Chapter~\ref{ch:groups} finally cleared the rule, and it remains the cheapest
+unfinished check in the project.
 
 What the figure does establish, and what no argument about tautology can take
 away, is the negative half of its ranking. The number of distinct antennas
 visited, the number of predictions contributed and the raw length of the day all
-stay below $0.24$ in absolute value. The intuitive explanations of why one person
-is harder than another, that they simply have less history or a wider repertoire
-of places, are eliminated in a single pass. Repetitiveness is the only candidate
-left standing.
+stay below $0.24$ in absolute value, so the intuitive explanations, that a hard
+person simply has less history or a wider repertoire of places, are eliminated in
+a single pass. Repetitiveness is the only candidate left standing.
 
 \subsection*{The same finding, without any correlation}
 
@@ -117,16 +98,9 @@ parts. \textbf{Quartile} is the same with four.}
 
 \input{figures/fig-switch-rate}
 
-The fifth of people who \emph{never} change antenna are predicted at 100\,\%, by
-the model and by the one-line rule alike, because for them the task is to notice
-that nothing is happening. At the other end, the most restless fifth plateaus at
-34.4\,\%. That is a spread of \textbf{65 correct answers per hundred}, produced
-entirely by who the people are, on one single trained model, with no setting
-involved anywhere.
-
-One objection has to be closed before any of that can be called a property of the
-person rather than of the ruler. Perhaps these people are only hard because of
-where their day happened to be cut. It is closed by a measurement made two
+One objection has to be closed before any of that can be called a property of
+the person rather than of the ruler. Perhaps these people are only hard because
+of where their day happened to be cut. It is closed by a measurement made two
 chapters later, in Table~\ref{tab:context-collapse}: the same person's score with
 30\,\% of their day in context and with 80\,\% of it correlates at $r = 0.77$.
 Somebody who is hard when the model has seen a third of their day is still hard
@@ -137,53 +111,38 @@ artefact.
 \section{Where the model does help, and why it does not show}
 
 The same figure carries the second half of the finding, and it is the more useful
-half.
-
-In the three easiest groups the model and the rule are indistinguishable: 100.0
-against 100.0, 87.6 against 88.4, 71.6 against 71.7. It is only in the two hardest
-groups that the trained model pulls ahead, by 3.7 and then by 7.8 correct answers
-per hundred. The model's contribution is real, it is consistent, and it lives
-exactly where repetition stops working.
+half. In the three easiest groups the model and the rule are indistinguishable.
+It is only in the two hardest that the trained model pulls ahead, by 3.7 and then
+by 7.8 correct answers per hundred. The model's contribution is real, it is
+consistent, and it lives exactly where repetition stops working.
 
 It also lives exactly where the volume is not. Those two groups hold 18.5\,\% of
-all the graded moments, and the most restless group alone, the one where the
-model gains 7.8, holds 5.6\,\%. Winning eight answers per hundred on one
-twentieth of the volume moves the overall average by less than half an answer per
-hundred.
+all graded moments, and the most restless group alone, where the model gains 7.8,
+holds 5.6\,\%. Winning eight answers per hundred on one twentieth of the volume
+moves the overall average by less than half an answer per hundred.
 
 The consequence is a reporting rule rather than a modelling one, and it is
 applied from this chapter onward: \emph{an average score on this task is a
 weighted mixture of segments with wildly different difficulty, and quoting it
 alone hides the only part of the result that is about the model.}
 
-Panel (b) of Figure~\ref{fig:switch-rate} makes the same point on the 100 held-out
-people of \Dmob, and makes it less comfortably. There the model \emph{loses} to
-the rule in the three easier quarters, by 7.1, 5.3 and 3.4, and only draws level
-in the most restless one, by 0.6. Same ordering, same mechanism, and a negative
-result overall. That is precisely how a model can be genuinely useful on hard
-people and still be worse than one line of code on average.
-
 \section{A tenth of the people decide the average}
 
 If the score varies that much between people, then how much each person weighs in
-the average matters. The weights turn out to be extremely uneven.
-
-Splitting the same 1{,}173 people into five equal groups by how many predictions
-each of them contributes, the middle person contributes eleven predictions while
-the busiest tenth, 117 people, carries \textbf{58.6\,\%} of the 54{,}173 graded
-moments. Any average on this data is, to a first approximation, the score of
-those 117 people.
+the average matters. The weights turn out to be extremely uneven. Splitting the
+same 1{,}173 people into five equal groups by how many predictions each
+contributes, the middle person contributes eleven predictions while the busiest
+tenth, 117 people, carries \textbf{58.6\,\%} of the 54{,}173 graded moments. Any
+average on this data is, to a first approximation, the score of those 117 people.
 
 The tempting conclusion, that having more records makes somebody more
 predictable, is not supported. The score is almost flat across the five volume
 groups, and the raw correlation between volume and score is only $r = +0.154$.
 What actually happens is that people with many records tend to change antenna
 \emph{less} often, $r = -0.15$ between the two, so the mild upward tilt at the
-busy end is the switch-rate finding wearing a different label.
-
-This matters practically. It means that levelling the number of records per
-person cannot be expected to redistribute difficulty, which is exactly the
-prediction that Chapter~\ref{ch:scale} eventually tests head on.
+busy end is the switch-rate finding wearing a different label. It also means that
+levelling the number of records per person cannot be expected to redistribute
+difficulty, which is exactly the prediction Chapter~\ref{ch:scale} tests head on.
 
 \section{What the score counts, and what it deliberately does not}
 
@@ -191,33 +150,25 @@ Looking at people one by one also exposes something an average cannot: part of
 the remaining error is not a modelling failure at all, but a deliberate property
 of the measurement.
 
-Table~\ref{tab:worst-users} lists \textbf{the seven worst-scoring people} on
-\Dfilt, every one of them at or below 12.5\,\%, and behind that single bad number
-sit three completely different situations.
-
 \input{tables/tab-worst-users}
 
-The one that mattered for the rest of the internship is the last pair. Those two
-people oscillate between near-twin antennas of the \emph{same} mast,
-\cid{UKVCHE102} and \cid{UKVCHE104} for instance, so plain repetition scores 50
-to 67\,\% on them while the model, which tries to choose between the two names,
-scores nothing at all. It is being marked wrong for failing a distinction that
-involves no movement whatsoever.
+The pair at the bottom of that table is what mattered for the rest of the
+internship. Those two people oscillate between near-twin antennas of the
+\emph{same} mast, so plain repetition scores 50 to 67\,\% on them while the
+model, which tries to choose between the two names, scores nothing at all. It is
+being marked wrong for failing a distinction that involves no movement whatsoever.
 
 This is where a decision had to be made, and it is worth stating explicitly
 because it looks like an oversight and is not one. \emph{Movement}, for every
 behavioural quantity in this report, is measured on the mast: that is what makes
 the four kinds of user of Chapter~\ref{ch:groups} meaningful. The \emph{prediction
-target}, however, remains the full antenna name. Two reasons. It is the question
-that was actually asked, since an operator wants to know which antenna will serve
-the person, not merely which mast. And coarsening the target halfway through the
+target} remains the full antenna name, for two reasons. It is the question that
+was actually asked, since an operator wants to know which antenna will serve the
+person, not merely which mast. And coarsening the target halfway through the
 internship would have made every number measured before that point incomparable
-with every number measured after it, which on a project whose entire discipline
-is ``compare only against the matching rule'' is a price not worth paying.
-
-The consequence is accepted rather than hidden: a small, known share of the
-reported error is the model being marked wrong for a difference that is not a
-movement.
+with every number after it. The consequence is accepted rather than hidden: a
+small, known share of the reported error is the model being marked wrong for a
+difference that is not a movement.
 
 \section{What I conclude, and where it leads}
 
@@ -227,43 +178,35 @@ Three statements survive this chapter, and they constrain everything after it.
   \item \textbf{The score of a person is set by how repetitive their movement
         already is, and by nothing else I measured.} It is a trait rather than an
         artefact of the protocol: the same person's score with a third of their
-        day in context and with four fifths of it correlates at $0.77$, so their
-        difficulty is fixed before any model sees them.
+        day in context and with four fifths of it correlates at $0.77$.
   \item \textbf{The model's real contribution is concentrated in the restless
         minority}, and that minority owns a small share of the graded volume, so
-        the average can barely move even when the contribution is real. Eight
-        correct answers per hundred on 5.6\,\% of the volume is worth less than
-        half an answer per hundred overall.
+        the average can barely move even when the contribution is real.
   \item \textbf{A known share of the remaining error is not a modelling failure},
         but the model being marked wrong for a distinction between two names of
         the same physical place, a cost accepted deliberately so that results stay
         comparable across the whole internship.
 \end{enumerate}
 
-Where that leads is the important part, and it decided the second half of the
-internship. Taken together, these three statements say that \emph{the lever is
-not capacity}. Making the model bigger, or training it for longer, would improve
-predictions in the segment that repetition already solves for free, which is the
-segment that owns most of the volume and none of the difficulty. What was needed
-instead was a signal that helps specifically \emph{at the moment a person is
-about to move}. The most obvious candidate for such a signal is the time of day,
-and that is what Chapter~\ref{ch:time} tries.
+Where that leads decided the second half of the internship. Taken together, these
+three say that \emph{the lever is not capacity}. Making the model bigger, or
+training it longer, would improve predictions in the segment that repetition
+already solves for free, which is the segment owning most of the volume and none
+of the difficulty. What was needed instead was a signal that helps specifically
+\emph{at the moment a person is about to move}. The most obvious candidate for
+such a signal is the time of day, and that is what Chapter~\ref{ch:time} tries.
 
 \section{Looking back}
 \label{sec:retro-user}
 
-What I would change here is what I put first. The chapter as I presented it at
-the time led with $r = -0.971$, and a coefficient that is almost arithmetic
-cannot carry a chapter, however striking it looks.
-
-The measurement that genuinely changed what I did next is the
-\emph{distribution}. One fifth of the people are predicted perfectly by doing
-nothing at all; one fifth plateau at 34.4\,\%; and the average is a weighted
-mixture of the two, with the weights concentrated in 117 people out of 1{,}173.
-That is why every chapter after this one reports numbers per segment rather than
-a single score. The correlation was the headline; the histogram was the finding.
-
-The other thing I would do differently costs one evaluation pass and I never ran
-it: re-measuring that coefficient after the model finally beat the rule, which
-would have turned the least informative number in the chapter into a test of the
-project's main claim.
+What I would change is what I put first. The chapter as I presented it at the
+time led with $r = -0.971$, and a coefficient that is almost arithmetic cannot
+carry a chapter however striking it looks. The measurement that genuinely changed
+what I did next is the \emph{distribution}: one fifth of the people predicted
+perfectly by doing nothing at all, one fifth plateauing at 34.4\,\%, and an
+average that is a weighted mixture of the two with the weights concentrated in
+117 people out of 1{,}173. The correlation was the headline; the histogram was
+the finding. The other thing I would do differently costs one evaluation pass and
+I never ran it: re-measuring that coefficient after the model finally beat the
+rule, which would have turned the least informative number in the chapter into a
+test of the project's main claim.

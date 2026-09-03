@@ -1,0 +1,102 @@
+% F -- The three rules about measuring, one panel each. A schematic: the only
+% numbers printed on it are the three quoted in the text.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  ttl/.style={anchor=north west,align=left,text width=4.5cm,
+              font=\footnotesize\bfseries,text=clmodel},
+  take/.style={anchor=north west,align=left,text width=4.34cm,inner sep=5pt,
+               font=\scriptsize,fill=clsoft,draw=clrule,rounded corners=2pt},
+  axl/.style={font=\tiny,text=clrule},
+]
+% ======================= panel (a) : read the peak =======================
+\begin{scope}[shift={(0,0)}]
+\node[ttl] at (0,0)
+  {(a) Never read the last pass\\ of a run};
+\draw[clrule] (0.25,-1.05) -- (0.25,-3.55) -- (4.45,-3.55);
+\node[axl,rotate=90,anchor=south] at (0.05,-2.30) {score on new people};
+\node[axl,anchor=north] at (2.35,-3.70) {passes over the training data};
+\draw[clmodel,very thick]
+  plot[smooth,tension=0.7] coordinates
+  {(0.45,-3.25) (0.90,-1.90) (1.30,-1.35) (1.55,-1.25)
+   (2.10,-1.60) (2.85,-1.95) (3.60,-2.20) (4.30,-2.35)};
+\draw[clrule,dashed] (0.25,-1.25) -- (4.30,-1.25);
+\draw[clrule,dashed] (0.25,-2.35) -- (4.30,-2.35);
+\node[star,star points=5,star point ratio=2.2,fill=clgain,draw=none,
+      inner sep=1.6pt] at (1.55,-1.25) {};
+\node[text=clloss,font=\footnotesize\bfseries] at (4.30,-2.35) {$\times$};
+\draw[{Stealth[length=4pt]}-{Stealth[length=4pt]},clgain,thick]
+  (3.15,-2.35) -- (3.15,-1.25);
+\node[anchor=west,font=\scriptsize\bfseries,text=clgain] at (3.22,-1.80) {15.5};
+\node[take] at (0.08,-4.28)
+  {The score on unseen people peaks early, then decays for tens of passes.
+   Reading the \textcolor{clloss}{end} of the run instead of its
+   \textcolor{clgain}{best point} throws away 15.5 correct answers per
+   hundred.};
+\end{scope}
+
+% ======================= panel (b) : the cut is the ruler ================
+\begin{scope}[shift={(5.10,0)}]
+\node[ttl] at (0,0)
+  {(b) Where the day is cut\\ belongs to the ruler};
+\draw[clrule] (0.25,-1.05) -- (0.25,-3.55) -- (4.45,-3.55);
+\node[axl,rotate=90,anchor=south] at (0.05,-2.30) {score};
+\node[axl,anchor=north] at (2.35,-3.70)
+  {share of the day given: 30\,\% $\rightarrow$ 90\,\%};
+\fill[clgain!25] (0.55,-3.05) -- (4.25,-1.50) -- (4.25,-1.20) -- (0.55,-2.75) -- cycle;
+\draw[clbase,very thick]  (0.55,-2.75) -- (4.25,-1.20);
+\draw[clmodel,very thick] (0.55,-3.05) -- (4.25,-1.50);
+\node[anchor=south,rotate=22.7,font=\scriptsize,text=clbase]
+      at (2.40,-1.93) {the one-line rule};
+\node[anchor=north,rotate=22.7,font=\scriptsize,text=clmodel]
+      at (2.40,-2.32) {my model};
+\node[take] at (0.08,-4.28)
+  {Giving the model more history raises its score, and raises the rule by the
+   same amount, because it also moves what counts as ``the last antenna
+   seen''. A rising score across cuts says nothing about the model.};
+\end{scope}
+
+% ======================= panel (c) : leave room ==========================
+\begin{scope}[shift={(10.20,0)}]
+\node[ttl] at (0,0)
+  {(c) A benchmark has to\\ leave room};
+\draw[clrule] (0.35,-3.55) -- (4.45,-3.55);
+\node[axl,rotate=90,anchor=south] at (0.15,-2.30) {correct answers per 100};
+% bar A : a raw day
+\fill[clsoft,draw=clrule] (0.85,-3.55) rectangle (1.95,-1.05);
+\fill[clbase] (0.85,-3.55) rectangle (1.95,-1.82);
+\node[font=\scriptsize\bfseries,text=white] at (1.40,-2.68) {69.2};
+\node[font=\scriptsize,text=clgain] at (1.40,-1.44) {30.8};
+\node[anchor=north,align=center,font=\scriptsize,text=clrule] at (1.40,-3.62)
+  {raw day file};
+% bar B : people who move
+\fill[clsoft,draw=clrule] (2.85,-3.55) rectangle (3.95,-1.05);
+\fill[clbase] (2.85,-3.55) rectangle (3.95,-2.41);
+\node[font=\scriptsize\bfseries,text=white] at (3.40,-2.98) {45.5};
+\node[font=\scriptsize,text=clgain] at (3.40,-1.73) {54.5};
+\node[anchor=north,align=center,font=\scriptsize,text=clrule] at (3.40,-3.62)
+  {people who move};
+\node[take] at (0.08,-4.28)
+  {Blue is what one line of code already takes; the pale part above it is what
+   a model could still win. Choosing whom to measure on nearly doubled that
+   room, from 30.8 to 54.5.};
+\end{scope}
+\end{tikzpicture}}
+\caption{The three rules about measuring, and what each one was worth}
+\label{fig:three-rules}
+\figtext{%
+\figpara{Why these three come before any modelling.}{Each of the three cost me a
+wrong conclusion before it was understood, and each turned out to be worth more,
+in correct answers, than most of the modelling ideas that followed. None of them
+is a deep idea; they are hygiene. Panel (a) is measured, on the run of
+Figure~\ref{fig:validation-curves}(a). Panels (b) and (c) are drawn to show the
+mechanism, and the numbers behind them are in Table~\ref{tab:context-sweep} and
+Table~\ref{tab:datasets}.}
+
+\figpara{The common shape of all three.}{In every one of them the thing that
+moved was the \emph{ruler}, not the model. Reading a different pass, cutting the
+day elsewhere, or scoring a different set of people all change what a given
+percentage means, and none of them changes how good the predictor is. That is why
+this report never quotes an accuracy without the rule that goes with it.}}
+\end{figure}

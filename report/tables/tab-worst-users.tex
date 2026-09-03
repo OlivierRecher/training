@@ -20,37 +20,27 @@
 \end{tabular}
 
 \figtext{%
-\figpara{Who is in this table.}{These are \textbf{the seven worst-scoring people
-of the whole test set} on \sfilt, and nobody else: every person there whose score
-is at or below 12.5\,\%. They were pulled out precisely because a single bad
-number hides several completely different problems, and only one of the three is
-about the model.}
+\figpara{Who is in this table, and what the columns say.}{These are \textbf{the
+seven worst-scoring people of the whole test set} on \sfilt, and nobody else:
+every person whose score is at or below 12.5\,\%. \texttt{user\_id} is the
+anonymous number the operator assigned to that person for that day.
+\textbf{Moments} is how many graded moments they contribute, so how much material
+there is to judge anything on. \textbf{Ceiling} is the best score reachable at
+all given the antennas that appear in that person's own history: if one never
+appeared before, no model could have named it.}
 
-\figpara{The columns.}{\texttt{user\_id} is the anonymous number the operator
-assigned to that person for that day. \textbf{Moments} is how many graded moments
-they contribute, so how much material there is to judge anything on.
-\textbf{Ceiling} is the best score reachable at all given the antennas that
-appear in that person's own history: if an antenna never appeared before, no
-model could have named it. \textbf{Rule} and \textbf{Model} are the one-line rule
-and my model on the same moments.}
-
-\figpara{Situation A, four people: there is nothing to measure.}{Between two and
-twelve graded moments each. A person with three moments scores 0, 33, 67 or
-100\,\%, and nothing in between, so their number says almost nothing about a
-model.}
-
-\figpara{Situation B, one person: a genuine miss.}{The ceiling is 89\,\%, so the
-behaviour was learnable, and neither the rule nor the model followed it. This is
-the only row of the table that is a straightforward modelling failure.}
-
-\figpara{Situation C, two people: beaten by the trivial rule, and the row that
-mattered.}{The ceiling is 100\,\%, plain repetition already scores 50 to 67\,\%,
-and my model scores nothing at all. These two people bounce between near-twin
+\figpara{One bad number, three unrelated problems.}{Four of the seven contribute
+between two and twelve moments each, and a person with three moments can only
+score 0, 33, 67 or 100\,\%, so their number says almost nothing about a model.
+One is a genuine miss: the ceiling is 89\,\%, the behaviour was learnable, and
+neither the rule nor the model followed it. The last two are the row that
+mattered. Their ceiling is 100\,\%, plain repetition already scores 50 to
+67\,\%, and my model scores nothing at all, because they bounce between near-twin
 antennas of the \emph{same} mast, \cid{UKVCHE102} and \cid{UKVCHE104} for
-instance. The model tries to choose between the two names and keeps choosing
-wrong, so it is being marked down for failing a distinction that involves no
-movement. This is the observation that led to measuring mobility on the mast
-while keeping the full antenna name as what has to be predicted.}}
+instance. The model keeps trying to choose between the two names, so it is marked
+down for failing a distinction that involves no movement. That is the observation
+behind measuring mobility on the mast while keeping the full antenna name as the
+target.}}
 
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the per-user error listing}
 \end{table}

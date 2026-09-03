@@ -21,40 +21,20 @@ G3 morning-moving user & 07--08h $\times2.0$, \ 10--13h $\times2.3$ & the mirror
 
 \figtext{%
 \figpara{Where these hours come from.}{They are not chosen. For each kind of
-user, I look at the score of the one-line rule hour by hour \emph{on that kind
+user I take the score of the one-line rule hour by hour \emph{on that kind
 alone}, and keep the run of consecutive hours where it falls furthest below that
-same kind's own average. In plain terms: the hours at which ``repeat the last
-antenna'' stops working \emph{for that sort of person}. The multiplier says how
-much more a mistake costs there.}
-
-\figpara{The first row is the one a hand-made rule could never produce.}{The
-stay-at-home user gets no emphasised hours at all, because their day is flat and
-there is nothing to emphasise. Leaving every hour at its ordinary cost is the
-correct answer for 28\,\% of the population, and a single window chosen for
-everybody structurally cannot say that.}
-
-\figpara{The last two rows are almost disjoint in time.}{The evening-moving user
-is emphasised late, the morning-moving user early. That is the mirror-image fact
-of Figure~\ref{fig:group-profiles} restated in the language of the training
-procedure, and it is why one shared set of hours was doomed.}
+kind's own average: the hours at which ``repeat the last antenna'' stops working
+\emph{for that sort of person}. The multiplier says how much more a mistake costs
+there. The first row is what a hand-made rule could never produce, since the
+stay-at-home user gets no emphasised hours at all, which is the correct answer
+for 28\,\% of the population. The last two rows are almost disjoint in time.}
 
 \figpara{The lower block is the test that justifies the whole detour.}{An
-emphasised stretch of the day is only useful if it actually lands on hard
-moments. The guess of Chapter~\ref{ch:time} separates the rule by two tenths,
-which is to say not at all: the moments inside it are exactly as easy as the
-moments outside. The hours derived per kind of user separate it by 27.4, marking
-moments on which the trivial rule is right 19\,\% of the time against 46\,\%
-elsewhere. Whatever the model then makes of that emphasis, it is at least being
-aimed at the right places.}}
-
-\vspace{4pt}
-\begin{minipage}{\textwidth}\footnotesize
-The guess I started from was not merely imprecise, it was misplaced. 04--06h is
-\emph{easier} than average for all four kinds of user: the one-line rule scores
-between 49 and 64\,\% inside it, against 20 to 57\,\% on average. Emphasising it
-therefore spent the training effort on moments the rule already gets right, which
-is the most expensive mistake available on a task like this one. It survives in
-the code only as the fallback used when the sorting is switched off or the data
-carries no hours.
-\end{minipage}
+emphasised stretch is only useful if it lands on hard moments. The guess of
+Chapter~\ref{ch:time} separates the rule by two tenths, which is to say not at
+all. The hours derived per kind of user separate it by 27.4, marking moments on
+which the trivial rule is right 19\,\% of the time against 46\,\% elsewhere.
+Worse, the guess was misplaced rather than merely imprecise: 04--06h is
+\emph{easier} than average for all four kinds, so emphasising it spent training
+effort on moments the rule already gets right.}}
 \end{table}

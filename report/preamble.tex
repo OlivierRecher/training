@@ -8,9 +8,9 @@
 \usepackage{amsmath}
 \usepackage{newtxtext,newtxmath}
 \usepackage[english]{babel}
-\usepackage[a4paper,top=2.6cm,bottom=2.6cm,left=2.7cm,right=2.7cm]{geometry}
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=2.7cm,right=2.7cm]{geometry}
 \usepackage{setspace}
-\setstretch{1.17}
+\setstretch{1.10}
 
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -37,6 +37,18 @@
 \setlength{\headheight}{14pt}
 \usepackage{emptypage}
 \usepackage[section]{placeins}
+
+% --- Float placement: let a float and its explanation fill more of the page,
+% so that a large figure does not push a nearly-empty page ahead of itself.
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.72}
+\setlength{\floatsep}{9pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{11pt plus 2pt minus 3pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{6pt}
+\setlength{\belowcaptionskip}{2pt}
 
 % --- Headers ---------------------------------------------------------------
 \pagestyle{fancy}
@@ -138,9 +150,9 @@
 % sets a bold lead-in naming what is about to be explained, then the
 % explanation, then a break, so the reader can find the paragraph they need.
 \newcommand{\figtext}[1]{%
-  \par\vspace{6pt}%
-  \begin{minipage}{0.94\textwidth}\setstretch{1.10}#1\end{minipage}\par}
-\newcommand{\figpara}[2]{\textbf{#1} #2\par\vspace{4pt}}
+  \par\vspace{4pt}%
+  \begin{minipage}{0.94\textwidth}\setstretch{1.06}#1\end{minipage}\par}
+\newcommand{\figpara}[2]{\textbf{#1} #2\par\vspace{3pt}}
 
 % \figsource{<path in repo>}{<display name>}{<what it produces there>} : the
 % visible, clickable provenance line placed just under the caption. A hidden

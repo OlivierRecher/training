@@ -1,0 +1,63 @@
+% F -- Three days on one clock: two with no movement at all, one with three.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[x=0.575cm,y=1cm,font=\small,
+  rowlab/.style={anchor=south west,font=\footnotesize\bfseries,text=clmodel},
+  cnt/.style={anchor=west,font=\scriptsize,text=clrule},
+  nm/.style={font=\tiny\ttfamily,text=clmove,anchor=north},
+]
+% ---------- row 1: 2G, never moves --------------------------------------
+\node[rowlab] at (0,2.88) {Stays home all day, phone on 2G};
+\draw[clrule!70] (0,2.65) -- (24,2.65);
+\foreach \h in {1,5,9,13,17,21}{ \fill[clbase] (\h,2.65) circle (2.2pt); }
+\node[cnt] at (24.4,2.65) {6 records, all \cid{BKVCHE1}};
+
+% ---------- row 2: 3G, same non-day -------------------------------------
+\node[rowlab] at (0,1.83) {The very same day, phone on 3G};
+\draw[clrule!70] (0,1.60) -- (24,1.60);
+\foreach \h in {0.5,2.5,4.5,6.5,8.5,10.5,12.5,14.5,16.5,18.5,20.5,22.5}{
+  \fill[clbase] (\h,1.60) circle (2.2pt); }
+\node[cnt] at (24.4,1.60) {12 records, all \cid{UKVCHE102}};
+
+% ---------- row 3: someone who commutes ---------------------------------
+\node[rowlab] at (0,0.78) {Commutes to work, and comes home};
+\draw[clrule!70] (0,0.55) -- (24,0.55);
+\foreach \h in {1,5,11,14,17,23}{ \fill[clbase] (\h,0.55) circle (2.2pt); }
+\foreach \h in {8,18.5,21}{ \fill[clmove] (\h,0.55) circle (3.0pt); }
+\node[nm] at (8,0.30)    {BKVPAN1};
+\node[nm] at (18.2,0.30) {BSOCHO1};
+\node[nm] at (21.6,0.30) {BKVCHE1};
+\node[cnt] at (24.4,0.55) {9 records, 3 of them a move};
+
+% ---------- the clock ----------------------------------------------------
+\draw[clrule] (0,0.05) -- (24,0.05);
+\foreach \h in {0,4,8,12,16,20,24}{
+  \draw[clrule] (\h,0.05) -- (\h,-0.09);
+  \node[anchor=north,font=\scriptsize,text=clrule] at (\h,-0.13) {\h h};
+}
+
+% ---------- the reading --------------------------------------------------
+\node[draw=clrule,fill=clsoft,rounded corners=3pt,align=left,inner sep=7pt,
+      text width=15.0cm,font=\footnotesize,anchor=north west] at (0,-0.72)
+  {\textbf{Neither of the first two rows contains a single movement.} A mast
+   asks every phone attached to it to announce itself on a fixed cycle, so an
+   untouched phone still writes records all day. How many somebody has is
+   therefore set partly by which radio generation their phone attached to,
+   2G every four hours and 3G every two, and not by what they did. Only the
+   orange dots are a change of antenna, and only there can a model beat
+   \emph{``the same antenna as a moment ago''}.};
+\end{tikzpicture}}
+\caption{A record is not a movement}
+\label{fig:record-not-movement}
+\figtext{%
+\figpara{Three days on one clock, and the property that makes the task
+hard.}{One line is one person's day from midnight to midnight, and one dot is one
+record written by the network. Blue dots carry the same antenna name as the dot
+before them, so nothing happened; orange dots carry a different one. The first
+two rows are the same behaviour, somebody at home all day, seen through two
+generations of radio, which is why the record count of a person says as much
+about their phone as about them. And a long run of one antenna name being the
+normal case is what makes ``repeat the last name you saw'' such a hard
+competitor: it is right very often, entirely for free.}}
+\end{figure}

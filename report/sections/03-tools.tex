@@ -4,110 +4,74 @@
 \section{The goal}
 
 The data was fixed; the instrument was not. Before any experiment could run, one
-purely practical question had to be settled: \emph{given one free graphics card
-and a few weeks, which model, which training method and which software are
-actually feasible?}
+practical question had to be settled: \emph{given one free graphics card and a
+few weeks, which model, which training method and which software are actually
+feasible?}
 
-This chapter answers it, and states the verdict on each choice with the benefit
-of eleven iterations of hindsight. It is worth saying at the outset that this
-toolchain was decided in the first week and never changed afterwards. What
-changed over the internship was the data and the training signal, never the
-instrument, and that is what makes the later comparisons between runs
-meaningful.
+This toolchain was decided in the first week and never changed. What changed over
+the internship was the data and the training signal, never the instrument, and
+that is what makes the later comparisons between runs meaningful.
 
 \section{The tools, and what each one does}
 
-Figure~\ref{fig:toolchain} shows the whole stack on one page: the machine at the
-bottom, the model and the libraries in the middle, and my own code on top.
-
 \input{figures/fig-toolchain}
-
-Two things in that picture drive the rest of the chapter. The first is the
-machine, because everything is constrained by how much memory a single free
-graphics card has. The second is the top layer, because the two ideas this
-report is actually about, making some mistakes count more than others and
-sending different kinds of user to different sets of numbers, cannot be
-expressed by changing a setting. Both require reaching inside the training step,
-and the stack was chosen in the first week for that one property.
 
 \section{How much of the model to change}
 \label{sec:tools-peft}
 
 A language model is a stack of very large tables of
 numbers.\footnote{\textbf{Weights}, or \textbf{parameters}: the numbers inside
-the model that turn an input into an output. ``Frozen'' means left exactly as
-its original authors trained them.} Adapting one that somebody else has already
-trained\footnote{\textbf{Pre-trained}: already trained, by someone else, on a
-very large body of general text. Fine-tuning starts from those numbers rather
-than from nothing, which is what makes it affordable at all.} can be done at
-three very different costs, and what separates them is not accuracy. It is
-memory. Figure~\ref{fig:lora} draws all three.
+the model that turn an input into an output. ``Frozen'' means left exactly as its
+original authors trained them.} Adapting one somebody else has already
+trained\footnote{\textbf{Pre-trained}: already trained, by someone else, on a very
+large body of general text. Fine-tuning starts from those numbers rather than
+from nothing, which is what makes it affordable.} can be done at three very
+different costs, and what separates them is not accuracy. It is memory.
 
 \input{figures/fig-lora}
 
-\begin{description}
-  \item[Full fine-tuning] modifies every number in the model. It has the highest
-        ceiling in principle, and while it runs each number has to be held in the
-        card's memory together with the bookkeeping needed to adjust it, about
-        four numbers for every one, several times the size of the model itself.
-  \item[LoRA] \cite{hu2022lora} freezes the original numbers entirely and adds a
-        small set of new ones beside them. Only the new ones are ever modified,
-        so that bookkeeping collapses. In the configuration used here, about 2
-        numbers out of every 100 were ever allowed to change.
-  \item[QLoRA] \cite{dettmers2023qlora} does the same and additionally stores the
-        frozen numbers in a coarser form, four bits each instead of
-        sixteen,\footnote{\textbf{4-bit precision}, or \emph{quantisation}:
-        storing each number with sixteen possible values instead of the usual
-        precision. These numbers are frozen and never updated, so it costs a
-        little accuracy rather than correctness.} which roughly quarters the
-        memory the frozen part occupies.
-\end{description}
-
 I chose QLoRA, and I chose it on hardware grounds rather than on expected
 quality: it was the only one of the three under which my first candidate model
-could be loaded at all on a free graphics card.
-
-That choice held for the rest of the internship, and it is what made the volume
-of experiments possible. Freezing the bulk of the model and training a small part
-on a compressed copy of the rest is what turns a training run into something
-that takes half an hour instead of half a day, and it is what made the per-group
-routing of Chapter~\ref{ch:groups} cheap enough to try at all.
+could be loaded at all on a free graphics card. That choice held for the rest of
+the internship, and it is what made the volume of experiments possible. It is
+also what made the per-group routing of Chapter~\ref{ch:groups} cheap enough to
+try at all.
 
 \section{Which model, and why the small one won}
 \label{sec:tools-model}
 
-The first real run used \textbf{Mistral-7B} \cite{jiang2023mistral}, a general
-purpose model with seven billion numbers in it.\footnote{``7B'' means seven
-billion numbers. Qwen2.5-0.5B has five hundred million, fourteen times fewer.
-The count is the model's capacity, and also, directly, how much memory it
-occupies.} A deliberately small first experiment, about thirty minutes over
-1.2\,\% of the training data, produced 16.87\,\% correct next-antenna answers.
-As a signal that the pipeline worked end to end this was encouraging. A Llama
-model tried at the same size did not even return well-formed antenna names.
+The first real run used \textbf{Mistral-7B} \cite{jiang2023mistral}, a
+general-purpose model with seven billion numbers in it.\footnote{``7B'' means
+seven billion numbers. Qwen2.5-0.5B has five hundred million, fourteen times
+fewer. The count is the model's capacity, and also how much memory it occupies.}
+A deliberately small first experiment, about thirty minutes over 1.2\,\% of the
+training data, produced 16.87\,\% correct next-antenna answers, which was
+encouraging as a signal that the pipeline worked end to end. A Llama model tried
+at the same size did not even return well-formed antenna names.
 
 Scaled up to a full run on 400 training people, however, Mistral-7B spent roughly
 five and a half hours on the free card to reach a best score of 41.1\,\% and then
 stopped improving. The same data given to \textbf{Qwen2.5-0.5B-Instruct}
 \cite{qwen2025}, fourteen times smaller, ran forty-nine passes over the data in
-about seventy-two minutes, and twenty-nine minutes once the fixes described in
+about seventy-two minutes, and twenty-nine minutes once the fixes of
 Chapter~\ref{ch:first} were in. Mistral-7B was abandoned.
 
-The reasoning behind that, stated at the time and still my view, is that the task
-is narrow. Naming the next antenna out of 369 requires no knowledge of the world,
-no reasoning in English and no ability to follow instructions. It requires
-learning how one small geographical area is moved through. A seven-billion-number
-model brings capacity the task cannot use, and charges for it in waiting time, by
-a factor of roughly twenty-three per run, which over nine weeks is the difference
+The reasoning, stated at the time and still my view, is that the task is narrow.
+Naming the next antenna out of 369 requires no knowledge of the world, no
+reasoning in English and no ability to follow instructions. It requires learning
+how one small geographical area is moved through. A seven-billion-number model
+brings capacity the task cannot use and charges for it in waiting time, by a
+factor of roughly twenty-three per run, which over nine weeks is the difference
 between thirty experiments and two.
 
 \section{How a day is written down for the model}
 
-The model cannot read a day; it reads symbols. Figure~\ref{fig:training-example}
-shows exactly what one person's day looks like on disk, and then what the model
-actually sees once it has been cut into symbols. Three choices are visible in
-that picture, and each one is a single sentence with a large consequence.
+The model cannot read a day; it reads symbols.
 
 \input{figures/fig-training-example}
+
+Three choices are visible in that picture, and each is a single sentence with a
+large consequence.
 
 \paragraph{One antenna, one symbol.} All 369 antenna names were added to the
 model's vocabulary\footnote{\textbf{Vocabulary}: the fixed set of symbols a
@@ -115,51 +79,40 @@ language model can read and produce. \textbf{Tokenizer}: the component that cuts
 an input into those symbols.} as symbols of their own. Left alone, the tokenizer
 would have split \cid{BSOCHO1} into four meaningless fragments, and the model
 would have had to spell an antenna correctly to be right, which is precisely the
-failure the Llama attempt showed. With the 369 names added, naming the next
-antenna becomes a choice among 369 known symbols instead of the spelling of a
-string that may not even be a valid name.
+failure the Llama attempt showed.
 
 \paragraph{One hour, one symbol.} From the sixth iteration each event is preceded
-by a symbol for its hour of day, \cid{<H00>} to \cid{<H23>}. Writing the time out
-in full would have cost four or five symbols per event instead of one, and since
-the model may only look at 512 symbols at a time,\footnote{\textbf{Context
-window}: the maximum number of symbols the model may look at in one go. Not the
-same thing as the \emph{context fraction} of Chapter~\ref{ch:first}, which is a
-property of the measurement.} that would have cut the visible history by about
-two thirds. Hours rather than minutes or seconds, for the same reason:
-twenty-four learnable symbols instead of 86{,}400 unlearnable ones. The hour is
-always \emph{given} to the model and never predicted by it, which is legitimate
-both here and in production, since the current time is always known when a
-prediction is requested.
+by a symbol for its hour of day, \cid{<H00>} to \cid{<H23>}. Hours rather than
+minutes or seconds means twenty-four learnable symbols instead of 86{,}400
+unlearnable ones, and one symbol rather than a written-out time preserves the
+history the model can see, since it may only look at 512 symbols at a
+time.\footnote{\textbf{Context window}: the maximum number of symbols the model
+may look at in one go. Not the same as the \emph{context fraction} of
+Chapter~\ref{ch:first}, which is a property of the measurement.}
 
-\paragraph{Only the antennas are graded.} Everything else in the line, the
-opening boilerplate and the hour symbols, is excluded from the
-score.\footnote{\textbf{Masking} a position means excluding it from the score:
-the model still \emph{reads} the symbol but is neither rewarded nor penalised for
-producing it.} The model is trained, and graded, only on the positions where an
-antenna name has to be produced.
+\paragraph{Only the antennas are graded.} The opening boilerplate and the hour
+symbols are excluded from the score.\footnote{\textbf{Masking} a position means
+excluding it from the score: the model still \emph{reads} the symbol but is
+neither rewarded nor penalised for producing it.} The model is trained, and
+graded, only where an antenna name has to be produced.
 
 \section{How one training run works}
-
-Figure~\ref{fig:training-loop} is the training procedure itself, and it is worth
-following once before any result is read, because two of the report's conclusions
-are about this loop rather than about the model.
 
 \input{figures/fig-training-loop}
 
 Two further mechanisms were added to this loop from the sixth iteration onward,
-and later chapters depend on them.
+and later chapters depend on both.
 
 \paragraph{Some mistakes are made to count more.} At step 3 the surprise measured
-at a given position can be multiplied, according to the hour that position falls
+at a given position can be multiplied according to the hour that position falls
 in. A mistake at seven in the evening under a multiplier of four costs four times
-as much as the same mistake at two in the afternoon. No data is duplicated; the
-optimiser is simply told which mistakes matter.
+the same mistake at two in the afternoon. No data is duplicated; the optimiser is
+simply told which mistakes matter.
 
 \paragraph{Some slices are shown more often.} At step 1, slices containing an
 interesting moment can be drawn three times more often than the rest. This is a
-different lever from the previous one: it changes how often the question is
-asked, not how much a wrong answer costs.
+different lever: it changes how often the question is asked, not how much a wrong
+answer costs.
 
 Both turned out to help only where the targeted positions were genuinely the hard
 ones, which is the subject of Chapters~\ref{ch:time} and~\ref{ch:groups}.
@@ -171,11 +124,11 @@ Colab}\footnote{\textbf{Google Colab}: a service that runs a Python notebook on 
 graphics card rented in the browser, free for a few hours a day and liable to
 disconnect. \textbf{T4} is the entry-level NVIDIA card it hands out.} on an
 NVIDIA \textbf{T4}. That card carries 16\,GB of memory, and that single figure is
-the constraint behind every choice in this chapter. The daily free quota is the
-reason the experiment schedule is organised as one training per iteration rather
-than as broad sweeps of settings.
+the constraint behind every choice in this chapter. The daily free quota is why
+the experiment schedule is one training per iteration rather than broad sweeps of
+settings.
 
-On the analysis side, three standard libraries do work that never touches the
+Three standard libraries do work that never touches the
 model.\footnote{\textbf{pandas}, \textbf{scikit-learn} and \textbf{scipy}: the
 three standard Python libraries for, respectively, manipulating tables of data,
 machine-learning utilities, and statistical tests.} They produce the balanced
@@ -183,43 +136,32 @@ split between training and test people, check that the two halves really do have
 comparable histories, and run the resampling test
 \cite{efron1993bootstrap}\footnote{\textbf{Bootstrap}: error bars obtained by
 re-scoring the models on many random redraws of the test people, with no
-assumption about the shape of the underlying distribution.} that eventually
-decides the central question of Chapter~\ref{ch:scale}.
+assumption about the shape of the underlying distribution.} that decides the
+central question of Chapter~\ref{ch:scale}.
 
 \section{What I reused from my colleagues}
 
-Three pieces came from the team and are attributed as such.
-
-The daily extracts and the selection of people who move and stay in the area came
-out of Nino's own analysis tooling. He ran the extraction for me whenever I
-needed a new regime, and those files are the data on which most of this report's
-modelling rests. That help was substantial, and none of it was his own
-assignment.
-
-The move-or-stay framing, separating the moments where a person really goes
-somewhere from the moments where nothing happens, is Tiphain and Benjamin's, and
-it is the idea behind the filtering of Chapter~\ref{ch:data} and behind reporting
-in-window and out-of-window scores separately. The technique of levelling every
-person's record count, tested in Chapter~\ref{ch:scale}, is Tiphain's.
-
-Their prompting approach, obtaining predictions from an untouched model through
-better instructions, is the complementary branch of the same problem, and I did
-not take it. Figure~\ref{fig:prompting} is one of their prompts, and set beside
-the training record of Figure~\ref{fig:training-example} it shows how little the
-two branches share.
+Three pieces came from the team. The daily extracts and the selection of people
+who move and stay in the area came out of Nino's own analysis tooling; he ran the
+extraction for me whenever I needed a new regime, and those files are the data on
+which most of this report's modelling rests. The move-or-stay framing, separating
+the moments where a person really goes somewhere from the moments where nothing
+happens, is Tiphain and Benjamin's, and it is the idea behind the filtering of
+Chapter~\ref{ch:data} and behind reporting in-window and out-of-window scores
+separately. The technique of levelling every person's record count, tested in
+Chapter~\ref{ch:scale}, is Tiphain's.
 
 \input{figures/fig-prompting}
 
 \section{Looking back}
 \label{sec:retro-tools}
 
-With hindsight, one of these choices was solved by another. I adopted QLoRA
-because storing the frozen numbers in four bits was the only way to load a
-seven-billion-number model on a free card, and a week later I abandoned that
-model for one fourteen times smaller, which would have fitted without the
-compression. Keeping QLoRA afterwards was harmless, but it is a fair illustration
-of engineering around a constraint instead of removing it: the cheaper answer was
-to make the model smaller, not the numbers coarser.
+One of these choices was solved by another. I adopted QLoRA because storing the
+frozen numbers in four bits was the only way to load a seven-billion-number model
+on a free card, and a week later I abandoned that model for one fourteen times
+smaller, which would have fitted without the compression. Keeping QLoRA was
+harmless, but it illustrates engineering around a constraint instead of removing
+it: the cheaper answer was to make the model smaller, not the numbers coarser.
 
 The one setting I never revisited is how much of the model I allowed to move.
 About 2 numbers in every 100 changed in every run of the internship, from four

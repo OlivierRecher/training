@@ -31,22 +31,18 @@ Hardware          & Colab T4        & Colab T4              & Colab T4          
 
 \figtext{%
 \figpara{How to read it.}{One column per family of runs, in chronological order.
-Everything that is not listed as changing was held constant on purpose, so that a
-difference between two runs is a difference in the data or in the training
-signal, and never in the recipe.}
+Everything not listed as changing was held constant on purpose, so a difference
+between two runs is a difference in the data or in the training signal, never in
+the recipe. A blank cell means the setting did not exist in that family:
+iteration 1 was a hundred-step probe on library defaults, and the hour symbols
+and four kinds of user appear only from iterations 6 and 7.}
 
-\figpara{Why some cells are blank.}{A blank means the setting did not exist in
-that family. Iteration 1 was a hundred-step probe on library defaults, and the
-hour symbols and the four kinds of user only appear from iterations 6 and 7
-onward.}
-
-\figpara{The three rows that matter most.}{\textbf{Max passes} together with
-\textbf{Early stopping} is the rule of Chapter~\ref{ch:first}: the run is allowed
-twenty passes but is stopped as soon as its score on unseen people stops
-improving, and the best copy is the one kept. \textbf{Context fraction} at 0.8 is
-where each day is cut, and Chapter~\ref{ch:first} argues it belongs to the
-measurement rather than here. \textbf{Emphasised hours} is where
-Chapters~\ref{ch:time} and~\ref{ch:groups} differ from each other, and it is the
-only substantive change in the last two columns.}}
+\figpara{The three rows that matter most.}{\textbf{Max passes} with
+\textbf{Early stopping} is the rule of Chapter~\ref{ch:first}: twenty passes are
+allowed, the run stops as soon as its score on unseen people stops improving, and
+the best copy is kept. \textbf{Context fraction} at 0.8 is where each day is cut,
+and belongs to the measurement rather than here. \textbf{Emphasised hours} is
+where Chapters~\ref{ch:time} and~\ref{ch:groups} differ, and it is the only
+substantive change in the last two columns.}}
 
 \end{minipage}
