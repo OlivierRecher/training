@@ -75,38 +75,13 @@ and my model collect the point for free. When the person leaves, the rule is
 guaranteed to be wrong, and the answer has to come from somewhere else. Every
 number in this document was won on moments of that second kind.
 
-\section{What I found, in three sentences}
-
-A fine-tuned model gets \textbf{4.3 more answers right out of every hundred}
-than the one-line rule: 54.5\,\% against 50.2\,\% on a thousand people the model
-had never seen, and 4.2 more out of a hundred on a second, separate
-group.\footnote{\textbf{Held-out people}: people set aside before training and
-never shown to the model. Training and test people are always different people
-here.} What produced that gain was neither a bigger model nor more data, but
-\emph{sorting people by the hours at which they actually move} and giving each
-kind of person its own set of trained numbers.
-
-The data needed for it is little: the edge grows from 0.6 to 4.2 more correct
-answers per hundred as the training population goes from 400 to 1{,}900 people,
-and multiplying that population by ten again buys 0.1, which is nothing.
-
-And the difficulty is not where I expected it. \textbf{22.4} correct answers per
-hundred separate the calmest kind of user from the most restless one, against
-\textbf{0.4} across the entire range of training sizes. Who the person is matters
-more than how much data was used, by a factor of fifty.
-
-\subsection*{How a gain is written in this report}
-
-Every figure above is a \emph{difference between two percentages}. The model
-gaining 4.3\,\% over the rule means it answers correctly 54.5 times out of a
-hundred where the rule answers correctly 50.2 times, so 4.3 more correct answers
-out of a hundred, always on the same people and the same moments.
-
-Only that distance is comparable from one chapter to the next. The set of people
-I trained and tested on changed four times over the internship, each time
-because a new idea needed data the earlier files did not carry, and the
-difficulty of the test group changed with it. An absolute accuracy therefore
-describes the people it was measured on more than it describes the model.
+Every figure quoted from here on is a \emph{difference between two percentages}.
+The model gaining 4.3\,\% over the rule means it answers correctly 54.5 times out
+of a hundred where the rule answers correctly 50.2 times, always on the same
+people and the same moments. Only that distance is comparable from one chapter to
+the next: the set of people I trained and tested on changed four times over the
+internship, each time because a new idea needed data the earlier files did not
+carry, and the difficulty of the test group changed with it.
 
 \section{The team around me}
 
@@ -123,10 +98,9 @@ records on a question of his own.
 
 \section{How to read this report}
 
-The chapters are organised by \emph{question}, not by week. Each of
-Chapters~\ref{ch:data} to~\ref{ch:scale} closes with a short \emph{Looking back}
-section giving my own view of that step with hindsight. The chronology, which
-the thematic organisation deliberately breaks, is restored in
-Appendix~\ref{app:timeline}; Appendix~\ref{app:repro} gives the settings of every
-run and the origin of every headline number, and Appendix~\ref{app:glossary}
-defines the terms that recur.
+The chapters are organised by \emph{question}, not by week; the chronology is
+restored in Appendix~\ref{app:timeline}. Each of Chapters~\ref{ch:data}
+to~\ref{ch:scale} closes with a short \emph{Looking back} paragraph giving my own
+view of that step with hindsight. Appendix~\ref{app:repro} gives the settings of
+every run and the origin of every headline number, and
+Appendix~\ref{app:glossary} defines the terms that recur.

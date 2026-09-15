@@ -49,23 +49,20 @@
 \caption{The kind of user as a piece of text, and as a switch}
 \label{fig:adapter-routing}
 \figtext{%
-\figpara{Panel (a): the kind of user as a piece of text, and it was
-ignored.}{Both panels deliver the same idea through different channels; nothing
-else differs, same people, same protocol, same model, same emphasised hours. In
-the first attempt the kind of user was one extra symbol, \cid{<G0>} to
-\cid{<G3>}, at the head of a sequence of up to five hundred. Feeding the correct
-kind, a deliberately wrong kind, or no kind at all gave 41.3, 41.2 and 41.1\,\%:
-three numbers inside two tenths of each other, so ignoring that symbol cost the
-training almost nothing and it was ignored.}
+\figpara{Panel (a): as a piece of text, and it was ignored.}{Same people, same
+protocol, same emphasised hours in both panels; only the channel differs. In the
+first attempt the kind of user was one extra symbol, \cid{<G0>} to \cid{<G3>}, at
+the head of a sequence of up to five hundred. Feeding the correct kind, a
+deliberately wrong kind, or none at all gave 41.3, 41.2 and 41.1\,\%: three
+numbers inside two tenths, so the model was not reading it.}
 
-\figpara{Panel (b): the kind of user as a switch, and what it was worth.}{In the
-second attempt the kind of user is not information at all. Four separate sets of
+\figpara{Panel (b): as a switch, and what it was worth.}{Four separate sets of
 added numbers are trained on the same frozen model, one per kind, and the kind
-identified from a person's past decides which set runs. There is nothing left to
-dilute. On the same people and architecture the distance to the one-line rule
-moved from 1.8 behind to 3.7 ahead. One caveat: four sets are also four times the
-trainable capacity of one, so part of that move may be capacity rather than the
-sorting, and the control that would separate the two was not run
+read from a person's past decides which set runs. There is nothing left to
+dilute, and the distance to the one-line rule moved from 1.8 behind to 3.7 ahead.
+Four sets are also four times the trainable capacity of one, and the control that
+would separate capacity from sorting was not run
 (Section~\ref{sec:retro-groups}).}}
+
 
 \end{figure}

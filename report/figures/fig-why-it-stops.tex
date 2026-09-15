@@ -32,33 +32,29 @@
   {top row: people trained on \ \ \ bottom row: what the model gains over the rule};
 \end{scope}
 
-% ================= panel (b) : nothing left to add =======================
+% ================= panel (b) : every antenna is already known =============
 \begin{scope}[shift={(8.95,0)}]
-\node[ttl,text width=5.9cm] at (0,0.40)
-  {(b) Why it stops: there is nothing left to see};
-\node[anchor=north west,align=left,text width=6.10cm,font=\scriptsize,
-      text=clrule] at (0,-0.42)
-  {share of the test people's antennas already seen during training};
-% bar 1
-\node[anchor=west,font=\scriptsize,text=clmodel] at (0,-1.42) {400 people};
-\fill[clnonsig!55] (2.60,-1.54) rectangle (5.90,-1.30);
-\fill[clbase]      (2.60,-1.54) rectangle (5.86,-1.30);
-\node[anchor=west,font=\scriptsize\bfseries,text=clbase] at (6.00,-1.42) {98.9};
-% bar 2
-\node[anchor=west,font=\scriptsize,text=clmodel] at (0,-1.97) {5{,}000 and above};
-\fill[clbase] (2.60,-2.09) rectangle (5.90,-1.85);
-\node[anchor=west,font=\scriptsize\bfseries,text=clbase] at (6.00,-1.97) {100};
-\draw[clrule!60] (0,-2.38) -- (6.60,-2.38);
-\node[anchor=north west,align=left,text width=6.40cm,font=\scriptsize,
-      text=clmodel] at (0,-2.52)
-  {And the four shapes of Figure~\ref{fig:group-profiles} are essentially
-   identical at every size, so 5{,}000 people already describe this population
-   completely.};
-\node[anchor=north west,draw=clrule,fill=clsoft,rounded corners=2pt,inner sep=5pt,
-      align=left,text width=6.05cm,font=\scriptsize] at (0,-3.62)
-  {The sixteen thousand people added after that bring no antenna and no
-   behaviour the model has not already seen hundreds of times. They are worth
-   \textbf{\textcolor{clgain}{+0.1}}.};
+\node[ttl,text width=6.35cm] at (0,0.40)
+  {(b) Why it stops: every antenna is already known};
+\node[anchor=north west,align=left,text width=4.30cm,font=\scriptsize,
+      text=clrule] at (0,-0.52)
+  {100 antennas the test people use};
+% 100 squares, 99 of them already seen during training
+\foreach \ri in {0,...,9}{ \foreach \cc in {0,...,9}{
+  \fill[clbase] (0.05+\cc*0.27,{-1.20-\ri*0.27}) rectangle
+                (0.26+\cc*0.27,{-1.41-\ri*0.27}); }}
+\fill[white] (0.05+9*0.27,{-1.20-3*0.27}) rectangle (0.26+9*0.27,{-1.41-3*0.27});
+\draw[clloss,line width=0.6pt] (0.05+9*0.27,{-1.20-3*0.27}) rectangle (0.26+9*0.27,{-1.41-3*0.27});
+\node[anchor=west,font=\scriptsize,text=clbase,align=left,text width=3.10cm]
+  at (3.25,-1.45) {filled: already seen during training};
+\node[anchor=west,font=\scriptsize,text=clloss] at (3.25,-2.15)
+  {the 1 that was new};
+\draw[-{Stealth[length=3.5pt]},clloss] (3.20,-2.15) -- (2.80,-2.15);
+\node[anchor=west,font=\scriptsize,align=left,text width=3.10cm] at (3.25,-3.05)
+  {\textbf{400 people:} 99 of 100\\ \textbf{5{,}000 and up:} 100 of 100};
+\node[anchor=north west,align=left,text width=6.10cm,font=\scriptsize] at (0,-4.02)
+  {The sixteen thousand people added after 5{,}000 bring nothing new:
+   \textcolor{clgain}{\textbf{+0.1}}.};
 \end{scope}
 \end{tikzpicture}}
 \caption{Why the curve climbs, and why it stops}
@@ -69,17 +65,18 @@ many people fall in the least populated of the four kinds, the evening-moving
 user, at 14\,\% of the population. Under each bar is what the model gained over
 the one-line rule at that training size. The count crosses roughly a hundred
 members exactly between the two sizes where the gain jumps from 0.6 to 2.8. A
-label can only carry information if the group it names has enough inhabitants
-for its rhythm to be estimated at all, and below that the model is right to
-ignore it, which is precisely what the failed run of Chapter~\ref{ch:groups}
-showed it doing. Cross-training did not become a better idea at 900 people than
-at 400; the kinds simply became large enough to be worth reading.}
+label can only carry information if the group it names has enough inhabitants for
+its rhythm to be estimated at all, which is precisely what the failed run of
+Chapter~\ref{ch:groups} showed.}
 
-\figpara{Panel (b): above the threshold every new person is a duplicate.}{With
-113 masts, four kinds of user and every antenna in the test set already seen
-during training at 5{,}000 people, more people can only bring more of the same.
+\figpara{Panel (b): above the threshold every new person is a duplicate.}{Each
+square is one of a hundred antennas the test people actually use. At the smallest
+training size the model has already met 99 of them, and from 5{,}000 people
+onward, all of them; the four rhythms of Figure~\ref{fig:group-profiles} keep the
+same shape at every size as well. So more people can only bring more of the same.
 This is an explanation that fits, not a proof: the alternative reading, that the
 training budget rather than the population ran out, is stated in
 Section~\ref{sec:scale-limits}.}}
+
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the eight-tier scaling notebook; the member counts are the group shares of Chapter~\ref{ch:groups} applied to each size}
 \end{figure}

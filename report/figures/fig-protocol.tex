@@ -26,18 +26,15 @@
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (0,-1.20)
   {(b) The rest is then answered one moment at a time, never in one go};
 \begin{scope}[yshift=-1.60cm]
-  \node[ctx] (b0) at (2.6,-0.35)  {given events 1 to 40};
-  \node[prd] (p0) at (5.9,-0.35)  {name event 41};
-  \node[ctx] (b1) at (2.6,-1.10)  {given events 1 to 41};
-  \node[prd] (p1) at (5.9,-1.10)  {name event 42};
-  \node[ctx] (b2) at (2.6,-1.85)  {given events 1 to 42};
-  \node[prd] (p2) at (5.9,-1.85)  {name event 43};
+  \node[ctx] (b0) at (5.30,-0.35)  {given events 1 to 40};
+  \node[prd] (p0) at (8.60,-0.35)  {name event 41};
+  \node[ctx] (b1) at (5.30,-1.10)  {given events 1 to 41};
+  \node[prd] (p1) at (8.60,-1.10)  {name event 42};
+  \node[ctx] (b2) at (5.30,-1.85)  {given events 1 to 42};
+  \node[prd] (p2) at (8.60,-1.85)  {name event 43};
   \draw[ar] (b0) -- (p0); \draw[ar] (b1) -- (p1); \draw[ar] (b2) -- (p2);
-  \node[font=\scriptsize,anchor=west,text width=6.6cm,align=left] at (7.6,-1.10)
-    {Each time, the model is handed the person's \emph{real} past, not its own
-     previous answers. So it can neither see the future nor go astray on its own
-     earlier mistakes. The one-line rule answers exactly the same moments, and
-     simply repeats the last antenna in the history it was given.};
+  \node[font=\scriptsize,text=clrule,anchor=north] at (6.95,-2.30)
+    {each time the real past, never the model's own earlier answers};
 \end{scope}
 \end{tikzpicture}}
 \caption{Where the day is cut, and how each moment is answered}
@@ -46,11 +43,10 @@
 \figpara{Panel (a) is the cut; panel (b) is how each moment is answered.}{Each
 test person's day is split once into a part the model may read and a part it has
 to produce, the default being 80/20. Where that cut falls is part of the
-\emph{measurement} rather than a property of the model, which is why it is drawn
-here (Chapter~\ref{ch:first}). The model is then not asked to invent a whole
-afternoon: it is asked for one antenna, told what really happened, and asked for
-the next, so it can neither see the future nor compound its own errors. The
-one-line rule is run through exactly the same moments with exactly the same
-history and simply answers the last antenna it was shown, which is what makes the
-two numbers comparable at all.}}
+\emph{measurement} rather than a property of the model. The model is then not
+asked to invent a whole afternoon: it is asked for one antenna, told what really
+happened, and asked for the next, so it can neither see the future nor compound
+its own errors. The one-line rule is run through exactly the same moments with
+exactly the same history, which is what makes the two numbers comparable at all.}}
+
 \end{figure}

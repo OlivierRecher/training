@@ -1,65 +1,98 @@
-% F5d -- How one training run actually works, step by step.
+% F5d -- How one training run actually works, four pictures and a safety rule.
 \begin{figure}[!htbp]
 \centering
 \fitwidth{%
 \begin{tikzpicture}[font=\small,
-  st/.style={draw=clrule,fill=clsoft,rounded corners=3pt,align=center,
-             inner sep=6pt,text width=2.85cm,minimum height=2.75cm},
   ar/.style={-{Stealth[length=5pt]},clrule,very thick},
+  ttl/.style={anchor=north,align=center,text width=2.70cm,
+              font=\footnotesize\bfseries,text=clmodel},
+  sub/.style={anchor=north,align=center,text width=2.70cm,font=\scriptsize},
   num/.style={circle,draw=clmodel,fill=white,inner sep=1.2pt,
               font=\scriptsize\bfseries,text=clmodel},
 ]
-\node[st] (a) at (0,0)
-  {{\footnotesize\bfseries\color{clmodel} Take a slice}\\[2pt]\footnotesize
-   a stretch of one training person's day: hour, antenna, hour, antenna};
-\node[st] (b) at (3.55,0)
-  {{\footnotesize\bfseries\color{clmodel} Hide the next antenna}\\[2pt]\footnotesize
-   the model reads the slice and names what it thinks comes next};
-\node[st] (c) at (7.10,0)
-  {{\footnotesize\bfseries\color{clmodel} Measure the surprise}\\[2pt]\footnotesize
-   compare with the antenna really visited; a confident wrong answer costs more
-   than a hesitant one};
-\node[st] (d) at (10.65,0)
-  {{\footnotesize\bfseries\color{clmodel} Nudge the small part}\\[2pt]\footnotesize
-   only the added numbers move; the 500 million original ones never do};
+% ---- the four frames ------------------------------------------------------
+\foreach \i/\n in {0/1,1/2,2/3,3/4}{
+  \draw[draw=clrule,fill=clsoft,rounded corners=3pt]
+        (\i*3.50,0) rectangle (\i*3.50+2.95,-2.72);
+  \node[num] at (\i*3.50+0.19,-0.19) {\n};
+}
+\foreach \i in {0,1,2}{ \draw[ar] (\i*3.50+2.95,-1.36) -- (\i*3.50+3.50,-1.36); }
 
-\draw[ar] (a) -- (b); \draw[ar] (b) -- (c); \draw[ar] (c) -- (d);
-\node[num] at (a.north west) {1}; \node[num] at (b.north west) {2};
-\node[num] at (c.north west) {3}; \node[num] at (d.north west) {4};
+% ---- icon 1: a slice cut out of a day ------------------------------------
+\begin{scope}[shift={(1.475,-0.70)}]
+  \foreach \i in {1,2,3}{
+    \fill[clmodel!30,rounded corners=1pt]
+          (\i*0.24-0.78,-0.14) rectangle (\i*0.24-0.78+0.18,0.14);}
+  \foreach \i in {0,...,5}{
+    \draw[clrule,rounded corners=1pt]
+          (\i*0.24-0.78,-0.14) rectangle (\i*0.24-0.78+0.18,0.14);}
+  \draw[clmodel,line width=0.7pt] (-0.56,-0.22) -- (-0.56,-0.32) -- (0.06,-0.32) -- (0.06,-0.22);
+\end{scope}
+% ---- icon 2: the next one hidden, and answered ---------------------------
+\begin{scope}[shift={(4.975,-0.70)}]
+  \foreach \i in {0,1,2}{
+    \fill[clmodel!25,rounded corners=1pt]
+          (\i*0.24-0.80,-0.14) rectangle (\i*0.24-0.80+0.18,0.14);}
+  \draw[-{Stealth[length=3.5pt]},clrule] (-0.06,0) -- (0.20,0);
+  \draw[clmodel,thick,fill=white,rounded corners=1.5pt] (0.28,-0.19) rectangle (0.66,0.19);
+  \node[font=\scriptsize\bfseries,text=clmodel] at (0.47,0) {?};
+\end{scope}
+% ---- icon 3: a dial reading how surprised it was -------------------------
+\begin{scope}[shift={(8.475,-0.80)}]
+  \draw[clrule,line width=0.8pt] (-0.46,0) arc (180:0:0.46);
+  \foreach \aa in {180,135,90,45,0}{ \draw[clrule] (\aa:0.46) -- (\aa:0.36); }
+  \draw[clgain,line width=1pt] (0,0) -- (58:0.36);
+  \fill[clgain] (0,0) circle (0.045);
+\end{scope}
+% ---- icon 4: almost nothing is allowed to move ---------------------------
+\begin{scope}[shift={(11.975,-0.70)}]
+  \fill[clnonsig] (-1.05,0.12) rectangle (0.60,0.32);
+  \node[font=\tiny,text=clrule,anchor=west] at (0.68,0.22) {frozen};
+  \fill[clgain] (-1.05,-0.30) rectangle (-0.98,-0.10);
+  \node[font=\tiny,text=clgain,anchor=west] at (-0.90,-0.20) {these move};
+\end{scope}
 
-% --- the loop back --------------------------------------------------------
-\draw[ar] (d.south) -- ++(0,-0.65) -- ++(-10.65,0) -- (a.south);
-\node[font=\scriptsize,text=clrule] at (5.32,-2.42)
-  {repeat, slice after slice, until every training person has been read once:
-   that is \textbf{one pass}};
+% ---- the four labels ------------------------------------------------------
+\node[ttl] at (1.475,-1.15)  {Take a slice\\ of a day};
+\node[sub] at (1.475,-1.92)  {hour, antenna,\\ hour, antenna};
+\node[ttl] at (4.975,-1.15)  {Let the model\\ answer};
+\node[sub] at (4.975,-1.92)  {the next antenna\\ is hidden};
+\node[ttl] at (8.475,-1.15)  {Measure the\\ surprise};
+\node[sub] at (8.475,-1.92)  {a confident wrong\\ answer costs more};
+\node[ttl] at (11.975,-1.15) {Nudge the\\ small part};
+\node[sub] at (11.975,-1.92) {about 2 numbers\\ in every 100};
 
-% --- the checkpoint rule --------------------------------------------------
+% ---- the loop back --------------------------------------------------------
+\draw[ar] (11.975,-2.72) -- (11.975,-3.28) -- (1.475,-3.28) -- (1.475,-2.72);
+\node[fill=white,inner sep=2.5pt,font=\scriptsize,text=clrule] at (6.72,-3.28)
+  {slice after slice, until every training person has been read once: \textbf{one pass}};
+
+% ---- the checkpoint rule --------------------------------------------------
 \node[draw=clgain,fill=clgain!10,rounded corners=3pt,align=center,inner sep=6pt,
-      text width=13.4cm,font=\small,anchor=north] (ck) at (5.32,-2.85)
-  {{\footnotesize\bfseries\color{clgain} 5. At the end of every pass: grade the
-    model on people it is not training on, save a copy, and keep only the best
-    copy of the whole run}\\[2pt]\footnotesize
-   On this task the best copy arrives between the fourth and the ninth pass, and
-   everything after it is worse. Keeping the last copy instead of the best one
-   costs 15.5 correct answers per hundred (Chapter~\ref{ch:first}).};
+      text width=12.9cm,font=\small,anchor=north] at (6.72,-3.72)
+  {{\footnotesize\bfseries\color{clgain} 5. After every pass: grade the model on
+    people it is not training on, save a copy, keep only the best copy of the
+    run}\\[2pt]\footnotesize
+   The best copy arrives between the fourth and the ninth pass. Keeping the last
+   one instead costs 15.5 correct answers per hundred
+   (Chapter~\ref{ch:tools}).};
 \end{tikzpicture}}
 \caption{How one training run works}
 \label{fig:training-loop}
 \figtext{%
 \figpara{Steps 1 to 4 are the whole of training.}{A slice of somebody's day is
-shown to the model with the next antenna hidden. The model names an antenna, the
-answer is compared with the truth and turned into a single number measuring how
-surprised the model was, and that number is used to nudge the model's adjustable
-numbers in the direction that would have made it less wrong. Only a small part
-ever moves: the 500 million numbers the model was published with are frozen, and
-the nudging applies to about 2 in every 100 added beside them.}
+shown to the model with the next antenna hidden. The model answers, the answer is
+compared with the truth and turned into a single number measuring how surprised
+the model was, and that number nudges the model's adjustable numbers in the
+direction that would have made it less wrong. Only a small part ever moves: the
+500 million numbers the model was published with are frozen, and the nudging
+applies to about 2 in every 100 added beside them.}
 
 \figpara{Step 5 is not an optimisation, it is a safety rule.}{Left to itself, a
 model trained on a few hundred short days stops learning the habits of the
-population and starts learning the days by heart. Its score on people it has
-never seen then turns around and falls while its score on its own training data
-keeps improving, so the training figures alone will happily report success for
-another forty passes. Grading on separate people after each pass, and keeping the
-best copy rather than the last, was the largest single improvement of the whole
-internship.}}
+population and starts learning the days by heart, while the training figures
+happily report success for another forty passes. Grading on separate people after
+each pass, and keeping the best copy rather than the last, was the largest single
+improvement of the whole internship.}}
+
 \end{figure}

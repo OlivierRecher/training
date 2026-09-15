@@ -12,33 +12,15 @@ records it is right 69.2 times out of a hundred, and for five of the eleven
 iterations of this internship nothing I trained beat it.
 
 The material is fifteen daily exports covering the Karlovy Vary study area, 369
-antennas mounted on 113 masts, with one day of records per person. Three results
-came out of it.
-
-First, a fine-tuned language model answers correctly \textbf{4.3 more times out
-of a hundred} than the one-line rule, 54.5\,\% against 50.2\,\% on the 1{,}000
-people held out of the largest corpus, and 4.2 more out of a hundred on a
-second, independent group. What made the difference was neither a bigger model
-nor more data, but conditioning on \emph{who the person is}: sorting people by
-the hours at which they genuinely change location, and giving each kind of person
-its own trained numbers.
-
-Second, the value of population size runs out early. The edge grows from 0.6 to
-4.2 correct answers per hundred as the training population goes from 400 to
-1{,}900 people, and a further ten-fold increase to 21{,}000 buys 0.1, with zero
-inside every confidence interval.
-
-Third, and most robustly, difficulty lives in the person rather than in the
-dataset. 22.4 correct answers per hundred separate the calmest kind of user from
-the most restless one, against 0.4 across the entire range of training sizes.
-
-A secondary finding concerns measurement rather than modelling. The three largest
-single improvements of the internship were reading the best save of a training
-run instead of the last one, worth 15.5 correct answers per hundred; recognising
-that where a day is cut in two belongs to the measurement rather than to the
-model; and choosing a group of people on which the trivial rule does not already
-score 69\,\%. On a task whose honest yardstick is a one-line rule, the
-measurement deserves to be audited before the model is.
+antennas mounted on 113 masts, with one day of records per person. On the
+thousand people held out of the largest set, the retrained model answers
+correctly \textbf{4.3 more times out of a hundred} than the one-line rule, 54.5
+against 50.2. What produced that gain was neither a bigger model nor more data,
+but conditioning on \emph{who the person is}. Two further results frame it:
+population size stops paying at around two thousand people, and 22.4 correct
+answers per hundred separate the calmest kind of user from the most restless one,
+against 0.4 across the entire range of training sizes. Difficulty lives in the
+person, not in the dataset.
 
 \vspace{0.8em}
 \noindent\textbf{Keywords:} human mobility prediction, call detail

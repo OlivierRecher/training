@@ -3,18 +3,15 @@
 
 \section{The goal}
 
-Chapter~\ref{ch:groups} ended on an uncomfortable piece of arithmetic. Four
-hundred training people split across four kinds of user leaves the smallest kind
-with a few dozen members, and a profile estimated from a few dozen people is
-barely a profile at all.
-
-If the mechanism that produced the project's only real gain depends on those
-kinds being well populated, then the obvious next lever is the number of users.
-Hence the question: \emph{how many people does a model need before the population
-itself is described, and what happens after that point?} The question is
-unusually well posed on this data, because the unit is one day per person, so the
-only thing that can be increased is the number of \emph{people}, never the amount
-of history per person.
+Four hundred training people split across four kinds of user leaves the smallest
+kind with a few dozen members, and a profile estimated from a few dozen people is
+barely a profile at all. If the mechanism that produced the project's only real
+gain depends on those kinds being well populated, then the obvious next lever is
+the number of users. Hence the question: \emph{how many people does a model need
+before the population itself is described, and what happens after that point?} The
+question is unusually well posed on this data, because the unit is one day per
+person, so the only thing that can be increased is the number of \emph{people},
+never the amount of history per person.
 
 \paragraph{Where the numbers in this chapter come from.} Three sets of people of
 Table~\ref{tab:datasets}. The 400-person point is \Dmob, graded on 100 held-out
@@ -22,177 +19,150 @@ people against a 43.1\,\% rule. The 900 to 1{,}900-person points are \Dtwok,
 graded on 100 held-out people against a 48.2\,\% rule. And the 5{,}000 to
 21{,}000-person points are \Deleven, graded on \textbf{1{,}000 held-out people}
 against a 50.2\,\% rule. In every case the test people are people the model has
-never trained on, and because those three rules differ, this chapter never
-compares two scores directly. It compares distances.
+never trained on, and because those three rules differ, this chapter never compares
+two scores directly. It compares distances.
 
 \section{Eight training sizes, everything else fixed}
 
-The proper version of this experiment fixes everything except the number of
-people. Same architecture, same settings, same cut of the day, hour symbols and
-the four kinds of user active throughout, and each size read against the one-line
-rule measured on its own test people.
+The proper version of this experiment fixes everything except the number of people.
+Same architecture, same settings, same cut of the day, hour symbols and the four
+kinds of user active throughout, and each size read against the one-line rule
+measured on its own test people.
 
 The largest sizes required data built for the purpose: eleven day files of 2{,}000
-people each, stacked into 22{,}000 person-days, of which 1{,}000 people are held
-out. The sizes are nested, so a larger one is strictly \emph{more} data and never
-\emph{other} data: the 21{,}000-person set is the 5{,}000-person set plus sixteen
-thousand more. Without that, a difference between two sizes could have come from
-\emph{which} people were drawn rather than from how many. Over those sizes the
-number of records grows from 369{,}451 to 1{,}538{,}379 and the number of
-available training slices\footnote{\textbf{Training slice}: one continuous
-stretch of a person's day, used as a single training example. A long day yields
-several and a short one just one.} from 5{,}379 to 22{,}522, for a total of two
-hours fifty-one minutes of computing time.
+people each, stacked into 22{,}000 person-days, of which 1{,}000 are held out. The
+sizes are nested, so a larger one is strictly \emph{more} data and never
+\emph{other} data; without that, a difference between two sizes could have come
+from \emph{which} people were drawn rather than from how many. Over those sizes the
+number of records grows from 369{,}451 to 1{,}538{,}379 and the number of available
+training slices\footnote{\textbf{Training slice}: one continuous stretch of a
+person's day, used as a single training example.} from 5{,}379 to 22{,}522, for a
+total of two hours fifty-one minutes of computing time.
 
 \input{figures/fig-scaling-ladder}
 
-\section{Is the flat part real, or is it noise?}
+\subsection{Is the flat part real, or is it noise?}
 
 ``The best size is followed by the worst'' is the signature of noise, but a
-signature is not a test. The test used is a \emph{paired resampling} of the
-1{,}000 held-out people.
+signature is not a test. The test used is a \emph{paired resampling} of the 1{,}000
+held-out people.
 
 \input{tables/tab-bootstrap}
 
 Every interval contains zero: each individual step, and the interval spanning the
 entire range from 5{,}000 to 21{,}000 people, whose best estimate is 0.04. So the
 correct statement is not ``the gain is small'' but \textbf{``no gain was
-measured''}.
-
-Nor does anything hide behind the overall average. Table~\ref{tab:all-metrics}
-takes the same sizes through six different measurements, and the spread across
-the whole range is between 0.2 and 1.3 on every single line.
+measured''}. Nor does anything hide behind the overall average.
+Table~\ref{tab:all-metrics} takes the same sizes through six different
+measurements, and the spread across the whole range is between 0.2 and 1.3 on every
+single line.
 
 \input{tables/tab-all-metrics}
 
 \input{tables/tab-context-scale}
 
-\section{What does move the score}
+\subsection{What does move the score}
 
 One thing does, and it is a property of the person rather than of the dataset:
 which kind of user they are. Evaluated with the 21{,}000-person model on the same
 held-out people, the four kinds score 62.8\,\% for the stay-at-home user, who is
 22\,\% of the people in \seleven; 53.6\,\% for the steady user, 37\,\%; 43.0\,\%
 for the evening-moving user, 22\,\%; and 40.4\,\% for the morning-moving user,
-18\,\%. That is a spread of \textbf{22.4 correct answers per hundred}.
-
-The shares are not those measured on \smob{} in Chapter~\ref{ch:groups}, since
-these are twenty-one thousand different people, but the four shapes themselves
-were essentially identical at every size. That is itself a result about scale.
+18\,\%. That is a spread of \textbf{22.4 correct answers per hundred}. The shares
+are not those measured on \smob{} in Chapter~\ref{ch:groups}, since these are
+twenty-one thousand different people, but the four shapes themselves were
+essentially identical at every size, which is itself a result about scale.
 
 Put side by side: \textbf{22.4 against 0.4}. Who the person is outweighs how much
 data was used to train, by a factor of more than fifty.
 
 \section{Why it climbs, then stops}
 
-Two mechanisms account for the two ends of the curve, and both are checkable.
-
 \input{figures/fig-why-it-stops}
 
 Below the threshold, copying is simply the cheapest way to score well. On the
-7{,}745 graded moments of the 100-person test set, 48 out of every hundred ask
-for the same antenna again and 52 are an actual decision, so half the task falls
-without modelling anything. Before any of the 369 antenna names means a place,
-the model has to learn them as symbols, and the middle person offers around
-twenty-one candidate antennas over sixty-four events. Meanwhile 400 training
-people split across four kinds of user and four stretches of the day leaves
-roughly twenty-five examples per cell of that grid, and twenty-five examples
-cannot tell a habit from a coincidence. A gain of 0.6 is the signature of a model
-that has learned the format and the trivial habit and nothing about behaviour,
-which is exactly what the checks of Chapter~\ref{ch:groups} independently
-concluded.
+7{,}745 graded moments of the 100-person test set, 48 out of every hundred ask for
+the same antenna again, so half the task falls without modelling anything.
+Meanwhile 400 training people split across four kinds of user and four stretches of
+the day leaves roughly twenty-five examples per cell of that grid, and twenty-five
+examples cannot tell a habit from a coincidence. A gain of 0.6 is the signature of
+a model that has learned the format and the trivial habit and nothing about
+behaviour, which is exactly what the checks of Chapter~\ref{ch:groups}
+independently concluded.
 
-\section{Two limits of this experiment}
+\subsection{Two limits of this experiment}
 \label{sec:scale-limits}
 
-The flat half of the curve was measured at \emph{constant computing time}, and
-that is a deliberate choice with a consequence. Every size received the same
-budget: enough steps to read 8{,}000 training slices, however many were
-available. At 5{,}000 people there are 5{,}379, so the run gets through all of
-them one and a half times. At 21{,}000 there are 22{,}522, so 8{,}000 are read
-and \textbf{14{,}522 are never read even once}, which is 36\,\% coverage. The
-larger dataset was not added; it was spread thinner. Separately, only about 2
-numbers in every 100 were ever allowed to change, and that fraction was never
-increased with the data either.
+The flat half of the curve was measured at \emph{constant computing time}, and that
+is a deliberate choice with a consequence. Every size received the same budget:
+enough steps to read 8{,}000 training slices, however many were available. At
+5{,}000 people there are 5{,}379, so the run gets through all of them one and a
+half times. At 21{,}000 there are 22{,}522, so 8{,}000 are read and \textbf{14{,}522
+are never read even once}, which is 36\,\% coverage. The larger dataset was not
+added; it was spread thinner. Separately, only about 2 numbers in every 100 were
+ever allowed to change, and that fraction was never increased with the data either.
 
 So the defensible conclusion is \emph{``with this much training time and this much
 trainable capacity, 1{,}900 people are enough''}, and not ``more people can never
-help''. Both statements would draw the same flat line, and one experiment would
-tell them apart: give the largest dataset the training time its size deserves.
-That run was not performed, and the claim is limited accordingly.
+help''. Both statements would draw the same flat line, and one experiment would tell
+them apart: give the largest dataset the training time its size deserves. That run
+was not performed, and the claim is limited accordingly.
 
 \section{What I conclude: the population is cheap, the person is not}
 
 \textbf{Data volume is a real lever over one narrow stretch and worthless above
 it.} From roughly 400 to 1{,}900 training people the gain climbs from 0.6 to 4.2,
-and above 1{,}900 it does not move at all: 0.1 across a ten-fold increase, with
-zero inside every confidence interval and six different measurements agreeing.
-For anyone who would pick this work up, two thousand people is the operating
-point; collecting ten times more is not where the next improvement lies.
+and above 1{,}900 it does not move at all: 0.1 across a ten-fold increase, with zero
+inside every confidence interval and six different measurements agreeing. For
+anyone who would pick this work up, two thousand people is the operating point.
 
-\textbf{And what difficulty there is lives in the person.} 22.4 correct answers
-per hundred separate the four kinds of user, against 0.4 across the whole range
-of training sizes. The ratio between those two numbers is more than fifty, and it
-is the most robust finding in this report.
+\textbf{And what difficulty there is lives in the person.} 22.4 correct answers per
+hundred separate the four kinds of user, against 0.4 across the whole range of
+training sizes. The ratio between those two numbers is more than fifty, and it is
+the most robust finding in this report.
 
 Read together, the two say where the remaining work is. It is not in collecting
 more people, because that is exhausted at two thousand. It is in conditioning
-better on who each person is, and specifically in doing so for somebody about
-whom little is yet known.
+better on who each person is, and specifically in doing so for somebody about whom
+little is yet known.
 
 \section{A side experiment: levelling records instead of adding users}
 \label{sec:levelling}
 
-One alternative to adding people was tested in the same iteration, and it is
-instructive both for what it delivers and for why it cannot be used here.
-
-The idea, adapted from a colleague's work, is that a few very long days dominate
-training: with natural day lengths, the longest quarter of people carries 44.3\,\%
-of the training positions,\footnote{\textbf{Training position}: one graded antenna
-name in the training data. Somebody with 200 events contributes about 200 of them
-and somebody with 20 contributes 20, so long days dominate by being long.} so a
+One alternative to adding people was tested in the same iteration. The idea,
+adapted from a colleague's work, is that a few very long days dominate training:
+with natural day lengths, the longest quarter of people carries 44.3\,\% of the
+training positions,\footnote{\textbf{Training position}: one graded antenna name in
+the training data. Somebody with 200 events contributes about 200 of them and
+somebody with 20 contributes 20, so long days dominate by being long.} so a
 fine-tune spends most of its budget learning the habits of the heaviest users. The
 remedy is to stretch every day to exactly 200 records by repeating each existing
 record a few times, spread evenly along the day.
 
-It delivers exactly what it promises. On the 400 training people the ratio
-between the longest and the shortest day goes from 200:19 to 1:1, the inequality
-of per-person weight\footnote{\textbf{Gini coefficient}: a measure of inequality
-borrowed from economics, running from 0 when everybody contributes the same
-number of training positions to 1 when a single person contributes all of them.}
-from 0.294 to \textbf{0}, and every person now weighs exactly 0.25\,\% of the
-training.
+It delivers exactly what it promises. On the 400 training people the ratio between
+the longest and the shortest day goes from 200:19 to 1:1 and the inequality of
+per-person weight\footnote{\textbf{Gini coefficient}: a measure of inequality
+borrowed from economics, running from 0 when everybody contributes the same number
+of training positions to 1 when a single person contributes all of them.} from
+0.294 to \textbf{0}.
 
 \input{figures/fig-resampling}
 
-The redistribution is visible, and paid for exactly as one would fear: the
-shortest quarter of people comes out level, 1.1 behind on days that are 82\,\%
-copies, while the longest quarter loses 3.6 on days that are 22\,\% copies.
-Weight was transferred from the people who had the most to say to the people who
-had the least.
-
-The deeper reason it could not work is that copying destroys the very signal the
-four kinds of user are cut on. A copied step never changes location, so the
-spread \emph{between} people in how often they move, which is exactly what the
-four kinds are carved out of, falls by a factor of 2.3, and every person drifts
-towards the stay-at-home profile. The technique is not wrong and the imbalance it
-fixes is genuine, but on this data it removes more information than it
-redistributes.
+The redistribution is paid for exactly as one would fear: the shortest quarter of
+people comes out level, 1.1 behind on days that are 82\,\% copies, while the
+longest quarter loses 3.6 on days that are 22\,\% copies. Weight was transferred
+from the people who had the most to say to the people who had the least. The
+technique is not wrong and the imbalance it fixes is genuine, but on this data it
+removes more information than it redistributes.
 
 \section{Looking back}
 \label{sec:retro-scale}
 
-Finding the operating point, the number of training people beyond which nothing
-further is bought, is the result of this chapter I am most satisfied with,
-because it is a statement about the problem rather than about my pipeline, and it
-is cheap knowledge: the eight sizes together cost under three hours of computing
-time.
-
-What I would change is \emph{when} it was measured, not how. Most of the
-internship was spent improving the model on four hundred training people, a size
-this very curve later placed inside the imitation region. Establishing the curve
-in the first weeks would have said so immediately. It did, at least, arrive in
-time to inform the final findings rather than after them, and there is a reason
-the order was not simply wrong: the explanation for the threshold only exists
-because the kinds had already been built and measured. Run first, the scaling
-study would have produced the curve without the mechanism that explains it.
+Finding the operating point is the result I am most satisfied with, because it is a
+statement about the problem rather than about my pipeline, and the eight sizes
+together cost under three hours of computing time. What I would change is
+\emph{when} it was measured: most of the internship was spent improving the model
+on four hundred training people, a size this very curve later placed inside the
+imitation region. There is one reason the order was not simply wrong, which is that
+the explanation for the threshold only exists because the kinds had already been
+built and measured.

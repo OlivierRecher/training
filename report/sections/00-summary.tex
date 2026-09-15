@@ -1,0 +1,64 @@
+\chapter*{The internship in two pages}
+\addcontentsline{toc}{chapter}{The internship in two pages}
+\thispagestyle{plain}
+
+\paragraph{The goal.} Predict which antenna a mobile phone will be attached to
+next, from the beginning of that person's day and nothing else. An operator wants
+this because it decides where capacity is needed, and because a connection
+prepared before it is required is a connection that does not drop.
+
+\paragraph{The data.} Fifteen daily exports from a Czech operator covering the
+Karlovy Vary area, 12 to 26 March 2014. 369 antennas mounted on 113 masts, and
+one line per person per day: an anonymous number, then the antennas that person's
+phone used with the time of each. No names, no numbers, no content. A day file
+holds between 80{,}217 and 99{,}504 people.
+
+\paragraph{The competitor.} The rule \emph{``the person is still on the same
+antenna as a moment ago''}. One line of code, no training. On a day file taken as
+it comes it is right 69.2 times out of a hundred, because people spend most of
+their time not going anywhere. Everything in this report is a distance to that
+rule, never an absolute score.
+
+\paragraph{What I built.} A small general-purpose language model, retrained on
+those days until it stops being a writer of English and becomes a predictor of
+movement in one Czech region. Every run was trained on one free graphics card.
+The whole instrument was fixed in the first week and never changed afterwards:
+what changed, eleven times, was the data and the training signal.
+
+\paragraph{What I actually did, week by week.} Table~\ref{tab:recap} is the
+internship. Each row is one iteration: which people it was measured on, the one
+thing I changed that week, and how far the trained model landed from the one-line
+rule.
+
+\input{tables/tab-recap}
+
+\paragraph{What came out of it.} Three findings, each established in the chapter
+named.
+
+\begin{enumerate}
+  \item \textbf{The model beats the rule by 4.3 more correct answers per hundred},
+        54.5\,\% against 50.2\,\% on a thousand people it had never seen, and by
+        4.2 on a second, separate group. What produced that gain was neither a
+        bigger model nor more data, but sorting people by \emph{the hours at which
+        they actually change location} and giving each kind of person its own set
+        of trained numbers (Chapter~\ref{ch:groups}).
+  \item \textbf{Population size stops paying at about two thousand people.} The
+        edge grows from 0.6 to 4.2 correct answers per hundred between 400 and
+        1{,}900 training people, and a further ten-fold increase to 21{,}000 buys
+        0.1, with zero inside every confidence interval
+        (Chapter~\ref{ch:scale}).
+  \item \textbf{Difficulty lives in the person, not in the dataset.} 22.4 correct
+        answers per hundred separate the calmest kind of user from the most
+        restless one, against 0.4 across the entire range of training sizes: a
+        factor of more than fifty (Chapters~\ref{ch:user} and~\ref{ch:scale}).
+\end{enumerate}
+
+\paragraph{And one finding about measurement rather than modelling.} The three
+largest single improvements of the nine weeks were not modelling ideas. Reading
+the best saved copy of a run instead of the last one was worth 15.5 correct
+answers per hundred. Recognising that where a day is cut in two belongs to the
+measurement and not to the model killed an apparent win. And choosing people on
+whom the one-line rule does not already score 69\,\% is what made the task
+measurable at all. On a problem whose honest yardstick is one line of code, the
+measurement deserves to be audited before the model is
+(Chapter~\ref{ch:tools}).

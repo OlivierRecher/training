@@ -1,18 +1,18 @@
 \chapter{State of the art}
 \label{ch:sota}
 
-Predicting where a person goes next is an old question with a large literature.
-Eight published works matter to this report. Figure~\ref{fig:sota-map} says what
-each one gave me; this chapter says what changed in the way I work because of
-the first two.
+Eight published works matter to this report. Two of them changed the way I work
+and are worth the first section on their own; three place the instrument, two are
+the ancestry of my only substantial gain, and the last one marks the boundary
+between the published task and the one I actually took on.
 
 \section{How much room a predictor has}
 \label{sec:sota-ceiling}
 
-The most useful part of this literature is not the part that proposes
-predictors. It is the part that measures how much room a predictor has before it
-even starts. Figure~\ref{fig:ceiling-ladder} puts that measurement, and my own
-numbers, on one scale.
+The most useful part of this literature is not the part that proposes predictors.
+It is the part that measures how much room a predictor has before it even starts.
+Figure~\ref{fig:ceiling-ladder} puts that measurement, and my own numbers, on one
+scale.
 
 \input{figures/fig-ceiling-ladder}
 
@@ -25,65 +25,56 @@ score any predictor could ever reach, however clever: 93\,\%.
 Ikanovic and Mollgaard then showed that most of the 93 is not knowledge about
 anybody \cite{ikanovic2017alternative}. The quantity Song et al.\ bound answers
 \emph{``where will this person be during the next time slot''}, and in most time
-slots the answer is ``exactly where they are now''. Re-running the same
-machinery on the question a predictor is actually useful for, \emph{``where will
-this person go next''}, with the repetitions removed, the ceiling fell to
-71\,\%. Roughly a quarter of what looked like predictability was the passage of
-time rather than the behaviour of a person.
-
-That is what names my competitor. If most of a high score is people staying
-where they are, the rule ``answer the last antenna seen'' already collects most
-of it for free, and any honest claim has to be a distance to that rule rather
-than an absolute score.
+slots the answer is ``exactly where they are now''. Re-running the same machinery
+on the question a predictor is actually useful for, \emph{``where will this person
+go next''}, with the repetitions removed, the ceiling fell to 71\,\%. Roughly a
+quarter of what looked like predictability was the passage of time rather than the
+behaviour of a person. That is what names my competitor: if most of a high score
+is people staying where they are, any honest claim has to be a distance to
+``answer the last antenna seen'' rather than an absolute score.
 
 Two further things in Song et al.\ bear directly on later chapters.
 
-\textbf{The ceiling is the same for everybody, but the score is not.} The
-authors expected heavy travellers to be harder to predict and were wrong: past a
-radius of ten kilometres, the ceiling stops depending on distance travelled at
-all. Yet what can be predicted from a person's visit frequencies alone is spread
-very widely across the population and peaks near 30\,\%. So a population average
-hides the thing worth reporting, and Chapters~\ref{ch:user}
-and~\ref{ch:groups} measure the spread directly: 22.4 correct answers per
-hundred separate my four kinds of user, against 0.4 across an entire range of
-training sizes.
+\textbf{The ceiling is the same for everybody, but the score is not.} The authors
+expected heavy travellers to be harder to predict and were wrong: past a radius of
+ten kilometres, the ceiling stops depending on distance travelled at all. Yet what
+can be predicted from a person's visit frequencies alone is spread very widely
+across the population and peaks near 30\,\%. A population average therefore hides
+the thing worth reporting, which is why Chapters~\ref{ch:user}
+and~\ref{ch:groups} measure the spread directly.
 
 \textbf{And a curve published almost in passing, which cost me an iteration.}
 Splitting the week into 168 hourly slots, the authors measure how often a person
-is found in their most-visited place for that hour. The answer is close to
-90\,\% during the night, when people are reliably at home, with clear low points
-around midday and between six and seven in the evening. The hours at which
-people are hard to predict were published in 2010, and they are not the small
-hours of the morning. Chapter~\ref{ch:time} spends its whole length
-rediscovering that the expensive way.
+is found in their most-visited place for that hour. The answer is close to 90\,\%
+during the night, with clear low points around midday and between six and seven in
+the evening. The hours at which people are hard to predict were published in 2010,
+and they are not the small hours of the morning. Chapter~\ref{ch:time} spends its
+whole length rediscovering that the expensive way.
 
 \section{What the other six gave me}
 
-\input{figures/fig-sota-map}
-
 Three of them place the instrument. Luca et al.\ survey the deep-learning branch
 of human mobility \cite{luca2021survey}, and two of their observations are used
-without modification here: giving a model the time of day is standard practice,
-so the mechanism of Chapter~\ref{ch:time} is not an idea of mine, and scoring a
-prediction at three depths, top-1, top-3 and top-5, is the convention of the
-field rather than a choice of mine. The language-model work closest to this one
-reports the same three depths \cite{qin2025mobllm}. The convention exists for a
-practical reason: an operator that can prepare three antennas instead of one is
-served by a correct answer in third place.
-
-The same survey notes that the better step-by-step networks had to be extended
-with a mechanism for reaching back to a matching moment in an earlier day. That
-reaching back is the native operation of the architecture behind current
-language models,\footnote{\textbf{Transformer}: the architecture behind current
-language models, in which every position of a sequence can look directly at
-every earlier one.} which is one honest reason to reach for an existing language
-model here rather than build a predictor from scratch.
+without modification here: giving a model the time of day is standard practice, so
+the mechanism of Chapter~\ref{ch:time} is not an idea of mine, and scoring a
+prediction at three depths, top-1, top-3 and top-5, is the convention of the field
+rather than a choice of mine. The language-model work closest to this one reports
+the same three depths \cite{qin2025mobllm}. The convention exists for a practical
+reason: an operator that can prepare three antennas instead of one is served by a
+correct answer in third place. The same survey notes that the better step-by-step
+networks had to be extended with a mechanism for reaching back to a matching
+moment in an earlier day. That reaching back is the native operation of the
+architecture behind current language models,\footnote{\textbf{Transformer}: the
+architecture behind current language models, in which every position of a sequence
+can look directly at every earlier one.} which is one honest reason to reach for an
+existing language model here rather than build a predictor from scratch.
 
 Since 2023 the field has split into the same two branches the team I joined was
 split into. Wang et al.\ leave the model's numbers alone and write a better
-instruction \cite{wang2023llmmob}; that is in substance what Tiphain and
-Benjamin were doing on this corpus. Qin et al.\ change the numbers instead, with
-the same cheap method used here, and that is my branch \cite{qin2025mobllm}.
+instruction \cite{wang2023llmmob}: that is the branch I did not take, and in
+substance what Tiphain and Benjamin were doing on this corpus. Qin et al.\ change
+the numbers instead, with the same cheap method used here, over six mobility
+datasets \cite{qin2025mobllm}; of the eight, that is the work mine is closest to.
 
 The last two are the ancestry of Chapter~\ref{ch:groups}, and I found them only
 after the fact. Pappalardo et al.\ establish that a population separates into
@@ -92,25 +83,24 @@ mobility \cite{pappalardo2015returners}. Jeong, Leconte and Proutière supply th
 mechanism: one person's history is too short to estimate that person's habits
 from, so group people who resemble each other and predict one person's next
 location partly from the others' \cite{jeong2016cluster}. My four kinds of user
-are the same idea with the axis changed, from how far a person travels to at
-which hours they change location.
+are the same idea with the axis changed, from how far a person travels to at which
+hours they change location.
 
 \section{Predicting an antenna, not a place}
 
 Everything above predicts a \emph{place}: a home, a workplace, a stopping point
 obtained by grouping nearby records. My target is the next antenna, which is a
-different object. The work that predicts antennas sits in the networking
-community and asks the question for another purpose: Chen, Mériaux and Valentin
-predict which antenna a phone will be handed over to,\footnote{\textbf{Handover}:
-the moment the network moves an ongoing connection from one antenna to another,
-normally because the new one offers a better signal.} from radio measurements,
-so the network can prepare it \cite{chen2013nextcell}.
+different object. The work that predicts antennas sits in the networking community
+and asks the question for another purpose: Chen, Mériaux and Valentin predict
+which antenna a phone will be handed over to,\footnote{\textbf{Handover}: the
+moment the network moves an ongoing connection from one antenna to another,
+normally because the new one offers a better signal.} from radio measurements, so
+the network can prepare it \cite{chen2013nextcell}.
 
 Predicting an antenna from a trace of antennas, with no radio measurements,
 inherits a drawback from each side. In this corpus 12.4\,\% of back-to-back
-records change antenna without the person having gone anywhere, because the
-phone re-attached to another antenna of the same mast (Chapter~\ref{ch:data}),
-so part of what my model is asked to predict is a decision of the network rather
-than of a human being. And the human part of it is graded on antennas rather
-than on places, which is a finer target than the published ceilings were ever
-estimated for.
+records change antenna without the person having gone anywhere, because the phone
+re-attached to another antenna of the same mast (Chapter~\ref{ch:data}), so part of
+what my model is asked to predict is a decision of the network rather than of a
+human being. And the human part of it is graded on antennas rather than on places,
+which is a finer target than the published ceilings were ever estimated for.

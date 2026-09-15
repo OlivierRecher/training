@@ -63,9 +63,7 @@ makes it fit in that card's memory, then three off-the-shelf libraries:
 \textbf{Transformers} loads a published model and runs a standard training loop,
 \textbf{PEFT} makes training affordable by freezing the model's 500 million
 numbers and adding a small set beside them, and \textbf{TRL} contributes only the
-format its files are written in. The column on the right never touches the model:
-it reshapes files, splits people, and runs the statistical checks of
-Chapter~\ref{ch:scale}.}
+format its files are written in. The column on the right never touches the model.}
 
 \figpara{Why the top layer had to be mine.}{Everything this report is about lives
 there. Making a mistake at seven in the evening count more than one at two in the
@@ -73,4 +71,5 @@ afternoon, and sending one kind of user to one set of numbers and another kind t
 another, cannot be expressed by changing a setting. Both require reaching inside
 the training step, and that is the single property the whole stack was chosen for
 in the first week.}}
+
 \end{figure}

@@ -90,24 +90,22 @@
 \label{fig:hour-ablation}
 \figtext{%
 \figpara{Panels (a) and (b): breaking the hour, and only the hour.}{Each event
-enters the sequence as an hour symbol followed by an antenna name, and mistakes
-in two chosen stretches of the day were made to count more, twice as much at 04h
-and 05h and four times as much at 18h and 19h. Panel (b) then re-grades the same
-trained model on the same people three more times, never touching the list of
-antennas: the hours are shuffled, so they are real hours attached to the wrong
-events; or all replaced by one value, which deletes the information; or all moved
-forward by twelve, so the ordering survives but every label is wrong.}
+enters the sequence as an hour symbol followed by an antenna name, and mistakes in
+two chosen stretches of the day were made to count more, twice as much at 04h and
+05h and four times as much at 18h and 19h. Panel (b) re-grades the same trained
+model on the same people three more times, never touching the list of antennas:
+the hours are shuffled, so they are real hours attached to the wrong events; or
+all replaced by one value, which deletes the information; or all moved forward by
+twelve, so the ordering survives but every label is wrong.}
 
-\figpara{Panel (c): the argument is the gap between two bars.}{Deleting the hour
-costs 0.7 correct answers per hundred. Merely shuffling it costs 3.0, more than
-four times as much. If the hour symbol were just occupying a slot, destroying its
-\emph{ordering} could not cost more than deleting it altogether, so the model has
-genuinely learned which hour goes with which antenna.}
+\figpara{Panels (c) and (d): the argument is the gap between two bars.}{Deleting
+the hour costs 0.7 correct answers per hundred; merely shuffling it costs 3.0. If
+the hour symbol were just occupying a slot, destroying its \emph{ordering} could
+not cost more than deleting it altogether, so the model has genuinely learned
+which hour goes with which antenna. Moving every hour forward by twelve changes
+the overall score by only $+0.5$, which is not indifference: inside the two
+upweighted stretches the score falls from 42.7 to 39.7 while outside them it rises
+from 45.3 to 47.1. The two halves of the day exchanged their difficulty along with
+their labels. \smob, 80\,\% of each day given as history, 1{,}747 graded moments.}}
 
-\figpara{Panel (d): the informative failure.}{Moving every hour forward by twelve
-changes the overall score by only $+0.5$, which looks like indifference and is
-not: inside the two upweighted stretches the score falls from 42.7 to 39.7 while
-outside them it rises from 45.3 to 47.1. The two halves of the day exchanged
-their difficulty along with their labels. \smob, 80\,\% of each day given as
-history, 1{,}747 graded moments.}}
 \end{figure}

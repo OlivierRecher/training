@@ -16,22 +16,21 @@
 \end{tabular}
 
 \figtext{%
-\figpara{The question, and how it is tested.}{Between two training sizes the
-score moves a little. Is that the model genuinely improving, or the luck of which
+\figpara{The question, and how it is tested.}{Between two training sizes the score
+moves a little. Is that the model genuinely improving, or the luck of which
 thousand people happened to be in the test set? A thousand people are drawn at
-random from the thousand held-out ones, with replacement. Both models are scored
+random from the thousand held-out ones, with replacement; both models are scored
 on exactly that draw and the difference noted; that is repeated two thousand
 times, and the middle 95\,\% of the differences is the range in the third column.
 Because both models always see the same draw, the luck of the sample cancels.}
 
-\figpara{What that licenses me to say.}{If a range contains zero, ``no
-difference at all'' is a perfectly ordinary outcome and the two sizes cannot be
-told apart. Every row contains zero, including the last, which spans the whole
-ladder from 5{,}000 to 21{,}000 people and whose best estimate is 0.04. So the
-claim is not ``the gain is small'' but \emph{no gain was measured}. The fitted
-scaling law agrees: a slope of $+0.18\pt$ per ten-fold increase in users, on a
-line accounting for only 12\,\% of the spread of the eight points, which at that
-rate would need about 1.5 billion users to buy one further correct answer per
-hundred.}}
+\figpara{What that licenses me to say.}{If a range contains zero, ``no difference
+at all'' is a perfectly ordinary outcome and the two sizes cannot be told apart.
+Every row contains zero, including the last, which spans the whole ladder from
+5{,}000 to 21{,}000 people and whose best estimate is 0.04. So the claim is not
+``the gain is small'' but \emph{no gain was measured}. The fitted scaling law
+agrees: a slope of $+0.18\pt$ per ten-fold increase in users, on a line accounting
+for only 12\,\% of the spread of the eight points.}}
+
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the paired-bootstrap cells, 2,000 resamples}
 \end{table}

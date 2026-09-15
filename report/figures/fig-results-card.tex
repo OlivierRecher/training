@@ -57,17 +57,18 @@
 % ============================ card 3 ====================================
 \begin{scope}[shift={(10.10,0)}]
 \node[card] at (0,0) {};
-\node[eyeb] at (0.25,-0.22) {THE PERSON OUTWEIGHS THE DATA BY};
-\node[big,text=clGthree] at (0.25,-0.92) {50$\times$};
+\node[eyeb] at (0.25,-0.22) {THE CALMEST AND THE MOST RESTLESS KIND OF USER ARE APART BY};
+\node[big,text=clGthree] at (0.25,-0.92) {22.4};
 \node[capt] at (0.25,-1.98)
-  {22.4 correct answers per hundred separate the calmest kind of user from the
-   most restless one. Across the whole range of training sizes: 0.4.};
-\fill[clGthree] (0.25,-4.29) rectangle (2.40,-4.05);
-\node[mic,anchor=west,text=clGthree] at (2.50,-4.17) {22.4 between people};
+  {correct answers per hundred. Over the whole range of training sizes, from 400
+   people to 21{,}000, the gain moves by 0.4.};
+\fill[clGthree] (0.25,-4.29) rectangle (1.95,-4.05);
+\node[mic,anchor=west,text=clGthree] at (2.05,-4.17) {22.4 between kinds of user};
 \fill[clnonsig] (0.25,-4.79) rectangle (0.29,-4.55);
 \node[mic,anchor=west] at (0.39,-4.67) {0.4 between training sizes};
 \node[capt] at (0.25,-5.35)
-  {This is the finding I would keep if I had to keep one.};
+  {Who the person is decides the score; how much data was collected barely
+   moves it.};
 \end{scope}
 
 % ============================ footer ====================================
@@ -89,14 +90,14 @@ questions the internship actually asked: does a retrained language model beat th
 trivial rule, how much data does that take, and where does the remaining
 difficulty live. They are ordered by how firmly they are established. The
 \textbf{+4.3} is one measurement on one set of people, repeated once on a second
-group. The \textbf{1{,}900} rests on eight training sizes and a resampling test.
-The \textbf{50$\times$} is the most robust of the three, because it appears in
-every chapter that split its results by person.}
+group; the \textbf{1{,}900} rests on eight training sizes and a resampling test;
+the \textbf{22.4} is the most robust of the three, because it appears in every
+chapter that split its results by person.}
 
-\figpara{What the dashed band is doing there.}{It is the uncomfortable part of
-the summary. On a task whose honest yardstick is one line of code, three
-corrections to how things were measured were each worth more than any modelling
-idea I had. That is not a criticism of the modelling; it is where I would tell
-somebody picking this up to look first.}}
+\figpara{What the dashed band is doing there.}{On a task whose honest yardstick is
+one line of code, three corrections to how things were measured were each worth
+more than any modelling idea I had. That is not a criticism of the modelling; it
+is where I would tell somebody picking this up to look first.}}
+
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{with every number traced to its run in Table~\ref{tab:provenance}}
 \end{figure}

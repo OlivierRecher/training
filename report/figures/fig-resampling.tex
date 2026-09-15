@@ -1,65 +1,87 @@
-% F15 -- Levelling every user to 200 records: what the score looks like, and what it is.
+% F15 -- Levelling every day to 200 records: what the score looks like, and what
+% it actually is. Drawn by hand rather than plotted: the point is a comparison
+% between two pairs of bars and a split of one population of moments.
 \begin{figure}[!htbp]
 \centering
 \replegend{\swatch{clbase}~the one-line rule \qquad \swatch{clmodel}~my model}
 \fitwidth{%
-\begin{tikzpicture}
-\begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=2.2cm, ylabels at=edge left},
-  repbar, width=0.42\linewidth, height=5.4cm, xtick=data,
-  title style={font=\footnotesize,yshift=1pt},
+\begin{tikzpicture}[font=\small,
+  ttl/.style={anchor=north west,align=left,font=\footnotesize\bfseries,text=clmodel},
+  axl/.style={font=\scriptsize,text=clrule},
+  grp/.style={anchor=west,align=left,text width=2.15cm,font=\scriptsize\bfseries,
+              text=clmodel},
+  who/.style={anchor=east,font=\scriptsize,text=clmodel},
+  val/.style={anchor=east,font=\scriptsize\bfseries,text=white},
 ]
-% ---- (a) each run against its own baseline ----
-\nextgroupplot[title={(a) each run against \emph{its own} rule},
-  symbolic x coords={nat,lev},
-  xticklabels={days as they are,every day stretched to 200},
-  ymin=0, ymax=122, ytick={0,20,...,80},
-  ylabel={correct answers per 100}, /pgf/bar width=16pt,
-  x tick label style={font=\scriptsize}]
-\addplot[fill=clbase,draw=none]  coordinates {(nat,43.1)(lev,76.5)};
-\addplot[fill=clmodel,draw=none] coordinates {(nat,46.8)(lev,74.9)};
-\node[font=\small,text=clgain,anchor=south] at (axis cs:nat,60) {$+3.7\pt$};
-\node[font=\small,text=clloss,anchor=south] at (axis cs:lev,102) {$-1.6\pt$};
-%
-% ---- (b) the arithmetic of copying ----
-\nextgroupplot[title={(b) what the 4{,}000 graded moments actually are},
-  symbolic x coords={cop,real},
-  xticklabels={{pure copies\\2{,}262 of 4{,}000},{real decisions\\1{,}738 of 4{,}000}},
-  ymin=0, ymax=125, ytick={0,25,...,100},
-  /pgf/bar width=16pt,
-  x tick label style={font=\scriptsize,align=center}]
-\addplot[fill=clbase,draw=none]  coordinates {(cop,100.0)(real,45.9)};
-\addplot[fill=clmodel,draw=none] coordinates {(real,42.2)};
-\node[font=\scriptsize,text=clloss,anchor=south,xshift=-11pt] at (axis cs:real,58) {$-3.7\pt$};
-\end{groupplot}
+% ================= panel (a) : two runs, each against its own rule ========
+\node[ttl,text width=13.0cm] at (0,1.42)
+  {(a) Stretching the days raises both scores, and turns the distance negative};
+\draw[clrule] (3.60,0.14) -- (11.10,0.14);
+\foreach \vv in {0,25,50,75,100}{
+  \draw[clrule] (3.60+\vv*0.075,0.14) -- (3.60+\vv*0.075,0.24);
+  \node[axl,anchor=south] at (3.60+\vv*0.075,0.22) {\vv};}
+\node[axl,anchor=west] at (11.25,0.19) {correct answers per 100};
+
+% --- run 1: the days as they come ---
+\node[grp] at (0,-0.67) {days as they are};
+\node[who] at (3.45,-0.47) {the rule};
+\node[who] at (3.45,-0.87) {my model};
+\fill[clbase]  (3.60,-0.32) rectangle (3.60+43.1*0.075,-0.62);
+\fill[clmodel] (3.60,-0.72) rectangle (3.60+46.8*0.075,-1.02);
+\node[val] at (3.53+43.1*0.075,-0.47) {43.1};
+\node[val] at (3.53+46.8*0.075,-0.87) {46.8};
+\node[anchor=west,draw=clgain,fill=clgain!12,rounded corners=2pt,inner sep=4pt,
+      font=\scriptsize\bfseries,text=clgain] at (3.60+46.8*0.075+0.45,-0.67)
+      {the model is 3.7 ahead};
+
+% --- run 2: every day stretched to 200 records ---
+\node[grp] at (0,-1.90) {every day stretched to 200 records};
+\node[who] at (3.45,-1.70) {the rule};
+\node[who] at (3.45,-2.10) {my model};
+\fill[clbase]  (3.60,-1.55) rectangle (3.60+76.5*0.075,-1.85);
+\fill[clmodel] (3.60,-1.95) rectangle (3.60+74.9*0.075,-2.25);
+\node[val] at (3.53+76.5*0.075,-1.70) {76.5};
+\node[val] at (3.53+74.9*0.075,-2.10) {74.9};
+\node[anchor=west,draw=clloss,fill=clloss!10,rounded corners=2pt,inner sep=4pt,
+      font=\scriptsize\bfseries,text=clloss] at (3.60+76.5*0.075+0.45,-1.90)
+      {the model is 1.6 behind};
+\draw[clrule!60] (0,-2.60) -- (13.60,-2.60);
+
+% ================= panel (b) : what the graded moments became ============
+\node[ttl,text width=13.4cm] at (0,-2.78)
+  {(b) Why: what the 4{,}000 graded moments are once the days have been stretched};
+\fill[clnonsig] (0,-3.30) rectangle (7.36,-3.86);
+\draw[clrule,fill=white] (7.36,-3.30) rectangle (13.00,-3.86);
+\node[font=\scriptsize\bfseries,text=clmodel] at (3.68,-3.58) {2{,}262 pure copies};
+\node[font=\scriptsize\bfseries,text=clmodel] at (10.18,-3.58) {1{,}738 real decisions};
+\node[anchor=north west,align=left,text width=7.10cm,font=\scriptsize] at (0,-4.02)
+  {The antenna asked for is a copy of the one just before, so anything that
+   repeats is right: \textbf{100 out of 100}, for the rule and for the model
+   alike. This block is the whole of the rise in panel (a).};
+\node[anchor=north west,align=left,text width=5.55cm,font=\scriptsize] at (7.45,-4.02)
+  {The moments where somebody had to be predicted. Here the rule is right
+   \textbf{45.9} times in 100 and my model \textbf{42.2}:
+   \textcolor{clloss}{\textbf{3.7 behind}}, on exactly the moments that matter.};
 \end{tikzpicture}}
 \caption{Stretching every day to 200 records: a high score, a worse result}
 \label{fig:resampling}
 \figtext{%
 \figpara{Panel (a): a spectacular score, and a result that changed sign.}{Every
 person's day is stretched to exactly 200 records by repeating records already
-there, so that the longest quarter of people stops carrying 44\,\% of the
-training material. Each run is shown against \emph{its own} one-line rule, and
-only the comparison inside a pair means anything. The levelled model reaches
-74.9\,\%, by a wide margin the highest absolute score of the project, but the
-rule on those same stretched days reaches 76.5\,\%. The distance flips from 3.7
-ahead to 1.6 behind: the score went up and the result got worse.}
+there, so that the longest quarter of people stops carrying 44\,\% of the training
+material. Each run is shown against \emph{its own} one-line rule, and only the
+comparison inside a pair means anything. The levelled model reaches 74.9\,\%, by a
+wide margin the highest absolute score of the project, but the rule on those same
+stretched days reaches 76.5\,\%.}
 
-\figpara{Panel (b): the reason is arithmetic, not modelling.}{Of the 4{,}000
-graded moments, \textbf{2{,}262 ask for a record that is a copy of the one
-before}. Any rule that repeats is right on all of them by construction, which is
-why both bars rose by about thirty. On the 1{,}738 moments that are real
-decisions the rule scores 45.9\,\% against the model's 42.2\,\%. The model bar
-here is derived from the reported 74.9\,\% rather than re-measured, assuming it
-never misses a copy; it rises to 44.8\,\% if it misses 2\,\% of them, and stays
-below the rule at either end.}
+\figpara{Panel (b): the reason is arithmetic, not modelling.}{Stretching a day
+fills it with copies, and a copy is a moment on which repeating the last antenna
+cannot be wrong. That is why both scores rose by about thirty. On the 1{,}738
+moments that are real decisions the model is behind. Its bar there is derived from
+the reported 74.9\,\% assuming it never misses a copy, and it stays below the rule
+at either end of that assumption. And because a copied step never changes
+location, levelling compresses the spread between people by a factor of 2.3,
+destroying the very signal the four kinds of user are cut on.}}
 
-\figpara{Why it could not have worked here.}{A copied step never changes
-location, so levelling compresses the spread between people in how often they
-move by a factor of 2.3 and drags everybody towards the stay-at-home profile.
-Telling the four kinds of user apart is the mechanism that produced the
-project's only real gain, and it needs that spread. The technique delivers
-exactly what it promises, per-person weight becoming perfectly equal, but on
-this data it removes more information than it redistributes.}}
 
 \end{figure}

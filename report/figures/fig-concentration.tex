@@ -31,24 +31,21 @@
 \label{fig:concentration}
 \figtext{%
 \figpara{What each bar is.}{One row per candidate property of a person, named on
-the left in plain words. The length of the bar is the Pearson correlation of
+the left in plain words. The bar is the Pearson correlation of
 Equation~\eqref{eq:pearson} between that property and that person's own score:
 zero means the property tells you nothing about the score, $\pm1$ that it tells
 you everything, and pointing left means ``more of this, worse predicted''. Dark
-blue bars are measured on the 1{,}173 scored people of a raw day file, teal bars
-on the 100 held-out people of a different set; a row with one bar was computed on
-one of the two only.}
+blue is measured on the 1{,}173 scored people of a raw day file, teal on the 100
+held-out people of a different set.}
 
 \figpara{The ranking is not close, and the top bar needs a warning.}{How often
 somebody changes antenna reaches $-0.971$ on the first set and $-0.773$ on the
-second. How spread out their time is ($-0.811$) and how much sits on one main
+second; how spread out their time is ($-0.811$) and how much sits on one main
 antenna ($+0.696$) are the same information from other angles. Everything else,
-including how much history the person has, stays below $0.24$ in absolute value,
-which eliminates the intuitive explanations in a single pass. But the $-0.971$ is
-close to arithmetic: how often somebody changes antenna is the mirror image of
-how often the one-line rule is right on them, so any model imitating that rule is
-guaranteed a large negative value before anything is measured. The distribution
-of Figure~\ref{fig:switch-rate}, not this coefficient, is the finding of the
-chapter.}}
+including how much history the person has, stays below $0.24$. But $-0.971$ is
+close to arithmetic, since how often somebody changes antenna is the mirror image
+of how often the one-line rule is right on them, so any model imitating that rule
+earns a large negative value before anything is measured.}}
+
 
 \end{figure}

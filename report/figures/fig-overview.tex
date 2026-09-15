@@ -3,55 +3,77 @@
 \centering
 \fitwidth{%
 \begin{tikzpicture}[font=\small,
-  st/.style={draw=clrule,fill=clsoft,rounded corners=3pt,align=center,
-             inner sep=7pt,text width=3.15cm,minimum height=3.55cm,anchor=north},
   ar/.style={-{Stealth[length=6pt]},clrule,very thick},
+  ttl/.style={anchor=north,align=center,text width=3.05cm,
+              font=\footnotesize\bfseries,text=clmodel},
+  sub/.style={anchor=north,align=center,text width=3.05cm,font=\scriptsize},
   num/.style={circle,draw=clmodel,fill=white,inner sep=1.4pt,
               font=\scriptsize\bfseries,text=clmodel},
 ]
-\node[st] (s1) at (0,0)
-  {{\footnotesize\bfseries\color{clmodel} 1. One day of\\ one person}\\[4pt]\footnotesize
-   The network writes down which antenna the phone was on, and at what time,
-   all day long.};
-\node[st] (s2) at (4.35,0)
-  {{\footnotesize\bfseries\color{clmodel} 2. Rewritten\\ as a list}\\[4pt]\footnotesize
-   That day becomes an ordered list of \emph{antenna, hour} pairs, one line
-   per person.};
-\node[st] (s3) at (8.70,0)
-  {{\footnotesize\bfseries\color{clmodel} 3. A language\\ model reads it}\\[4pt]\footnotesize
-   The same kind of model that finishes a sentence, retrained on those lists
-   instead of on text.};
-\node[st] (s4) at (13.05,0)
-  {{\footnotesize\bfseries\color{clmodel} 4. It names the\\ next antenna}\\[4pt]\footnotesize
-   Out of the 369 antennas of the study area, it ranks the likeliest one
-   first.};
+% ---- the four frames ------------------------------------------------------
+\foreach \i/\n in {0/1,1/2,2/3,3/4}{
+  \draw[draw=clrule,fill=clsoft,rounded corners=3pt]
+        (\i*3.90,0) rectangle (\i*3.90+3.30,-2.70);
+  \node[num] at (\i*3.90+0.19,-0.19) {\n};
+}
+\foreach \i in {0,1,2}{ \draw[ar] (\i*3.90+3.30,-1.35) -- (\i*3.90+3.90,-1.35); }
 
-\draw[ar] (s1.east) -- (s2.west);
-\draw[ar] (s2.east) -- (s3.west);
-\draw[ar] (s3.east) -- (s4.west);
-\node[num] at (s1.north west) {1}; \node[num] at (s2.north west) {2};
-\node[num] at (s3.north west) {3}; \node[num] at (s4.north west) {4};
+% ---- icon 1: a mast, and a phone attached to it ---------------------------
+\begin{scope}[shift={(1.65,-0.74)},clmodel,line width=0.7pt]
+  \draw (-0.62,-0.32) -- (-0.32,0.34) -- (-0.02,-0.32);
+  \draw (-0.54,-0.14) -- (-0.10,-0.14);
+  \draw (-0.45,0.05) -- (-0.19,0.05);
+  \draw (-0.66,-0.32) -- (0.02,-0.32);
+  \foreach \rr in {0.19,0.33}{ \draw (-0.32,0.34) ++(-42:\rr) arc (-42:42:\rr); }
+  \draw[rounded corners=1.5pt,fill=white] (0.36,-0.24) rectangle (0.62,0.20);
+\end{scope}
+% ---- icon 2: the day rewritten as a list ----------------------------------
+\begin{scope}[shift={(5.55,-0.74)},clmodel,line width=0.7pt]
+  \draw[fill=white,rounded corners=1.5pt] (-0.44,-0.34) rectangle (0.44,0.34);
+  \draw (-0.30,0.18) -- (0.24,0.18);
+  \draw (-0.30,0.00) -- (0.30,0.00);
+  \draw (-0.30,-0.18) -- (0.16,-0.18);
+\end{scope}
+% ---- icon 3: the model ----------------------------------------------------
+\begin{scope}[shift={(9.45,-0.74)},clmodel,line width=0.7pt]
+  \draw[fill=white,rounded corners=2pt] (-0.38,-0.28) rectangle (0.38,0.28);
+  \foreach \xx in {-0.19,0,0.19}{
+    \draw (\xx,-0.42) -- (\xx,-0.28); \draw (\xx,0.28) -- (\xx,0.42); }
+  \foreach \xx in {-0.16,0,0.16}{ \fill (\xx,0) circle (0.055); }
+\end{scope}
+% ---- icon 4: a ranking, likeliest first -----------------------------------
+\begin{scope}[shift={(13.35,-0.74)}]
+  \fill[clgain]   (-0.55,0.13) rectangle (0.21,0.31);
+  \fill[clnonsig] (-0.55,-0.09) rectangle (-0.03,0.09);
+  \fill[clnonsig] (-0.55,-0.31) rectangle (-0.19,-0.13);
+  \node[font=\tiny\bfseries,text=clgain,anchor=west] at (0.27,0.22) {1st};
+\end{scope}
 
-% --- the competitor, underneath -----------------------------------------
+% ---- the four labels ------------------------------------------------------
+\node[ttl] at (1.65,-1.15)  {One day of\\ one person};
+\node[sub] at (1.65,-1.88)  {which antenna,\\ at what time};
+\node[ttl] at (5.55,-1.15)  {Rewritten\\ as a list};
+\node[sub] at (5.55,-1.88)  {antenna, hour,\\ antenna, hour};
+\node[ttl] at (9.45,-1.15)  {A language model\\ reads it};
+\node[sub] at (9.45,-1.88)  {retrained on days,\\ not on text};
+\node[ttl] at (13.35,-1.15) {It names the\\ next antenna};
+\node[sub] at (13.35,-1.88) {the likeliest\\ of 369 antennas};
+
+% ---- the competitor, underneath -------------------------------------------
 \node[draw=clbase,dashed,fill=clbase!8,rounded corners=3pt,align=center,
-      inner sep=7pt,text width=14.1cm,font=\small,anchor=north]
-      (rule) at (6.52,-4.25)
-  {\textbf{The thing to beat, on the very same question:} answer
-   \emph{``the same antenna as a moment ago''}, every time. No model, no
-   training, one line of code.\\[2pt]
-   On an ordinary day of records it is right \textbf{69 times out of 100}.};
-\draw[ar,clbase] (s4.south) -- (13.05,-4.25);
+      inner sep=6pt,text width=13.9cm,font=\small,anchor=north] (rule) at (8.25,-3.35)
+  {\textbf{The competitor:} answer \emph{``the same antenna as a moment ago''},
+   every time. No model, no training. Right \textbf{69 times out of 100}.};
+\draw[ar,clbase] (13.35,-2.70) -- (13.35,-3.35);
 \end{tikzpicture}}
 \caption{What this internship built, in four steps}
 \label{fig:overview}
 \figtext{%
-\figpara{What the picture says.}{The mobile network records, all day, which
-antenna each phone is attached to. I turn one person's day into a plain ordered
-list, retrain a small language model on thousands of those lists, and ask it to
-continue one: it names which antenna the person will be on next by ranking all
-369 antennas of the area. A language model fits a question with no language in
-it because the shape is the same, an ordered list of symbols drawn from a fixed
-set. The dashed box is the real difficulty: a competitor with no model at all,
-``the person is still where they were'', is already right about seven times out
-of ten, and every number in this report is the distance to it.}}
+\figpara{What the picture says.}{The network records all day which antenna each
+phone is attached to. I turn one person's day into a plain ordered list, retrain a
+small language model on thousands of those lists, and ask it to continue one: it
+ranks all 369 antennas of the area and names the likeliest. The dashed box is the
+real difficulty: a competitor with no model at all is already right about seven
+times out of ten, and every number in this report is the distance to it.}}
+
 \end{figure}

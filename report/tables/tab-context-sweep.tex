@@ -31,19 +31,18 @@ is cut into the part the model reads and the part it must produce: ``70 / 30''
 means the model sees the first 70\,\% and is graded on the last 30\,\%.
 \textbf{Valid.} is the score on people held back to decide when to stop training,
 \textbf{Model} the score on the test people, \textbf{Rule} what ``repeat the last
-antenna'' scores on those very same moments, and \textbf{Distance} the model
-minus the rule, which is the only column that means anything.}
+antenna'' scores on those very same moments, and \textbf{Distance} the model minus
+the rule, which is the only column that means anything.}
 
 \figpara{The point of the table is the \textbf{Rule} column.}{It changes from row
-to row. Moving the cut changes which antenna counts as ``the last one seen'', so
-it moves the competitor too, and each row must be read against the rule on its
-own line. On \sfilt{} exactly one cut out of three clears the rule, by 1.1, while
+to row, because moving the cut changes which antenna counts as ``the last one
+seen''. On \sfilt{} exactly one cut out of three clears the rule, by 1.1, while
 the other two lose ground by 0.3 and 2.4; one favourable cell out of three is not
 a result, and the next iteration made it disappear. On \smob{} no cut clears the
 rule at all: the model climbs steadily from 41.5 to 47.6\,\% as it is given more
 history, which looks like progress until one notices the rule climbing just as
-fast. Each \sfilt{} row is a separate training run; the \smob{} block is one
-model read seven times, and the giveaway is its identical \textbf{Valid.}
-column.}}
+fast. Each \sfilt{} row is a separate training run; the \smob{} block is one model
+read seven times, and the giveaway is its identical \textbf{Valid.} column.}}
+
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the context-fraction sweeps}
 \end{table}

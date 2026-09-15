@@ -1,46 +1,44 @@
-% T14 -- Every headline run of the internship on one axis, gap by gap.
-\begin{table}[t]
-\centering\footnotesize
-\caption{Every iteration, on one axis}
+% T14 -- Every iteration of the internship on one axis, gap by gap.
+% Used by the executive summary. Plain wording only: no term that the body
+% has not yet introduced.
+\par\vspace{6pt}
+{\centering\small
+\captionof{table}{The eleven iterations, on one axis}
 \label{tab:recap}
-\begin{tabular}{@{}c@{\hspace{8pt}}l@{\hspace{8pt}}l@{\hspace{8pt}}l@{\hspace{8pt}}r@{\hspace{8pt}}r@{\hspace{9pt}}r@{}}
+\begin{tabular}{@{}c@{\hspace{7pt}}l@{\hspace{7pt}}l@{\hspace{7pt}}l@{\hspace{7pt}}r@{\hspace{7pt}}r@{\hspace{8pt}}r@{}}
 \toprule
-\textbf{It.} & \textbf{Corpus} & \textbf{Lever of that iteration} & \textbf{Protocol} & \textbf{Base.} & \textbf{Model} & \textbf{Gap} \\
+\textbf{It.} & \textbf{People} & \textbf{What I changed that week} & \textbf{Graded on} & \textbf{Rule} & \textbf{Model} & \textbf{Gap} \\
 \midrule
-1  & \sraw     & pipeline built    & last 20\,\% & 69.2\,\% & 16.9\,\% & $-52.3$ \\
-2  & \sraw     & harness fixes     & last 20\,\% & 69.2\,\% & 64.4\,\% & $-4.8$  \\
-3  & \srawbig  & ten times more users & last 20\,\% & 81.6\,\% & 76.0\,\% & $-5.6$  \\
-4  & \sfilt    & filtering         & last 20\,\% & 79.0\,\% & 80.1\,\% & $\mathbf{+1.1}$ \\
-5  & \smob     & a cleaner corpus  & last 20\,\% & 45.5\,\% & 44.6\,\% & $-0.9$  \\
-6  & \smob     & hour tokens       & last 20\,\% & 45.5\,\% & 44.2\,\% & $-1.3$  \\
-7  & \smob     & group token       & full seq.   & 43.1\,\% & 41.3\,\% & $-1.8$  \\
-8  & \smob     & adapter routing   & full seq.   & 43.1\,\% & 46.8\,\% & $\mathbf{+3.7}$ \\
-9  & \stwok    & 1{,}900 users     & last 20\,\% & 48.2\,\% & 52.4\,\% & $\mathbf{+4.2}$ \\
-9  & \slev     & levelled records  & last 20\,\% & 76.5\,\% & 74.9\,\% & $-1.6$  \\
-10 & \seleven  & 21{,}000 users    & last 20\,\% & 50.2\,\% & 54.5\,\% & $\mathbf{+4.3}$ \\
-11 & \seleven  & analysis only     & \multicolumn{4}{@{}l@{}}{\textit{no new training: why the ladder climbs, then stops}} \\
+1  & \sraw     & built the pipeline end to end   & last fifth & 69.2\,\% & 16.9\,\% & $-52.3$ \\
+2  & \sraw     & read the best saved copy        & last fifth & 69.2\,\% & 64.4\,\% & $-4.8$  \\
+3  & \srawbig  & ten times more people           & last fifth & 81.6\,\% & 76.0\,\% & $-5.6$  \\
+4  & \sfilt    & dropped near-silent people      & last fifth & 79.0\,\% & 80.1\,\% & $\mathbf{+1.1}$ \\
+5  & \smob     & kept only people who move       & last fifth & 45.5\,\% & 44.6\,\% & $-0.9$  \\
+6  & \smob     & gave the model the hour of day  & last fifth & 45.5\,\% & 44.2\,\% & $-1.3$  \\
+7  & \smob     & named the kind of user in the text & whole day & 43.1\,\% & 41.3\,\% & $-1.8$  \\
+8  & \smob     & one set of numbers per kind of user & whole day & 43.1\,\% & 46.8\,\% & $\mathbf{+3.7}$ \\
+9  & \stwok    & 1{,}900 training people         & last fifth & 48.2\,\% & 52.4\,\% & $\mathbf{+4.2}$ \\
+9  & \slev     & stretched every day to 200 records & last fifth & 76.5\,\% & 74.9\,\% & $-1.6$  \\
+10 & \seleven  & 21{,}000 training people        & last fifth & 50.2\,\% & 54.5\,\% & $\mathbf{+4.3}$ \\
+11 & \seleven  & \multicolumn{5}{@{}l@{}}{\textit{no new training: why the curve climbs, then stops}} \\
 \bottomrule
-\end{tabular}
+\end{tabular}\par}
+\small
 
 \figtext{%
-The eleven iterations reduced to the only quantity that is comparable between
-them, the gap in points between the model and the persistence baseline of its
-own test users. Reading down the \textbf{Gap} column is reading the whole
-internship: five iterations below the trivial rule, one accidental win at
-iteration~4, and a real one from iteration~8 onward. Reading down the
-\textbf{Base.} column shows why no other column may be compared vertically,
-since the corpus, and with it the difficulty of the test users, changed four
-times. What each iteration actually did is in
-Appendix~\ref{app:timeline}.}
+\figpara{The only column that may be read vertically is the last one.}{\textbf{Gap}
+is how many more answers out of a hundred the model got right than the one-line
+rule, on that week's own test people. Five weeks below it, one accidental win at
+iteration~4, and a real one from iteration~8. The \textbf{Rule} column is why no
+other column may be compared from row to row: the set of people changed four
+times, and with it the difficulty of the test. ``Last fifth'' grades the final
+fifth of each test day, ``whole day'' every position of it one at a time, which
+is harder and lowers the rule on the very same people from 45.5\,\% to 43.1\,\%.}
 
-\vspace{4pt}
-\begin{minipage}{\textwidth}\footnotesize
-``Last 20\,\%'' scores the final fifth of each test sequence, ``full seq.''
-every position of it, one at a time, which is strictly harder and lowers the
-baseline on the very same users from 45.5\,\% to 43.1\,\%
-(Chapter~\ref{ch:time}). Iteration~6 is the row whose single number understates
-it: its targeted sampling won $+2.6\pt$ inside the two guessed windows and lost
-more than that outside them. Iteration~9 appears twice because two independent
-things were tried that week, more users and levelled records.
-\end{minipage}
-\end{table}
+\figpara{Two rows read wrong on their own.}{Iteration~6 won 2.6 more correct
+answers per hundred inside the two stretches of the day it targeted and lost more
+than that everywhere else, so its single number hides the mechanism that
+iteration~8 then used properly. Iteration~9 appears twice because two independent
+things were tried that week. What each iteration actually did is in
+Appendix~\ref{app:timeline}.}}
+\normalsize\par\vspace{4pt}

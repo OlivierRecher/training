@@ -1,0 +1,77 @@
+% F2 -- One real mast, seen with 2G alone and then with 3G added on top.
+% Adapted from a schematic in a colleague's report on the same corpus.
+\begin{figure}[!htbp]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\small,
+  ttl/.style={anchor=south,align=center,font=\footnotesize\bfseries,text=clmodel},
+  scap/.style={anchor=north,align=center,font=\scriptsize,text=clrule},
+  nm/.style={font=\tiny\ttfamily},
+]
+% a coverage lobe: {angle}{half-width}{reach}{style}
+\def\lobe#1#2#3#4{\draw[#4,rotate=#1] (0,#3) ellipse (#2 and #3);}
+% the mast itself: a crossed circle
+\def\mast{\draw[clmodel,fill=white,line width=0.7pt] (0,0) circle (0.17);
+          \draw[clmodel] (-0.12,-0.12) -- (0.12,0.12);
+          \draw[clmodel] (-0.12,0.12) -- (0.12,-0.12);}
+
+% ================= panel (a): 2G only ====================================
+\begin{scope}[shift={(3.5,0)}]
+  \foreach \aa in {45,135,225,315}{
+    \lobe{\aa}{0.62}{1.35}{draw=clbase,fill=clbase!16,line width=0.7pt}}
+  \mast
+  \node[nm,text=clbase] at (45:1.05)  {BKVCHE1};
+  \node[nm,text=clbase] at (135:1.05) {BKVCHE2};
+  \node[nm,text=clbase] at (225:1.05) {BKVCHE3};
+  \node[nm,text=clbase] at (315:1.05) {BKVCHE4};
+  \node[ttl] at (0,2.95) {(a) One mast carries four 2G cells};
+  \node[scap,text width=5.0cm] at (0,-2.95)
+    {one installation, four names in the data};
+\end{scope}
+
+\draw[clrule!50] (7.0,3.05) -- (7.0,-3.20);
+
+% ================= panel (b): 2G and 3G together =========================
+\begin{scope}[shift={(10.5,0)}]
+  \foreach \aa in {0,90,180,270}{
+    \lobe{\aa}{0.62}{1.35}{draw=clink,fill=clink!13,line width=0.7pt}}
+  \foreach \aa in {45,135,225,315}{
+    \lobe{\aa}{0.40}{0.82}{draw=clbase,fill=clbase!20,line width=0.7pt}}
+  \mast
+  \node[nm,text=clink] at (0:1.78)   {UKVCHE101};
+  \node[nm,text=clink] at (90:1.78)  {UKVCHE102};
+  \node[nm,text=clink] at (180:1.78) {UKVCHE103};
+  \node[nm,text=clink] at (270:1.78) {UKVCHE104};
+  % the handover that looks like a movement
+  \draw[-{Stealth[length=4pt]},clmove,thick]
+        (0.38,0.38) to[bend left=25] (1.15,0.22);
+  \draw[clmove] (1.24,1.44) -- (0.82,0.82);
+  \node[anchor=west,font=\scriptsize,text=clmove,align=left,text width=1.95cm]
+        at (1.24,1.72) {a new name,\\ nobody moved};
+  \node[ttl] at (0,2.95) {(b) The same mast also carries 3G: eight cells};
+  \node[scap,text width=5.4cm] at (0,-2.95)
+    {the smaller lobes are the 2G cells of panel (a)};
+\end{scope}
+
+% ================= the reading ===========================================
+\node[draw=clrule,fill=clsoft,rounded corners=3pt,align=left,inner sep=7pt,
+      text width=13.6cm,font=\footnotesize,anchor=north] at (7.0,-3.55)
+  {\textbf{Eight names, one place.} A phone lying still at the foot of the mast
+   sits inside several lobes at once, and the network can hand it from one to the
+   next for reasons of signal alone. Every such handover is written into the data
+   as a change of antenna, and looks exactly like a movement.};
+\end{tikzpicture}}
+\caption{One mast, and all the names it answers to}
+\label{fig:base-station}
+\figtext{%
+\figpara{What is drawn, and why it decides how movement is measured.}{Both panels
+are the same mast of the study area seen from above, the crossed circle being the
+installation itself and each shaded lobe the area covered by one of its antennas
+pointing in one direction. Panel (a) has the four 2G cells alone; panel (b) adds
+the four 3G ones, which reach differently and point elsewhere. The eight lobes all
+start at the same point, so any hop among those eight names happens at one
+address. On the day used for Chapter~\ref{ch:groups} that is \textbf{12.4 out of
+every 100} back-to-back records. Movement is therefore always measured on the
+mast, while what has to be \emph{predicted} stays the full antenna name.}}
+
+\end{figure}

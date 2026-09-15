@@ -1,0 +1,266 @@
+\chapter{How I train, and how I measure}
+\label{ch:tools}
+
+\section{The goal}
+
+Two practical questions had to be settled before any experiment could mean
+anything. \emph{Given one free graphics card and a few weeks, which model and
+which training method are actually feasible?} And \emph{what has to be true of the
+measurement before a trained model's score can be believed?}
+
+The answer to the first was decided in the first week and never changed. What
+changed over the internship was the data and the training signal, never the
+instrument, and that is what makes the later comparisons between runs meaningful.
+The answer to the second cost me three wrong conclusions, one per rule, and the
+second half of this chapter is those three rules.
+
+\paragraph{Where the numbers in this chapter come from.} From the three earliest
+sets of people of Table~\ref{tab:datasets}: \Draw{} taken exactly as the operator
+sent it, \Dfilt{} once people with too few records were removed, and \Dmob{} once
+only people who genuinely move are kept. Each uses \textbf{400 people for
+training} and \textbf{100 different people}, never seen during training, for
+grading. The one-line rule scores 69.2\,\%, 79.0\,\% and 45.5\,\% on them
+respectively, and that difference between the three is itself the subject of the
+third rule below.
+
+\section{The tools, and how much of the model I change}
+\label{sec:tools-peft}
+
+\input{figures/fig-toolchain}
+
+A language model is a stack of very large tables of
+numbers.\footnote{\textbf{Weights}, or \textbf{parameters}: the numbers inside
+the model that turn an input into an output. ``Frozen'' means left exactly as its
+original authors trained them.} Adapting one somebody else has already
+trained\footnote{\textbf{Pre-trained}: already trained, by someone else, on a very
+large body of general text. Fine-tuning starts from those numbers rather than
+from nothing, which is what makes it affordable.} can be done at three very
+different costs, and what separates them is not accuracy. It is memory.
+
+\input{figures/fig-lora}
+
+I chose QLoRA, and on hardware grounds rather than on expected quality: it was the
+only one of the three under which my first candidate model could be loaded at all
+on a free graphics card. That choice held for the rest of the internship, and it
+is what made the volume of experiments possible, and the per-group routing of
+Chapter~\ref{ch:groups} cheap enough to try at all.
+
+\subsection{Which model, and why the small one won}
+\label{sec:tools-model}
+
+The first real run used \textbf{Mistral-7B} \cite{jiang2023mistral}, a
+general-purpose model with seven billion numbers in it.\footnote{``7B'' means
+seven billion numbers. Qwen2.5-0.5B has five hundred million, fourteen times
+fewer. The count is the model's capacity, and also how much memory it occupies.}
+A deliberately small first experiment, about thirty minutes over 1.2\,\% of the
+training data, produced 16.87\,\% correct next-antenna answers, which was
+encouraging as a signal that the pipeline worked end to end. A Llama model tried
+at the same size did not even return well-formed antenna names.
+
+Scaled up to a full run on 400 training people, however, Mistral-7B spent roughly
+five and a half hours on the free card to reach a best score of 41.1\,\% and then
+stopped improving. The same data given to \textbf{Qwen2.5-0.5B-Instruct}
+\cite{qwen2025}, fourteen times smaller, ran forty-nine passes over the data in
+about seventy-two minutes, and twenty-nine minutes once the rules below were in.
+Mistral-7B was abandoned.
+
+The reasoning, stated at the time and still my view, is that the task is narrow.
+Naming the next antenna out of 369 requires no knowledge of the world and no
+reasoning in English; it requires learning how one small geographical area is
+moved through. The larger model brings capacity the task cannot use and charges
+for it in waiting time, by a factor of roughly twenty-three per run, which over
+nine weeks is the difference between thirty experiments and two.
+
+\section{How a day is written down, and how one run works}
+
+The model cannot read a day; it reads symbols.
+
+\input{figures/fig-training-example}
+
+Three choices are visible in that picture. \textbf{One antenna, one symbol}: all
+369 antenna names were added to the model's
+vocabulary\footnote{\textbf{Vocabulary}: the fixed set of symbols a language model
+can read and produce. \textbf{Tokenizer}: the component that cuts an input into
+those symbols.} as symbols of their own, since left alone the tokenizer would have
+split \cid{BSOCHO1} into four meaningless fragments and the model would have had
+to spell an antenna correctly to be right. \textbf{One hour, one symbol}: from the
+sixth iteration each event is preceded by a symbol for its hour of day,
+\cid{<H00>} to \cid{<H23>}, which is twenty-four learnable symbols instead of
+86{,}400 unlearnable ones and preserves the history the model can see, since it
+may only look at 512 symbols at a time.\footnote{\textbf{Context window}: the
+maximum number of symbols the model may look at in one go. Not the same as the
+\emph{context fraction} below, which is a property of the measurement.} And
+\textbf{only the antennas are graded}: the opening boilerplate and the hour
+symbols are excluded from the score,\footnote{\textbf{Masking} a position means
+excluding it from the score: the model still \emph{reads} the symbol but is
+neither rewarded nor penalised for producing it.} so the model is trained, and
+graded, only where an antenna name has to be produced.
+
+\subsection{One training run, step by step}
+
+\input{figures/fig-training-loop}
+
+Two further mechanisms were added to this loop from the sixth iteration onward,
+and later chapters depend on both. \textbf{Some mistakes are made to count more}:
+at step 3 the surprise measured at a given position can be multiplied according to
+the hour that position falls in, so a mistake at seven in the evening under a
+multiplier of four costs four times the same mistake at two in the afternoon. No
+data is duplicated; the optimiser is simply told which mistakes matter.
+\textbf{Some slices are shown more often}: at step 1, slices containing an
+interesting moment can be drawn three times more often than the rest, which
+changes how often the question is asked rather than how much a wrong answer costs.
+Both turned out to help only where the targeted positions were genuinely the hard
+ones, which is the subject of Chapters~\ref{ch:time} and~\ref{ch:groups}.
+
+\subsection{The machine: one free graphics card}
+
+Every run reported in this document was trained on \textbf{Google
+Colab}\footnote{\textbf{Google Colab}: a service that runs a Python notebook on a
+graphics card rented in the browser, free for a few hours a day and liable to
+disconnect. \textbf{T4} is the entry-level NVIDIA card it hands out.} on an
+NVIDIA \textbf{T4}. That card carries 16\,GB of memory, and that single figure is
+the constraint behind every choice in this chapter. The daily free quota is why
+the experiment schedule is one training per iteration rather than broad sweeps of
+settings.
+
+Three standard libraries do work that never touches the
+model.\footnote{\textbf{pandas}, \textbf{scikit-learn} and \textbf{scipy}: the
+three standard Python libraries for, respectively, manipulating tables of data,
+machine-learning utilities, and statistical tests.} They split people between
+training and test, check that the two halves have comparable histories, and run
+the resampling test \cite{efron1993bootstrap}\footnote{\textbf{Bootstrap}: error
+bars obtained by re-scoring the models on many random redraws of the test people,
+with no assumption about the shape of the underlying distribution.} that decides
+the central question of Chapter~\ref{ch:scale}.
+
+\subsection{What I reused from my colleagues}
+
+Three pieces came from the team. The daily extracts and the selection of people
+who move and stay in the area came out of Nino's own analysis tooling, and those
+files are the data on which most of this report's modelling rests. The
+move-or-stay framing is Tiphain and Benjamin's, and it is the idea behind the
+filtering of Chapter~\ref{ch:data} and behind reporting in-window and
+out-of-window scores separately. The technique of levelling every person's record
+count, tested in Chapter~\ref{ch:scale}, is Tiphain's. Their branch of the problem
+sends one long instruction, narrating a day in English, to a model whose numbers
+are never modified: everything it is meant to know about this population has to be
+restated in every instruction, whereas the branch this report takes stores that in
+the numbers instead.
+
+\section{How a prediction is scored}
+\label{sec:scoring}
+
+Everything in this report is scored the same way, and the procedure never changes.
+Each test person's day is cut once into a past the model may read and a rest it has
+to produce, the default being 80/20. The rest is then answered one moment at a
+time: the model is asked for one antenna, told what really happened, and asked for
+the next, so it can neither see the future nor compound its own mistakes. The
+one-line rule is run through exactly the same moments with exactly the same
+history.
+
+\input{figures/fig-protocol}
+
+At each graded moment the model produces not a single answer but a ranking of all
+369 antennas, most likely first, and the moment counts as correct if the antenna
+the person really visited is at the top of that ranking. Reading the ranking one
+place down gives \textbf{top-3}, and further down \textbf{top-5}.
+
+\input{figures/fig-topk}
+
+The three depths are not three models; they are the same predictions read at three
+levels of strictness. Top-1 is the strict headline used throughout this report;
+the other two say whether a model that misses is missing narrowly or wildly.
+
+\section{Three rules about measuring}
+
+\input{figures/fig-three-rules}
+
+\subsection{Rule 1: never read the last pass of a run}
+
+A language model fine-tuned on a few hundred short days will end up learning them
+by heart.\footnote{\textbf{Overfitting}: the point past which a model stops
+learning the regularity of the data and starts memorising the examples it was
+shown.} That is not a hypothesis; it is what the curves do.
+
+\input{figures/fig-validation-curves}
+
+The clearest evidence is a single run, deliberately allowed to continue to a hard
+ceiling of forty-nine passes. Its training score improves the whole way through,
+but its score on people it had never seen climbs for nine passes, peaks, and then
+declines for the remaining forty. The copy saved at the end scored 48.7\,\% on the
+held-out people; the copy saved at the peak scored 64.2\,\%. Reading the end of
+training instead of its best point therefore throws away \textbf{15.5 correct
+answers per hundred}, and spends forty passes of waiting time doing so.
+
+Acting on that, keeping the best copy, stopping on a plateau, and adding three
+mild settings that make memorisation harder,\footnote{Three standard knobs.
+\textbf{Dropout}: a tenth of the added numbers are set to zero at random at each
+step, so the model cannot lean on any single one. \textbf{Learning rate}: how big
+a step to take when adjusting a number. \textbf{Weight decay}: a mild pull of
+every trainable number back towards zero.} moved the score on unseen people from
+48.7\,\% to \textbf{64.4\,\%}, cut the waiting time from seventy-two minutes to
+twenty-nine, and lifted top-3 from 76.2\,\% to 82.7\,\%. Panels (b), (c) and (d)
+confirm that this shape belongs to the task rather than to one run. So every run
+in this report is stopped early and read at its best copy, and two runs are always
+compared at their respective peaks.
+
+\subsection{Rule 2: where the day is cut belongs to the ruler}
+
+The share of the day given to the model, called the \emph{context
+fraction},\footnote{\textbf{Context fraction}: the share of a person's day handed
+to the model before it must produce the rest. Distinct from the \emph{context
+window} above, which is a hard architectural limit.} looks like a setting of the
+experiment. It is part of the measurement. Moving the cut changes which antenna
+counts as ``the last one seen'', so it moves the one-line rule too. A model graded
+at 90\,\% context is not a better model than the same model graded at 30\,\%; it is
+the same model measured against an easier ruler.
+
+\input{tables/tab-context-sweep}
+
+That table contains the mistake this rule exists to prevent. On \Dfilt{} the model
+reaches 80.1\,\% at the reference 80/20 split against a rule at 79.0\,\%:
+\textbf{1.1 more correct answers per hundred}, and the first time in the project
+that a trained model cleared the one-line rule. Read on its own that looks like a
+result. Read across the three rows it is far weaker: at 70\,\% context the model
+trails by 0.3, and at 90\,\% context, where its own score is the \emph{highest} of
+the three, it trails by 2.4.
+
+\subsection{Rule 3: a benchmark has to leave room}
+
+On a day file taken as it comes, ``repeat the last antenna'' is right 69.2\,\% of
+the time, and most of what is left above that is not mobility at all: it is people
+with three records from a single antenna. A model scoring 64.4\,\% on such a file
+has not failed at prediction; it has been measured on a benchmark with no room in
+it. The same trained architecture, on three sets of people, faces rules of
+69.2\,\%, 79.0\,\% and 45.5\,\%.
+
+\subsection{What the three rules settled}
+
+Taken together they closed the ``tune it harder'' avenue. Once runs were read at
+their peak, once the cut was recognised as part of the ruler, and once the people
+had been chosen so that the yardstick was beatable in principle, the model still
+sat within a few correct answers of a one-line rule, usually below it, at every cut
+and on every set of people tried.
+
+The example that decided what to do next is small enough to quote in full. On one
+run, person 775719, whose past is the same antenna repeated ten times, is predicted
+correctly with 100\,\% confidence; person 3268099, whose past ends on one antenna
+and whose next event is a different one entirely, is predicted as ``the same
+antenna again'' with 68\,\% confidence. The model was right for free on the first
+and wrong for free on the second. A companion experiment made the same point
+statistically: on a 100-person version of the data, the score per person ranged
+from 10\,\% to 100\,\% and the model never passed 42.1\,\%. One hundred people
+is not a population; it is a handful of anecdotes with an average printed
+underneath. That is what Chapter~\ref{ch:user} sets out to fix.
+
+\section{Looking back}
+\label{sec:retro-tools}
+
+Each of the three rules arrived \emph{after} a conclusion that turned out to be
+wrong, and the 1.1 I presented as a result was not one. A short checklist written
+before the first training would have caught all three at once, and the modelling
+work would have started two iterations earlier. The one setting I never revisited
+is how much of the model I allowed to move: about 2 numbers in every 100 changed in
+every run, from four hundred training people to twenty-one thousand, and that
+fraction was never scaled with the data. Chapter~\ref{ch:scale} is where the
+omission bites.

@@ -49,27 +49,20 @@
 people they were trained on. The horizontal axis is that number on a logarithmic
 scale, so equal distances are equal multiples. The vertical axis is \emph{not} a
 score: it is the distance between the model and the one-line rule on that run's
-own test people, which is the only quantity that survives a change of test set.
-The dashed line at zero means ``indistinguishable from repeating the last
-antenna''.}
+own test people, the only quantity that survives a change of test set. The dashed
+line at zero means ``indistinguishable from repeating the last antenna''.}
 
-\figpara{Three bands, and the middle one holds everything.}{At 400 people the
-model gains 0.6, which is to say it does nothing the trivial rule was not already
-doing. Between 400 and 1{,}900 the gain climbs 0.6, 2.8, 3.5, 4.2: a four-fold
-increase in population buys 3.6 more correct answers per hundred, essentially the
-entire benefit this project ever obtained from data volume. The ten-fold increase
-that follows buys 0.1, and not even in an orderly way, since the best size,
-15{,}000, is followed by the worst, 21{,}000. The curve does not slow down. It
-stops.}
+\figpara{The middle band holds everything, and two things constrain how far it
+reads.}{At 400 people the model gains 0.6, which is to say nothing. Between 400
+and 1{,}900 the gain climbs 0.6, 2.8, 3.5, 4.2, essentially the entire benefit
+this project ever obtained from data volume. The ten-fold increase that follows
+buys 0.1, and the best size, 15{,}000, is followed by the worst, 21{,}000: the
+curve does not slow down, it stops. Two caveats. The points do not come from the
+same test people, which is why the axis is a distance and the small step across
+that boundary is not a measurement. And every size received the same budget of
+training time, so at 21{,}000 people only 36\,\% of the material was ever read:
+the defensible claim is that 1{,}900 people are enough \emph{at this budget}.}}
 
-\figpara{Two things constrain how far this reads.}{The points do not all come
-from the same test people: 400 is \smob{} against a 43.1\,\% rule, 900 to
-1{,}900 are \stwok{} against 48.2\,\%, and 5{,}000 to 21{,}000 are \seleven{}
-against 50.2\,\%. That is why the axis is a distance, and why the small step
-across that boundary is not a measurement. And every size received the same
-budget of training time, so at 21{,}000 people only 36\,\% of the available
-training material was ever read. The defensible claim is that 1{,}900 people are
-enough \emph{at this training budget}, not that more can never help.}}
 
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the eight-tier scaling notebook}
 \end{figure}

@@ -14,95 +14,86 @@ part of the answer is the conditions under which that is true.
 \paragraph{The model does beat the one-line rule, and it is clear where the gain
 comes from.} A fine-tuned Qwen2.5-0.5B answers correctly \textbf{4.3 more times
 out of a hundred} than ``repeat the last antenna''. That number is not large, and
-it should not be. The competitor is one line of code that is right roughly half
+it should not be: the competitor is one line of code that is right roughly half
 the time on people who genuinely move, and for five of the eleven iterations
 nothing I trained beat it at all. What made the difference was neither capacity
-nor volume but \emph{conditioning on who the person is}: sorting people by the
-hours at which they actually change location, and sending each kind of user to
-its own set of trained numbers. That single change took the model from 1.8 behind
-the rule to 3.7 ahead of it, and the gain fell in the exact inverse order of how
-well repetition already worked for each of the four kinds.
+nor volume but \emph{conditioning on who the person is}, sorting people by the
+hours at which they actually change location and sending each kind of user to its
+own set of trained numbers. That single change took the model from 1.8 behind the
+rule to 3.7 ahead of it, and the gain fell in the exact inverse order of how well
+repetition already worked for each of the four kinds.
 
 \paragraph{The amount of data needed is small, and the report says where it stops
-paying.} Population size is a real lever from 400 to 1{,}900 training people,
-where the gain grows from 0.6 to 4.2, and is worth nothing above it. One
-explanation fits the timing: the least populated of the four kinds of user crosses
-roughly a hundred members exactly between the two sizes where the score moves.
-Below that, a kind cannot be estimated and the model is right to ignore it.
+paying.} Population size is a real lever from 400 to 1{,}900 training people, where
+the gain grows from 0.6 to 4.2, and is worth nothing above it. One explanation fits
+the timing: the least populated of the four kinds of user crosses roughly a hundred
+members exactly between the two sizes where the score moves.
 
-\paragraph{Difficulty lives in the person, not in the dataset.} This is the
-finding I would keep if I had to keep one. The score of an individual person
-ranges from zero to one hundred per cent, and what predicts it is how repetitive
-that person's movement already is. An average score on this problem is a weighted
-mixture of segments of wildly different difficulty, and quoting it alone hides
-the only part of the result that is about the model.
+\paragraph{Difficulty lives in the person, not in the dataset.} This is the finding
+I would keep if I had to keep one. The score of an individual person ranges from
+zero to one hundred per cent, and what predicts it is how repetitive that person's
+movement already is. An average score on this problem is a weighted mixture of
+segments of wildly different difficulty, and quoting it alone hides the only part
+of the result that is about the model.
 
 \section{What I did not have time to do}
 
-Some of what follows is unfinished work rather than future research. The first
-four items could each be done in under a day, and I would do them before
-anything else.
+The first four items are unfinished work rather than future research. Each could be
+done in under a day, and I would do them before anything else.
 
 \begin{enumerate}
   \item \textbf{Re-score the earlier model on the later test people.} One grading
-        pass, no training at all. Because the set of test people changed four
-        times over the internship, the 3.7 of iteration 8 and the 4.2 of
-        iteration 9 are two separate measurements of the same effect rather than
-        a progression. Re-scoring puts every row of the project on one axis.
+        pass, no training. Because the set of test people changed four times, the
+        3.7 of iteration 8 and the 4.2 of iteration 9 are two separate measurements
+        of the same effect rather than a progression. Re-scoring puts every row of
+        the project on one axis.
   \item \textbf{Re-measure the switch-rate correlation on the final model.} Also
-        one grading pass. The $r = -0.971$ of Chapter~\ref{ch:user} was measured
-        on a model that was imitating the trivial rule, and a model that
-        genuinely helps the restless minority has to break the lockstep between
-        how often somebody moves and how well they are predicted. It is the
-        cheapest independent test of this report's main claim, and it would say
-        whether the mechanism reaches individual people or only shows up once
-        they are grouped.
+        one grading pass. The $r = -0.971$ of Chapter~\ref{ch:user} was measured on
+        a model that was imitating the trivial rule, and a model that genuinely
+        helps the restless minority has to break the lockstep between how often
+        somebody moves and how well they are predicted. It is the cheapest
+        independent test of this report's main claim.
   \item \textbf{Train the same configuration twice from different random starting
-        points.} About half an hour. The resampling test of
-        Chapter~\ref{ch:scale} covers the luck of which test people are drawn,
-        but not the other source of chance, namely that training itself is not
-        perfectly repeatable. Differences of a few tenths between sizes therefore
-        sit on a floor nobody measured.
+        points.} About half an hour. The resampling test of Chapter~\ref{ch:scale}
+        covers the luck of which test people are drawn, but not the fact that
+        training itself is not perfectly repeatable, so differences of a few tenths
+        between sizes sit on a floor nobody measured.
   \item \textbf{Run the capacity control for the routing.} Four sets of trained
         numbers are four times the trainable capacity of one, so part of the
         project's main gain may be capacity rather than the sorting itself. A
-        single set carrying as many trainable numbers as the four together, on
-        the same data, separates the two. I expect the sorting to carry most of
-        it, for the reason given in Section~\ref{sec:retro-groups}, but an
-        expectation is not a measurement.
+        single set carrying as many trainable numbers as the four together, on the
+        same data, separates the two.
 \end{enumerate}
 
 Two experiments were prepared and did not complete. A seven-day comparison, one
 independent training per weekday, was launched and the session crashed after five
 hours with none of the seven finished, so this report claims no effect of the day
-of the week. And the scaling curve of Chapter~\ref{ch:scale} was measured at
-constant computing time, which means that at 21{,}000 people only 36\,\% of the
-available training material was ever read. Giving the largest dataset the training
-time its size deserves is the one experiment that would separate ``1{,}900 people
-are enough at this budget'' from ``more people never help''.
+of the week. And the scaling curve was measured at constant computing time, which
+means that at 21{,}000 people only 36\,\% of the available training material was
+ever read; giving the largest dataset the training time its size deserves is the
+one experiment that would separate ``1{,}900 people are enough at this budget''
+from ``more people never help''.
 
 \section{What I would do next}
 
-\paragraph{Make the conditioning work on a short history.} This is the limitation
-I would put first if someone asked what the work is good for. The model's edge is
-largest on people about whom little is known, 4.6 with only 30\,\% of a day in
-hand against 4.3 with 80\,\%, and that cold start is exactly the case an operator
-cares about: predicting the rest of the day for somebody who has just appeared is
-worth more than confirming that a well-known person is still at home. But the
-kind of user is identified correctly for 92 out of 100 people at the reference
-protocol and only 61 and 44 out of 100 when half a day or a third of it is
-available. So the very conditioning that produces the edge decays as the history
+\paragraph{Make the conditioning work on a short history.} This is the limitation I
+would put first if someone asked what the work is good for. The model's edge is
+largest on people about whom little is known, 4.6 with only 30\,\% of a day in hand
+against 4.3 with 80\,\%, and that cold start is exactly the case an operator cares
+about. But the kind of user is identified correctly for 92 out of 100 people at the
+reference protocol and only 61 and 44 out of 100 when half a day or a third of it
+is available. So the very conditioning that produces the edge decays as the history
 shortens. Building an identifier that works on a short prefix is a smaller and
 better-posed problem than the one I spent the internship on, and it is where I
 would start again.
 
 \paragraph{Widen the question from one day to several.} The question given to me
-was a within-day one, predict the rest of a person's day from its beginning, and
-that is the question this report answers. The obvious continuation is to predict
-day $N+1$ from days $1$ to $N$, on data whose identifiers are stable from one day
-to the next: observing the same individual's home-to-activity move several times,
-and anything that could be called personalisation. That is the only item on this
-list that changes what the problem \emph{is} rather than how well it is measured.
+was a within-day one, and that is the question this report answers. The obvious
+continuation is to predict day $N+1$ from days $1$ to $N$, on data whose
+identifiers are stable from one day to the next: observing the same individual's
+home-to-activity move several times, and anything that could be called
+personalisation. That is the only item on this list that changes what the problem
+\emph{is} rather than how well it is measured.
 
 \paragraph{And check whether any of this survives a different city.} Every result
 here comes from a single Czech region over fifteen days in March 2014, with 369
@@ -112,10 +103,9 @@ small this world is.
 
 \section{In one paragraph}
 
-The honest summary of the nine weeks is narrow and, I think, useful. On
-single-day cellular records, what a population has in common is cheap to learn,
-it is measurable, it is worth about four correct answers per hundred over a
-trivial rule, and it is exhausted at around two thousand people. What it is not
-yet is usable on somebody who has just appeared, since the conditioning it rests
-on has to be read from most of a day of history. Closing that gap, rather than
-training a larger model on a larger corpus, is where I would start again.
+On single-day cellular records, what a population has in common is cheap to learn,
+it is measurable, it is worth about four correct answers per hundred over a trivial
+rule, and it is exhausted at around two thousand people. What it is not yet is
+usable on somebody who has just appeared, since the conditioning it rests on has to
+be read from most of a day of history. Closing that gap, rather than training a
+larger model on a larger corpus, is where I would start again.

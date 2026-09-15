@@ -65,25 +65,21 @@
 people. The horizontal axis counts the passes a run made over its training data;
 the vertical axis is the score on people it is \emph{not} training on. The solid
 line is the model, the star marks its best pass, and the dashed line is the
-one-line rule on that same set of people. In all four the score climbs for four
-to nine passes, peaks, then declines, while the score on the run's own training
-data keeps improving: that divergence is the model switching from learning how
-the population moves to learning its examples by heart.}
+one-line rule on that same set of people. In all four the score climbs for four to
+nine passes, peaks, then declines, while the score on the run's own training data
+keeps improving: that divergence is the model switching from learning how the
+population moves to learning its examples by heart.}
 
-\figpara{What it costs to read the wrong pass.}{In panel (a) the best pass scores
-65.0\,\% and the last one 48.1\,\%, so reading the end of the run instead of its
-best point throws away 16.9 correct answers per hundred plus forty passes of
-waiting time. Measured on the held-out people rather than the validation ones the
-same choice costs 15.5, and it is the single largest improvement of the
-internship.}
+\figpara{What it costs to read the wrong pass, and a warning about the dashed
+line.}{In panel (a) the best pass scores 65.0\,\% and the last one 48.1\,\%, so
+reading the end of a run instead of its best point throws away 16.9 correct
+answers per hundred plus forty passes of waiting time; measured on the held-out
+people rather than the validation ones the same choice costs 15.5. The dashed line
+moves between panels, from 69.2\,\% on the unfiltered day to 43.5\,\% once only
+mobile people are kept, because the people are different. The four panels are
+comparable only on the distance between solid and dashed, and in all four that
+distance is negative: none of these runs beats the rule.}}
 
-\figpara{Careful with the dashed line.}{It moves between panels, from 69.2\,\%
-on the unfiltered day to 43.5\,\% once only mobile people are kept, because the
-people are different. The four panels are comparable only on the distance between
-solid and dashed, and in all four that distance is negative: none of these runs
-beats the rule. The per-pass points are read off each run's own chart and carry
-about one correct answer per hundred of reading error; the figures quoted in the
-text are the reported ones.}}
 
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the training loop these per-pass scores come from}
 \end{figure}

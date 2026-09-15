@@ -40,22 +40,21 @@
 bars per kind of user, on two different scales, so read each colour against its
 own neighbours. Orange is how often that kind changes location over the day;
 grey-blue is what the one-line rule scores on them. The two rankings are exact
-opposites, with no exception: the stay-at-home user changes location about a
-third of the time and the rule is already right 56.3\,\% of the time for them,
-while the morning-moving user changes half again as often and the rule is right
-only 17.8\,\%. That is what makes the label useful before any model runs.}
+opposites, with no exception: the stay-at-home user changes location about a third
+of the time and the rule is already right 56.3\,\% of the time for them, while the
+morning-moving user changes half again as often and the rule is right only
+17.8\,\%.}
 
 \figpara{Panel (b): the constraint that makes the idea usable, and where it
 breaks.}{At the moment a prediction is asked for, only the person's past exists,
-so the kind of user has to be worked out from that past alone or the exercise is
-circular. These bars measure how often the kind identified from the past matches
-the kind computed from the complete day. Given 80\,\% of the day it is right for
-92 of the 100 held-out people, unaided. Below roughly 60\,\% it collapses,
-61\,\% at half a day and 44\,\% at 30\,\%, because there is not enough history to
-tell a morning mover from an evening mover. That is an uncomfortable place for
-the limit to fall: it is worth nothing on somebody who has just appeared, which
-is exactly when an operator would most want a prediction. \smob, 400 training
-and 100 held-out people.}}
+so the kind of user has to be worked out from that past or the exercise is
+circular. These bars measure how often the kind read from the past matches the
+kind computed from the complete day. Given 80\,\% of the day it is right for 92 of
+the 100 held-out people; below roughly 60\,\% it collapses, 61\,\% at half a day
+and 44\,\% at 30\,\%. That is worth nothing on somebody who has just appeared,
+which is exactly when an operator would most want a prediction. \smob, 400
+training and 100 held-out people.}}
+
 
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the group-detection and per-group baseline cells}
 \end{figure}
