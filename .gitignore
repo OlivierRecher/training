@@ -50,3 +50,6 @@ report/main.pdf
 *.makefile
 *.figlist-*
 *-blx.bib
+
+# Skill local de verification du rapport (outillage perso, pas le rapport)
+.claude/skills/

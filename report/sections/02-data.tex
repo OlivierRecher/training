@@ -61,25 +61,19 @@ introduced: in the working files this string is called the
 
 \input{figures/fig-base-station}
 
-It decomposes into three parts: a letter giving the generation of radio, a middle
-part naming the \emph{mast},\footnote{\textbf{Site root}: the middle letters of a
-\cid{cell\_id}, naming the physical mast, \cid{KVCHE} in \cid{UKVCHE102}.
-\textbf{Sector}: the trailing digits, naming which antenna of that mast served the
-phone.} and trailing digits naming which antenna of that mast was in use. The
-study area contains \textbf{369 distinct antennas over 113 masts}, 224 on 2G and
-145 on 3G, so the same physical mast appears in the data under three or four
-different names.
+One mast answers to several names at once, one per generation of radio and one per
+direction its antennas point in, so there are three or four times as many names as
+there are masts. A phone that never leaves the same spot can be passed from one of
+those names to the next, and in the raw data that looks exactly like somebody going
+somewhere.
 
 \input{figures/fig-transition-composition}
 
-The consequence is measurable. Out of every hundred back-to-back records on the
-day used for Chapter~\ref{ch:groups}, 43.6 carry the very same antenna name, 44.0
-are a genuine change of mast, and \textbf{12.4} fall in between: the phone
-re-attached to a different antenna of the \emph{same} mast without the person
-moving at all. Every measurement of \emph{movement} in this report is therefore
-taken on the mast. The \emph{prediction target} remains the raw antenna name,
-because that is what the original question asks for, and coarsening it to the mast
-would be answering an easier question than the one posed.
+Figure~\ref{fig:transition-composition} counts how often the data plays that trick.
+So whenever this report asks whether somebody \emph{moved}, it looks at the mast
+and not at the antenna name. What the model has to \emph{predict} stays the full
+antenna name, because that is the question I was given; predicting only the mast
+would be an easier one.
 
 \section{From a raw file to training material}
 

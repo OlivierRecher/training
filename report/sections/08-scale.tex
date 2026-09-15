@@ -47,9 +47,9 @@ total of two hours fifty-one minutes of computing time.
 signature is not a test. The test used is a \emph{paired resampling} of the 1{,}000
 held-out people.
 
-\input{tables/tab-bootstrap}
 
-Every interval contains zero: each individual step, and the interval spanning the
+Table~\ref{tab:bootstrap} reports it. Every interval contains zero: each
+individual step, and the interval spanning the
 entire range from 5{,}000 to 21{,}000 people, whose best estimate is 0.04. So the
 correct statement is not ``the gain is small'' but \textbf{``no gain was
 measured''}. Nor does anything hide behind the overall average.
@@ -57,9 +57,6 @@ Table~\ref{tab:all-metrics} takes the same sizes through six different
 measurements, and the spread across the whole range is between 0.2 and 1.3 on every
 single line.
 
-\input{tables/tab-all-metrics}
-
-\input{tables/tab-context-scale}
 
 \subsection{What does move the score}
 
@@ -75,6 +72,12 @@ essentially identical at every size, which is itself a result about scale.
 
 Put side by side: \textbf{22.4 against 0.4}. Who the person is outweighs how much
 data was used to train, by a factor of more than fifty.
+
+\input{tables/tab-bootstrap}
+
+\input{tables/tab-all-metrics}
+
+\input{tables/tab-context-scale}
 
 \section{Why it climbs, then stops}
 

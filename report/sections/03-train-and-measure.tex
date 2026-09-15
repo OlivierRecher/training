@@ -26,8 +26,6 @@ third rule below.
 \section{The tools, and how much of the model I change}
 \label{sec:tools-peft}
 
-\input{figures/fig-toolchain}
-
 A language model is a stack of very large tables of
 numbers.\footnote{\textbf{Weights}, or \textbf{parameters}: the numbers inside
 the model that turn an input into an output. ``Frozen'' means left exactly as its
@@ -71,6 +69,8 @@ moved through. The larger model brings capacity the task cannot use and charges
 for it in waiting time, by a factor of roughly twenty-three per run, which over
 nine weeks is the difference between thirty experiments and two.
 
+\input{figures/fig-toolchain}
+
 \section{How a day is written down, and how one run works}
 
 The model cannot read a day; it reads symbols.
@@ -85,11 +85,7 @@ those symbols.} as symbols of their own, since left alone the tokenizer would ha
 split \cid{BSOCHO1} into four meaningless fragments and the model would have had
 to spell an antenna correctly to be right. \textbf{One hour, one symbol}: from the
 sixth iteration each event is preceded by a symbol for its hour of day,
-\cid{<H00>} to \cid{<H23>}, which is twenty-four learnable symbols instead of
-86{,}400 unlearnable ones and preserves the history the model can see, since it
-may only look at 512 symbols at a time.\footnote{\textbf{Context window}: the
-maximum number of symbols the model may look at in one go. Not the same as the
-\emph{context fraction} below, which is a property of the measurement.} And
+\cid{<H00>} to \cid{<H23>}, which is twenty-four learnable symbols. And
 \textbf{only the antennas are graded}: the opening boilerplate and the hour
 symbols are excluded from the score,\footnote{\textbf{Masking} a position means
 excluding it from the score: the model still \emph{reads} the symbol but is
@@ -206,18 +202,18 @@ compared at their respective peaks.
 
 \subsection{Rule 2: where the day is cut belongs to the ruler}
 
+\input{tables/tab-context-sweep}
+
 The share of the day given to the model, called the \emph{context
 fraction},\footnote{\textbf{Context fraction}: the share of a person's day handed
-to the model before it must produce the rest. Distinct from the \emph{context
-window} above, which is a hard architectural limit.} looks like a setting of the
+to the model before it must produce the rest.} looks like a setting of the
 experiment. It is part of the measurement. Moving the cut changes which antenna
 counts as ``the last one seen'', so it moves the one-line rule too. A model graded
 at 90\,\% context is not a better model than the same model graded at 30\,\%; it is
 the same model measured against an easier ruler.
 
-\input{tables/tab-context-sweep}
-
-That table contains the mistake this rule exists to prevent. On \Dfilt{} the model
+Table~\ref{tab:context-sweep} contains the mistake this rule exists to prevent. On
+\Dfilt{} the model
 reaches 80.1\,\% at the reference 80/20 split against a rule at 79.0\,\%:
 \textbf{1.1 more correct answers per hundred}, and the first time in the project
 that a trained model cleared the one-line rule. Read on its own that looks like a
@@ -225,7 +221,9 @@ result. Read across the three rows it is far weaker: at 70\,\% context the model
 trails by 0.3, and at 90\,\% context, where its own score is the \emph{highest} of
 the three, it trails by 2.4.
 
-\subsection{Rule 3: a benchmark has to leave room}
+\FloatBarrier
+
+\subsection{Rule 3: a test the one-line rule already passes measures nothing}
 
 On a day file taken as it comes, ``repeat the last antenna'' is right 69.2\,\% of
 the time, and most of what is left above that is not mobility at all: it is people
@@ -243,10 +241,10 @@ sat within a few correct answers of a one-line rule, usually below it, at every 
 and on every set of people tried.
 
 The example that decided what to do next is small enough to quote in full. On one
-run, person 775719, whose past is the same antenna repeated ten times, is predicted
-correctly with 100\,\% confidence; person 3268099, whose past ends on one antenna
-and whose next event is a different one entirely, is predicted as ``the same
-antenna again'' with 68\,\% confidence. The model was right for free on the first
+run, \textbf{person A}, whose past is the same antenna repeated ten times, is
+predicted correctly with 100\,\% confidence; \textbf{person B}, whose past ends on
+one antenna and whose next event is a different one entirely, is predicted as
+``the same antenna again'' with 68\,\% confidence. The model was right for free on the first
 and wrong for free on the second. A companion experiment made the same point
 statistically: on a 100-person version of the data, the score per person ranged
 from 10\,\% to 100\,\% and the model never passed 42.1\,\%. One hundred people
@@ -259,8 +257,9 @@ underneath. That is what Chapter~\ref{ch:user} sets out to fix.
 Each of the three rules arrived \emph{after} a conclusion that turned out to be
 wrong, and the 1.1 I presented as a result was not one. A short checklist written
 before the first training would have caught all three at once, and the modelling
-work would have started two iterations earlier. The one setting I never revisited
-is how much of the model I allowed to move: about 2 numbers in every 100 changed in
-every run, from four hundred training people to twenty-one thousand, and that
-fraction was never scaled with the data. Chapter~\ref{ch:scale} is where the
-omission bites.
+work would have started two iterations earlier. The one thing I never went back to is the
+size of the part of the model that training is allowed to change. QLoRA only
+trains a small share of the numbers, about two in every hundred, and I left that
+share at the same value in every run, from four hundred training people up to
+twenty-one thousand. Fifty times more data was poured into a part that never grew,
+and Chapter~\ref{ch:scale} is where that shows.

@@ -17,7 +17,7 @@
 \nextgroupplot[title={(a) a raw day, 500 people},
   symbolic x coords={qa,qb,qc,qd,qe},
   xticklabels={{never\\changes},{0--21\%},{21--38\%},{38--60\%},{60--100\%}},
-  xlabel={the five groups, calmest on the left}]
+  xlabel={the five groups, moving least on the left}]
 \addplot[fill=clbase,draw=none] coordinates {(qa,100.0) (qb,88.4) (qc,71.7) (qd,52.8) (qe,26.6)};
 \addplot[fill=clmodel,draw=none] coordinates {(qa,100.0) (qb,87.6) (qc,71.6) (qd,56.5) (qe,34.4)};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qd,74) {$+3.7\pt$};
@@ -25,9 +25,9 @@
 %
 \nextgroupplot[title={(b) \smob, 100 held-out people},
   symbolic x coords={pa,pb,pc,pd},
-  xticklabels={{calmest\\25\%},{next\\25\%},{next\\25\%},{most\\restless}},
+  xticklabels={{moves\\least 25\%},{next\\25\%},{next\\25\%},{moves\\most 25\%}},
   x tick label style={font=\scriptsize,align=center,anchor=north},
-  xlabel={the four groups, calmest on the left}]
+  xlabel={the four groups, moving least on the left}]
 \addplot[fill=clbase,draw=none] coordinates {(pa,87.7) (pb,79.6) (pc,66.7) (pd,42.8)};
 \addplot[fill=clmodel,draw=none] coordinates {(pa,80.6) (pb,74.3) (pc,63.3) (pd,43.4)};
 \node[font=\scriptsize,text=clloss,anchor=west,rotate=90,yshift=7pt] at (axis cs:pa,99) {$-7.1\pt$};
@@ -40,21 +40,21 @@
 \label{fig:switch-rate}
 \figtext{%
 \figpara{How to read either panel.}{People are sorted by how often they change
-antenna, calmest to most restless, and the sorted list is cut into equal groups,
-five on the left and four on the right; restlessness increases left to right in
-both. Grey-blue is the one-line rule, dark blue my model, both scored on exactly
-the same moments of the same people, and the number above each pair is the
-distance between them.}
+antenna, from those who move least to those who move most, and the sorted list is
+cut into equal groups, five on the left and four on the right; movement increases
+left to right in both. Grey-blue is the one-line rule, dark blue my model, both
+scored on exactly the same moments of the same people, and the number above each
+pair is the distance between them.}
 
-\figpara{A spread of 65 in panel (a), and a less comfortable panel (b).}{The
-fifth of people who never change antenna are predicted at 100\,\% by both; the
-most restless fifth plateaus at 34.4\,\%. That is 65 correct answers per hundred
-between the two ends of one population, on one trained model. The two bars are
-the same height in the three calmest groups: the model only pulls ahead in the
-two hardest, by 3.7 and 7.8, and those hold 18.5\,\% of the graded moments. On a
-second, independent set of people the model \emph{loses} to the rule in the three
-calmer quarters, by 7.1, 5.3 and 3.4, and only draws level in the most restless
-one. Same ordering, same mechanism, negative result overall.}}
+\figpara{A spread of 65 in panel (a), and a less comfortable panel (b).}{The fifth
+of people who never change antenna are predicted at 100\,\% by both; the fifth that
+moves most plateaus at 34.4\,\%. That is 65 correct answers per hundred between the
+two ends of one population, on one trained model. The two bars are the same height
+in the three groups that move least: the model only pulls ahead in the two hardest,
+by 3.7 and 7.8, and those hold 18.5\,\% of the graded moments. On a second,
+independent set of people the model \emph{loses} to the rule in the three quarters
+that move less, by 7.1, 5.3 and 3.4, and only draws level in the one that moves
+most. Same ordering, same mechanism, negative result overall.}}
 
 
 \end{figure}
