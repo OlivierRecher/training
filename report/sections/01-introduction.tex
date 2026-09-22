@@ -1,7 +1,7 @@
 \chapter{Introduction}
 \label{ch:intro}
 
-\section{Where I worked}
+\section{The host laboratory and its records}
 
 This report covers a second-year engineering internship carried out from
 29 June to 28 August 2026 at the \host, under the supervision of \supervisor.
@@ -35,11 +35,14 @@ several antennas pointing in different directions, and each of those is called a
 stations}, so a mast carries three or four cells on average. What I predict is a
 cell, not a mast, which is harder than predicting a place.
 
-\section{What I built}
+\section{The instrument: a retrained language model}
 
 \input{figures/fig-overview}
 
-The instrument is a \textbf{language model}.\footnote{\textbf{Language model}: a
+Figure~\ref{fig:overview} shows the whole internship in four steps, from the raw
+records to a ranked list of antennas, with the rule this work has to beat drawn
+underneath it. The instrument at the centre of that chain is a \textbf{language
+model}.\footnote{\textbf{Language model}: a
 program trained to guess the next symbol of a sequence. Nothing in that
 description mentions language, which is why one can be pointed at a day of
 movement instead.} These are the programs behind the writing assistants everyone
@@ -56,7 +59,7 @@ two colleagues, leaves those numbers untouched and writes better instructions
 for a general model instead. That is called \textbf{prompting}, and it answers a
 different question rather than competing with mine.
 
-\section{The rule I have to beat}
+\section{The rule to beat: repeat the last antenna}
 
 What makes the question hard is not the model. It is the competitor.
 
@@ -70,8 +73,9 @@ internship, nothing I trained managed to.
 
 \input{figures/fig-worked-example}
 
-When the person stays put, repeating the last cell is correct and both the rule
-and my model collect the point for free. When the person leaves, the rule is
+Figure~\ref{fig:worked-example} takes one prediction apart on two people, and it
+shows why the competitor is so strong. When the person stays put, repeating the
+last cell is correct and both the rule and my model collect the point for free. When the person leaves, the rule is
 guaranteed to be wrong, and the answer has to come from somewhere else. Every
 number in this document was won on moments of that second kind.
 
@@ -83,10 +87,11 @@ the next: the set of people I trained and tested on changed four times over the
 internship, each time because a new idea needed data the earlier files did not
 carry, and the difficulty of the test group changed with it.
 
-\section{The team around me}
+\section{The four colleagues working on the same records}
 
 Four colleagues were already working on the same records when I arrived, with
-different instruments (Figure~\ref{fig:team-context}). Nino was building his own
+different instruments. Figure~\ref{fig:team-context} places my own branch among
+theirs. Nino was building his own
 description of the corpus: which cell is somebody's home, which is where they
 spend their day, and who genuinely moves around the area. He had tooling for
 that, and he very kindly used it to produce the daily extracts and the user
@@ -96,11 +101,11 @@ records on a question of his own.
 
 \input{figures/fig-team-context}
 
-\section{How to read this report}
+\section{The plan of this report}
 
 The chapters are organised by \emph{question}, not by week; the chronology is
 restored in Appendix~\ref{app:timeline}. Each of Chapters~\ref{ch:data}
-to~\ref{ch:scale} closes with a short \emph{Looking back} paragraph giving my own
-view of that step with hindsight. Appendix~\ref{app:repro} gives the settings of
+to~\ref{ch:scale} closes with a \emph{Conclusion} section, written after the fact,
+that states what the chapter established and what I make of it with hindsight. Appendix~\ref{app:repro} gives the settings of
 every run and the origin of every headline number, and
 Appendix~\ref{app:glossary} defines the terms that recur.

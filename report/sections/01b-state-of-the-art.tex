@@ -1,18 +1,22 @@
 \chapter{State of the art}
 \label{ch:sota}
 
-Eight published works matter to this report. Two of them changed the way I work
-and are worth the first section on their own; three place the instrument, two are
-the ancestry of my only substantial gain, and the last one marks the boundary
-between the published task and the one I actually took on.
+Eight published works matter to this report, and all eight are listed in the
+bibliography at the end. Two of them changed the way I work and are worth the
+first section on their own. Of the six that follow, three settle how a predictor
+of this kind is normally built and normally scored, two are the ancestry of my
+only substantial gain, and the last one marks the boundary between the published
+task and the one I actually took on.
 
-\section{How much room a predictor has}
+\section{The narrow room a predictor has}
 \label{sec:sota-ceiling}
 
 The most useful part of this literature is not the part that proposes predictors.
 It is the part that measures how much room a predictor has before it even starts.
-Figure~\ref{fig:ceiling-ladder} puts that measurement, and my own numbers, on one
-scale.
+As Figure~\ref{fig:ceiling-ladder} shows, once the published ceiling is corrected
+for people simply standing still it falls from 93 to 71 correct answers per
+hundred, and the one-line rule of this report already sits at 69.2 of them: read
+on that single scale, almost nothing is left to win.
 
 \input{figures/fig-ceiling-ladder}
 
@@ -51,10 +55,11 @@ the evening. The hours at which people are hard to predict were published in 201
 and they are not the small hours of the morning. Chapter~\ref{ch:time} spends its
 whole length rediscovering that the expensive way.
 
-\section{What the other six gave me}
+\section{The contribution of the six other cited works}
 
-Three of them place the instrument. Luca et al.\ survey the deep-learning branch
-of human mobility \cite{luca2021survey}, and two of their observations are used
+The first three of the six settle how a predictor of this kind is normally built,
+and how its answers are normally scored. Luca et al.\ survey the deep-learning
+branch of human mobility \cite{luca2021survey}, and two of their observations are used
 without modification here: giving a model the time of day is standard practice, so
 the mechanism of Chapter~\ref{ch:time} is not an idea of mine, and scoring a
 prediction at three depths, top-1, top-3 and top-5, is the convention of the field
@@ -76,8 +81,8 @@ substance what Tiphain and Benjamin were doing on this corpus. Qin et al.\ chang
 the numbers instead, with the same cheap method used here, over six mobility
 datasets \cite{qin2025mobllm}; of the eight, that is the work mine is closest to.
 
-The last two are the ancestry of Chapter~\ref{ch:groups}, and I found them only
-after the fact. Pappalardo et al.\ establish that a population separates into
+The last two of the six are the ancestry of Chapter~\ref{ch:groups}, and I found
+them only after the fact. Pappalardo et al.\ establish that a population separates into
 recognisable kinds of person rather than spreading smoothly along one scale of
 mobility \cite{pappalardo2015returners}. Jeong, Leconte and Proutière supply the
 mechanism: one person's history is too short to estimate that person's habits

@@ -30,10 +30,13 @@ zero.
 
 \input{tables/tab-context-collapse}
 
-So the missing ingredient is not more history. It is knowing that the end of the
+Table~\ref{tab:context-collapse} puts eight of those people side by side, and its
+bottom four are the ones worth looking at: given most of their day rather than a
+third of it, they score zero or nearly. So the missing ingredient is not more
+history. It is knowing that the end of the
 day is not the middle of it.
 
-\section{How the time of day enters, and the two bets it carries}
+\section{The form the time of day takes, and the two bets it carries}
 
 Time enters in the form fixed in Chapter~\ref{ch:tools}: one symbol for the hour
 placed before each event, always given to the model and never predicted by it. Two
@@ -65,7 +68,10 @@ by breaking the input and seeing whether the score notices.
 
 \input{figures/fig-hour-ablation}
 
-The argument is the difference between two of those numbers, and only that.
+The test is the one drawn in Figure~\ref{fig:hour-ablation}: the hour symbols are
+deliberately corrupted in three different ways, and the score is re-measured each
+time. The argument is the difference between two of those numbers, and only
+that.
 Replacing every hour by a constant, which removes the information completely,
 costs 0.7 correct answers per hundred. Merely shuffling the hours, so that the
 values are still real hours but attached to the wrong events, costs 3.0, four
@@ -91,13 +97,20 @@ time. That is strictly harder, because early positions have almost no history
 behind them, and it is why the one-line rule on these same people is quoted as
 43.1\,\% on the full day against 45.5\,\% on the last fifth.
 
+Figure~\ref{fig:targeted-sampling} and Table~\ref{tab:after-sampling} measure what
+those three changes were worth: the first group of moments by group of moments,
+the second at seven different cuts of the day.
+
 \input{figures/fig-targeted-sampling}
 
 \input{tables/tab-after-sampling}
 
-\subsection{What the table above says: right mechanism, wrong hours}
+\subsection{Right mechanism, wrong hours}
 
-The gain and the cost are not contradictory. Weighting a chosen set of moments
+As Figure~\ref{fig:targeted-sampling} shows, the model gains 2.6 correct answers
+per hundred inside the 18--20h stretch and loses ground almost everywhere else,
+and the seven rows of Table~\ref{tab:after-sampling} all move the same way. The
+gain and the cost are not contradictory. Weighting a chosen set of moments
 does exactly what it is designed to do: it buys correct answers there and pays for
 them elsewhere. The mechanism was never in question after the ablation. What was
 in question, and what I had never checked, was whether the moments I had chosen
@@ -123,13 +136,34 @@ Chapter~\ref{ch:groups} does. If the right hours differ from one person to the
 next, the remedy is not to pick better hours for everybody. It is to stop assuming
 everybody shares the same hours.
 
-\section{Looking back}
+\section{Conclusion}
 \label{sec:retro-time}
 
-Grading every position instead of only the last fifth was the right methodological
+The chapter carried two bets and settled both. The first holds: the model does
+read the hour, and the proof is that scrambling the hours costs four times as much
+as deleting them, which could not happen if the symbol were merely occupying a
+slot. That result is kept, and every run from this point on is given the hour of
+day. The second bet half-holds. Making mistakes count more inside a chosen stretch
+of the day does exactly what it is designed to do, buying 2.6 correct answers per
+hundred at 18--20h, but it pays for them everywhere else, at all seven cuts of the
+day tested. The machinery was right and I pointed it at the wrong hours: on these
+people the one-line rule scores 43.6\,\% inside the guessed windows against
+43.4\,\% outside them, so the moments I paid to emphasise were no harder than
+average. Song et al.\ had published the hourly curve that says so in 2010, and the
+stretch I guessed is the one the literature already marks as easy.
+
+What I take from that is a habit rather than a result. The hours were the only
+component of the design I never measured before relying on it, and they are the
+only one that failed; measuring them would have cost an afternoon against the
+iteration it cost instead. There is also a methodological cost I would avoid a
+second time. Grading every position instead of only the last fifth was the right
 choice, since leaving the early positions out was quietly making the task easier
-than the question deserved. But it also moved the one-line rule, on the very same
-people, from 45.5\,\% to 43.1\,\%, so runs before and after cannot be compared on
-absolute score at all. A change of measurement is a change of ruler: I would freeze
-the grading protocol before the first training and treat any later change as
-opening a new series of results.
+than the question deserved, but it moved the one-line rule on the very same people
+from 45.5\,\% to 43.1\,\%, so runs before and after cannot be compared on absolute
+score at all. A change of measurement is a change of ruler: I would freeze the
+grading protocol before the first training and treat any later change as opening a
+new series of results.
+
+The failure is also what produced the rest of the report. If one pair of hours
+applied to everybody marks nothing, the remedy is not a better pair of hours. It is
+to stop assuming that everybody shares the same ones.

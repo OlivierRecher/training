@@ -18,7 +18,7 @@ training and \textbf{100 different people}, never seen during training, for
 grading. Wherever a figure says ``100 held-out people'', it means those hundred
 strangers.
 
-\section{Which property of a person decides it}
+\section{The property of a person that decides the score}
 
 The candidates are all things computable from a person's own day without any
 model: how often they change antenna, how much of their time is spent on one
@@ -26,8 +26,10 @@ dominant antenna, how many different antennas they visit, how irregular their
 changes are, and how many records they have.
 
 Each candidate was compared against that person's own score using the
-\textbf{Pearson correlation}, written $r$. It is a single number saying how
-tightly two quantities move together across a population:
+\textbf{Pearson correlation}, written $r$. I did not invent it: it is the measure
+Karl Pearson published in 1895 \cite{pearson1895correlation} and it has been the
+standard one ever since. It is a single number saying how tightly two quantities
+move together across a population:
 
 \begin{equation}
   r \;=\;
@@ -48,7 +50,9 @@ nothing to do with each other.
 
 \input{figures/fig-concentration}
 
-The winner needs a definition before it can be used. Take one person's day and
+Figure~\ref{fig:concentration} ranks the five candidates by that coefficient, and
+one of them stands clear of the others: how often a person changes antenna. The
+winner needs a definition before it can be used. Take one person's day and
 walk through their records in order, comparing each with the one just before. The
 \textbf{cell-switch rate} is the share of those comparisons in which the antenna
 is not the same. Somebody who spends the whole day at home has a rate near 0\,\%,
@@ -89,7 +93,7 @@ chapter, closes it. The same person's score with 30\,\% of their day in context
 and with 80\,\% of it correlates at $r = 0.77$, so difficulty travels with the
 person, not with the amount of history handed over.
 
-\subsection{Where the model does help, and why it does not show}
+\subsection{The model helps in the restless minority, which is a small share}
 
 The same figure carries the second half of the finding, and it is the more useful
 half. In the three easiest groups the model and the rule are indistinguishable. It
@@ -124,7 +128,7 @@ switch-rate finding wearing a different label. It also means that levelling the
 number of records per person cannot be expected to redistribute difficulty, which
 is exactly the prediction Chapter~\ref{ch:scale} tests head on.
 
-\section{What the score counts, and what it deliberately does not}
+\section{The target is the antenna name, not the mast}
 
 Looking at people one by one also exposes something an average cannot: part of the
 remaining error is not a modelling failure at all, but a deliberate property of
@@ -132,7 +136,8 @@ the measurement.
 
 \input{tables/tab-worst-users}
 
-The pair at the bottom of that table is what mattered for the rest of the
+Table~\ref{tab:worst-users} lists the seven worst-scoring people of that run, each
+with the reason it scores badly. The pair at the bottom of it is what mattered for the rest of the
 internship. Those two people oscillate between near-twin antennas of the
 \emph{same} mast, so plain repetition scores 50 to 67\,\% on them while the model,
 which tries to choose between the two names, scores nothing at all.
@@ -146,7 +151,7 @@ have made every number measured before that point incomparable with every number
 after it. A small, known share of the reported error is therefore the model being
 marked wrong for a difference that is not a movement.
 
-\section{What I conclude, and where it leads}
+\section{Three statements survive, and they point to the time of day}
 
 Three statements survive this chapter. The score of a person is set by how
 repetitive their movement already is, and by nothing else I measured. The model's
@@ -161,12 +166,31 @@ solves for free, which owns most of the volume and none of the difficulty. What 
 needed instead was a signal that helps specifically \emph{at the moment a person is
 about to move}, and the most obvious candidate is the time of day.
 
-\section{Looking back}
+\section{Conclusion}
 \label{sec:retro-user}
 
-I led this chapter, at the time, with $r = -0.971$, and a coefficient that is
-almost arithmetic cannot carry a chapter however striking it looks. What genuinely
-changed what I did next is the \emph{distribution}: one fifth of the people
-predicted perfectly by doing nothing at all, one fifth plateauing at 34.4\,\%, and
-an average concentrated in 117 people. The correlation was the headline; the
-histogram was the finding.
+The chapter set out to find whether the score belongs to the model or to the
+person, and the answer is unambiguous: to the person. Of everything computable
+from somebody's own day, only one quantity tracks how well they are predicted, and
+it is how often they already change antenna. The number of distinct places they
+visit, the length of their day and the number of predictions they contribute are
+all near zero, which disposes of the two intuitive explanations at once. The
+model's own contribution is real but narrow: it appears in the two most restless
+groups, worth 3.7 and then 7.8 correct answers per hundred, and those groups hold
+18.5\,\% of the graded moments between them.
+
+I led this chapter, at the time, with $r = -0.971$, and that was a mistake. A
+coefficient that is very nearly arithmetic, because the switch rate is the mirror
+image of how often the trivial rule is right, cannot carry a chapter however
+striking it looks; at best it measures how closely that particular run was
+imitating the rule it was meant to beat. What genuinely changed what I did next is
+the \emph{distribution}: one fifth of the people predicted perfectly by doing
+nothing at all, one fifth plateauing at 34.4\,\%, and an average written by 117
+people out of 1{,}173. The correlation was the headline; the histogram was the
+finding.
+
+The practical consequence is the reporting rule this report has followed ever
+since. An average score on this task is a mixture of segments of wildly different
+difficulty, so it is quoted here only alongside the one-line rule measured on the
+same people, and the interesting half of any result is which segment the gain came
+from.

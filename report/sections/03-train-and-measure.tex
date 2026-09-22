@@ -1,4 +1,4 @@
-\chapter{How I train, and how I measure}
+\chapter{The training procedure and the measurement rules}
 \label{ch:tools}
 
 \section{The goal}
@@ -23,7 +23,7 @@ grading. The one-line rule scores 69.2\,\%, 79.0\,\% and 45.5\,\% on them
 respectively, and that difference between the three is itself the subject of the
 third rule below.
 
-\section{The tools, and how much of the model I change}
+\section{The tools, and the share of the model that is changed}
 \label{sec:tools-peft}
 
 A language model is a stack of very large tables of
@@ -37,13 +37,16 @@ different costs, and what separates them is not accuracy. It is memory.
 
 \input{figures/fig-lora}
 
-I chose QLoRA, and on hardware grounds rather than on expected quality: it was the
+Figure~\ref{fig:lora} puts the three costs side by side: retraining everything
+needs far more memory than a free card has, LoRA freezes the original numbers and
+trains a small set of new ones beside them, and QLoRA does the same after shrinking
+the frozen numbers to a coarser precision. I chose QLoRA, and on hardware grounds rather than on expected quality: it was the
 only one of the three under which my first candidate model could be loaded at all
 on a free graphics card. That choice held for the rest of the internship, and it
 is what made the volume of experiments possible, and the per-group routing of
 Chapter~\ref{ch:groups} cheap enough to try at all.
 
-\subsection{Which model, and why the small one won}
+\subsection{The choice of model}
 \label{sec:tools-model}
 
 The first real run used \textbf{Mistral-7B} \cite{jiang2023mistral}, a
@@ -69,11 +72,16 @@ moved through. The larger model brings capacity the task cannot use and charges
 for it in waiting time, by a factor of roughly twenty-three per run, which over
 nine weeks is the difference between thirty experiments and two.
 
+Figure~\ref{fig:toolchain} gathers the whole toolchain in four layers, from the
+free graphics card at the bottom to my own notebook at the top; everything between
+the two is somebody else's library.
+
 \input{figures/fig-toolchain}
 
-\section{How a day is written down, and how one run works}
+\section{Interpretation of data and implementation of model}
 
-The model cannot read a day; it reads symbols.
+The model cannot read a day; it reads symbols. Figure~\ref{fig:training-example}
+shows one person's day exactly as the model receives it.
 
 \input{figures/fig-training-example}
 
@@ -96,7 +104,9 @@ graded, only where an antenna name has to be produced.
 
 \input{figures/fig-training-loop}
 
-Two further mechanisms were added to this loop from the sixth iteration onward,
+Figure~\ref{fig:training-loop} sets out the five steps one run goes through, and
+the rule underneath them that decides which saved copy is kept. Two further
+mechanisms were added to this loop from the sixth iteration onward,
 and later chapters depend on both. \textbf{Some mistakes are made to count more}:
 at step 3 the surprise measured at a given position can be multiplied according to
 the hour that position falls in, so a mistake at seven in the evening under a
@@ -129,7 +139,7 @@ bars obtained by re-scoring the models on many random redraws of the test people
 with no assumption about the shape of the underlying distribution.} that decides
 the central question of Chapter~\ref{ch:scale}.
 
-\subsection{What I reused from my colleagues}
+\subsection{The pieces reused from the team}
 
 Three pieces came from the team. The daily extracts and the selection of people
 who move and stay in the area came out of Nino's own analysis tooling, and those
@@ -143,7 +153,7 @@ are never modified: everything it is meant to know about this population has to 
 restated in every instruction, whereas the branch this report takes stores that in
 the numbers instead.
 
-\section{How a prediction is scored}
+\section{The scoring procedure}
 \label{sec:scoring}
 
 Everything in this report is scored the same way, and the procedure never changes.
@@ -152,7 +162,8 @@ to produce, the default being 80/20. The rest is then answered one moment at a
 time: the model is asked for one antenna, told what really happened, and asked for
 the next, so it can neither see the future nor compound its own mistakes. The
 one-line rule is run through exactly the same moments with exactly the same
-history.
+history. Figure~\ref{fig:protocol} draws that procedure on one day, with the cut,
+the part the model may read and the part it has to produce.
 
 \input{figures/fig-protocol}
 
@@ -160,6 +171,8 @@ At each graded moment the model produces not a single answer but a ranking of al
 369 antennas, most likely first, and the moment counts as correct if the antenna
 the person really visited is at the top of that ranking. Reading the ranking one
 place down gives \textbf{top-3}, and further down \textbf{top-5}.
+Figure~\ref{fig:topk} shows the same ranking read at those three depths, and its
+lower panel shows how a score is obtained from a row of right and wrong answers.
 
 \input{figures/fig-topk}
 
@@ -169,9 +182,12 @@ the other two say whether a model that misses is missing narrowly or wildly.
 
 \section{Three rules about measuring}
 
-\input{figures/fig-three-rules}
+Figure~\ref{fig:three-rules} states the three rules and what each one was worth,
+and the rest of this section establishes them one at a time.
 
 \subsection{Rule 1: never read the last pass of a run}
+
+\input{figures/fig-three-rules}
 
 A language model fine-tuned on a few hundred short days will end up learning them
 by heart.\footnote{\textbf{Overfitting}: the point past which a model stops
@@ -180,7 +196,9 @@ shown.} That is not a hypothesis; it is what the curves do.
 
 \input{figures/fig-validation-curves}
 
-The clearest evidence is a single run, deliberately allowed to continue to a hard
+As Figure~\ref{fig:validation-curves} shows, on four different sets of people
+alike the score on strangers rises for a few passes, peaks, and then falls for the
+rest of the run. The clearest evidence is a single run, deliberately allowed to continue to a hard
 ceiling of forty-nine passes. Its training score improves the whole way through,
 but its score on people it had never seen climbs for nine passes, peaks, and then
 declines for the remaining forty. The copy saved at the end scored 48.7\,\% on the
@@ -200,7 +218,9 @@ confirm that this shape belongs to the task rather than to one run. So every run
 in this report is stopped early and read at its best copy, and two runs are always
 compared at their respective peaks.
 
-\subsection{Rule 2: where the day is cut belongs to the ruler}
+\FloatBarrier
+
+\subsection{Rule 2: the cut of the day belongs to the ruler}
 
 \input{tables/tab-context-sweep}
 
@@ -232,7 +252,7 @@ has not failed at prediction; it has been measured on a benchmark with no room i
 it. The same trained architecture, on three sets of people, faces rules of
 69.2\,\%, 79.0\,\% and 45.5\,\%.
 
-\subsection{What the three rules settled}
+\subsection{The three rules closed the tuning avenue}
 
 Taken together they closed the ``tune it harder'' avenue. Once runs were read at
 their peak, once the cut was recognised as part of the ruler, and once the people
@@ -251,15 +271,30 @@ from 10\,\% to 100\,\% and the model never passed 42.1\,\%. One hundred people
 is not a population; it is a handful of anecdotes with an average printed
 underneath. That is what Chapter~\ref{ch:user} sets out to fix.
 
-\section{Looking back}
+\section{Conclusion}
 \label{sec:retro-tools}
 
-Each of the three rules arrived \emph{after} a conclusion that turned out to be
-wrong, and the 1.1 I presented as a result was not one. A short checklist written
-before the first training would have caught all three at once, and the modelling
-work would have started two iterations earlier. The one thing I never went back to is the
-size of the part of the model that training is allowed to change. QLoRA only
-trains a small share of the numbers, about two in every hundred, and I left that
-share at the same value in every run, from four hundred training people up to
-twenty-one thousand. Fifty times more data was poured into a part that never grew,
-and Chapter~\ref{ch:scale} is where that shows.
+This chapter fixed the instrument and then fixed the ruler. The instrument is a
+small model, Qwen2.5-0.5B, retrained with QLoRA on one free graphics card, fed a
+day written as one symbol per antenna and one symbol per hour, and graded only
+where an antenna name has to be produced. It was settled in the first week and
+never changed again, which is the only reason the eleven iterations can be
+compared with one another at all: what varied from one to the next was the data
+and the training signal, never the machine underneath.
+
+The ruler cost more. Each of the three rules arrived \emph{after} a conclusion
+that turned out to be wrong, and the 1.1 more correct answers per hundred that I
+presented as the project's first result was not one. Reading a run at its best
+saved copy rather than at its last was worth 15.5 correct answers per hundred, far
+more than any modelling idea in this report; recognising that the cut of the day
+belongs to the measurement killed that apparent win; and choosing people on whom
+one line of code does not already score 69\,\% is what made the task measurable at
+all. A short checklist written before the first training would have caught all
+three at once, and the modelling work would have started two iterations earlier.
+
+One thing I never went back to is the size of the part of the model that training
+is allowed to change. QLoRA only trains a small share of the numbers, about two in
+every hundred, and I left that share at the same value in every run, from four
+hundred training people up to twenty-one thousand. Fifty times more data was
+poured into a part that never grew, and Chapter~\ref{ch:scale} is where that
+shows.
