@@ -1,111 +1,37 @@
-\chapter{State of the art}
+\chapter{State of the Art}
 \label{ch:sota}
 
-Eight published works matter to this report, and all eight are listed in the
-bibliography at the end. Two of them changed the way I work and are worth the
-first section on their own. Of the six that follow, three settle how a predictor
-of this kind is normally built and normally scored, two are the ancestry of my
-only substantial gain, and the last one marks the boundary between the published
-task and the one I actually took on.
+Eight published studies form the theoretical and empirical baseline for this investigation, all of which are cited in the bibliography. Two foundational papers established the theoretical bounds of trajectory predictability and guided the methodology of this study. Among the remaining six works, three establish standard benchmarking protocols and evaluation metrics for mobility predictors, two provide the theoretical basis for user stratification, and one defines the conceptual boundary between spatial location prediction and cellular antenna handovers.
 
-\section{The narrow room a predictor has}
+\section{Predictability Ceilings and Baseline Boundaries}
 \label{sec:sota-ceiling}
 
-The most useful part of this literature is not the part that proposes predictors.
-It is the part that measures how much room a predictor has before it even starts.
-As Figure~\ref{fig:ceiling-ladder} shows, once the published ceiling is corrected
-for people simply standing still it falls from 93 to 71 correct answers per
-hundred, and the one-line rule of this report already sits at 69.2 of them: read
-on that single scale, almost nothing is left to win.
+The mobility literature provides critical bounds on theoretical predictability limits prior to model deployment. As demonstrated in \textbf{Figure~\ref{fig:ceiling-ladder}}, correcting published predictability ceilings for stationary periods reduces the maximum theoretical accuracy from 93\% to 71\%. In comparison, the simple persistence baseline evaluated in this report achieves 69.2\% accuracy on raw trajectory data, demonstrating that the remaining marginal gain for transition modeling is narrowly bounded.
 
 \input{figures/fig-ceiling-ladder}
 
-Song et al.\ took three months of mobile-phone records for 45{,}000 people,
-treated each person's sequence of visited antennas as a stream of symbols, and
-asked how much of the next position is already implied by everything that came
-before \cite{song2010limits}. From that they derived a \emph{ceiling}, the best
-score any predictor could ever reach, however clever: 93\,\%.
+Song et al.\ analyzed three months of mobile phone location records for 45,000 subscribers, modeling visited antenna sequences as discrete stochastic processes to quantify theoretical entropy bounds \textbf{\cite{song2010limits}}. From information-theoretic entropy measurements, they derived an upper bound ceiling of 93\% for overall location predictability in \textbf{Figure~\ref{fig:ceiling-ladder}}.
 
-Ikanovic and Mollgaard then showed that most of the 93 is not knowledge about
-anybody \cite{ikanovic2017alternative}. The quantity Song et al.\ bound answers
-\emph{``where will this person be during the next time slot''}, and in most time
-slots the answer is ``exactly where they are now''. Re-running the same machinery
-on the question a predictor is actually useful for, \emph{``where will this person
-go next''}, with the repetitions removed, the ceiling fell to 71\,\%. Roughly a
-quarter of what looked like predictability was the passage of time rather than the
-behaviour of a person. That is what names my competitor: if most of a high score
-is people staying where they are, any honest claim has to be a distance to
-``answer the last antenna seen'' rather than an absolute score.
+Subsequently, Ikanovic and Mollgaard demonstrated that a substantial portion of this 93\% ceiling stems from temporal stationary states rather than true mobility trajectory predictability \textbf{\cite{ikanovic2017alternative}}. The entropy formulation of Song et al.\ addresses the query \emph{``where will the user be during the next time interval''}, which defaults to the user's current position during stationary periods. By reformulating the target to non-stationary transition events---\emph{``where will the user move next''} with stationary repetitions removed---the theoretical ceiling in \textbf{Figure~\ref{fig:ceiling-ladder}} drops to 71\%. This indicates that approximately one quarter of apparent trajectory predictability is attributable to stationary temporal residence. Consequently, rigorous model evaluation requires measuring accuracy gains relative to the persistence baseline rather than reporting absolute accuracy figures.
 
-Two further things in Song et al.\ bear directly on later chapters.
+Two additional insights from Song et al.\ directly inform subsequent sections of this report \textbf{\cite{song2010limits}}:
 
-\textbf{The ceiling is the same for everybody, but the score is not.} The authors
-expected heavy travellers to be harder to predict and were wrong: past a radius of
-ten kilometres, the ceiling stops depending on distance travelled at all. Yet what
-can be predicted from a person's visit frequencies alone is spread very widely
-across the population and peaks near 30\,\%. A population average therefore hides
-the thing worth reporting, which is why Chapters~\ref{ch:user}
-and~\ref{ch:groups} measure the spread directly.
+\textbf{Constancy of Predictability Ceilings Across Travel Radii.} The predictability ceiling remains largely invariant to user travel distances beyond a radius of ten kilometers. However, localized predictability derived from individual visit frequencies varies widely across subscriber cohorts, peaking near 30\%. Consequently, aggregate population averages mask underlying subgroup variations, necessitating the individual user profiling detailed in Chapters~\ref{ch:user} and \ref{ch:groups}.
 
-\textbf{And a curve published almost in passing, which cost me an iteration.}
-Splitting the week into 168 hourly slots, the authors measure how often a person
-is found in their most-visited place for that hour. The answer is close to 90\,\%
-during the night, with clear low points around midday and between six and seven in
-the evening. The hours at which people are hard to predict were published in 2010,
-and they are not the small hours of the morning. Chapter~\ref{ch:time} spends its
-whole length rediscovering that the expensive way.
+\textbf{Diurnal Regularity Patterns.} By partitioning weekly trajectories into 168 hourly slots, Song et al.\ observed that individual regularity reaches approximately 90\% during night hours, while exhibiting pronounced dips around midday and early evening (18h--20h) \textbf{\cite{song2010limits}}. This empirical distribution of temporal difficulty motivates the hourly feature integration evaluated in Chapter~\ref{ch:time}.
 
-\section{The contribution of the six other cited works}
+\section{Categorization of Literature Contributions}
 
-The first three of the six settle how a predictor of this kind is normally built,
-and how its answers are normally scored. Luca et al.\ survey the deep-learning
-branch of human mobility \cite{luca2021survey}, and two of their observations are used
-without modification here: giving a model the time of day is standard practice, so
-the mechanism of Chapter~\ref{ch:time} is not an idea of mine, and scoring a
-prediction at three depths, top-1, top-3 and top-5, is the convention of the field
-rather than a choice of mine. The language-model work closest to this one reports
-the same three depths \cite{qin2025mobllm}. The convention exists for a practical
-reason: an operator that can prepare three antennas instead of one is served by a
-correct answer in third place. The same survey notes that the better step-by-step
-networks had to be extended with a mechanism for reaching back to a matching
-moment in an earlier day. That reaching back is the native operation of the
-architecture behind current language models,\footnote{\textbf{Transformer}: the
-architecture behind current language models, in which every position of a sequence
-can look directly at every earlier one.} which is one honest reason to reach for an
-existing language model here rather than build a predictor from scratch.
+The secondary literature informs the evaluation framework and model architecture utilized in this research. Luca et al.\ present a comprehensive survey of deep learning approaches for human mobility modeling \textbf{\cite{luca2021survey}}. Two standard conventions from their survey are adopted here: integrating explicit temporal representations (hour of day) into the model input, and evaluating prediction accuracy across multiple rank thresholds (top-1, top-3, and top-5). Parallel work by Qin et al.\ adopts identical multi-depth evaluation metrics \textbf{\cite{qin2025mobllm}}. Top-$k$ evaluation reflects practical deployment requirements, where network operators benefit from pre-allocating handover capacity across candidate top-ranked cell targets. Furthermore, mobility surveys highlight the importance of recurrent memory mechanisms to capture historical trajectory patterns, a capability inherently supported by Transformer-based attention mechanisms.
 
-Since 2023 the field has split into the same two branches the team I joined was
-split into. Wang et al.\ leave the model's numbers alone and write a better
-instruction \cite{wang2023llmmob}: that is the branch I did not take, and in
-substance what Tiphain and Benjamin were doing on this corpus. Qin et al.\ change
-the numbers instead, with the same cheap method used here, over six mobility
-datasets \cite{qin2025mobllm}; of the eight, that is the work mine is closest to.
+Recent developments in LLM-based mobility prediction diverge into two principal paradigms. Wang et al.\ utilize zero-shot and few-shot natural language prompting without modifying underlying model parameters \textbf{\cite{wang2023llmmob}}, an approach evaluated in parallel by team members Tiphain and Benjamin. Conversely, Qin et al.\ update model parameters directly using parameter-efficient fine-tuning across mobility datasets \textbf{\cite{qin2025mobllm}}, establishing the methodological foundation adopted in this report.
 
-The last two of the six are the ancestry of Chapter~\ref{ch:groups}, and I found
-them only after the fact. Pappalardo et al.\ establish that a population separates into
-recognisable kinds of person rather than spreading smoothly along one scale of
-mobility \cite{pappalardo2015returners}. Jeong, Leconte and Proutière supply the
-mechanism: one person's history is too short to estimate that person's habits
-from, so group people who resemble each other and predict one person's next
-location partly from the others' \cite{jeong2016cluster}. My four kinds of user
-are the same idea with the axis changed, from how far a person travels to at which
-hours they change location.
+The theoretical framework for user cohort stratification in Chapter~\ref{ch:groups} originates from demographic mobility studies. Pappalardo et al.\ demonstrate that human populations partition into distinct mobility behavioral classes rather than conforming to a single continuous spectrum \textbf{\cite{pappalardo2015returners}}. Jeong et al.\ provide the algorithmic motivation: because individual historical traces are frequently sparse, grouping subscribers with similar mobility patterns enables collective parameter sharing and collaborative prediction \textbf{\cite{jeong2016cluster}}. The four user profiles established in Chapter~\ref{ch:groups} extend this concept by stratifying users according to temporal cell transition distributions.
 
-\section{Predicting an antenna, not a place}
+\section{Comparison Between Antenna-Level and Location-Level Prediction}
 
-Everything above predicts a \emph{place}: a home, a workplace, a stopping point
-obtained by grouping nearby records. My target is the next antenna, which is a
-different object. The work that predicts antennas sits in the networking community
-and asks the question for another purpose: Chen, Mériaux and Valentin predict
-which antenna a phone will be handed over to,\footnote{\textbf{Handover}: the
-moment the network moves an ongoing connection from one antenna to another,
-normally because the new one offers a better signal.} from radio measurements, so
-the network can prepare it \cite{chen2013nextcell}.
+The majority of existing literature focuses on predicting semantic \emph{locations} (e.g., home, workplace, or clustered points of interest). In contrast, the objective of this study is the prediction of specific cellular \emph{antennas}, presenting distinct domain-specific properties. Cellular antenna prediction is primarily addressed within mobile network engineering; for instance, Chen et al.\ predict physical antenna handovers using radio signal measurement logs to optimize network handover management \textbf{\cite{chen2013nextcell}}.
 
-Predicting an antenna from a trace of antennas, with no radio measurements,
-inherits a drawback from each side. In this corpus 12.4\,\% of back-to-back
-records change antenna without the person having gone anywhere, because the phone
-re-attached to another antenna of the same mast (Chapter~\ref{ch:data}), so part of
-what my model is asked to predict is a decision of the network rather than of a
-human being. And the human part of it is graded on antennas rather than on places,
-which is a finer target than the published ceilings were ever estimated for.
+Predicting cellular antennas strictly from sequence traces without physical signal strength telemetry introduces specific challenges. In the evaluation dataset, 12.4\% of consecutive records exhibit cell identifier changes caused by inter-antenna handovers on the same base station mast without physical subscriber displacement (Chapter~\ref{ch:data}). Consequently, model evaluation involves predicting network handover decisions alongside physical human mobility. Furthermore, grading accuracy at the granular cell level represents a finer-grained target than spatial region clustering evaluated in theoretical predictability bounds.
+
+

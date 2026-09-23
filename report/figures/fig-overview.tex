@@ -69,11 +69,10 @@
 \caption{The four steps this internship built}
 \label{fig:overview}
 \figtext{%
-\figpara{What the picture says.}{The network records all day which antenna each
-phone is attached to. I turn one person's day into a plain ordered list, retrain a
-small language model on thousands of those lists, and ask it to continue one: it
-ranks all 369 antennas of the area and names the likeliest. The dashed box is the
-real difficulty: a competitor with no model at all is already right about seven
-times out of ten, and every number in this report is the distance to it.}}
+\figpara{System overview and workflow of Figure~\ref{fig:overview}.}{The network records all day which antenna each
+phone is attached to in Figure~\ref{fig:overview}. The system turns subscriber day traces into structured token lists, fine-tunes a
+language model on thousands of those lists, and forecasts next-cell attachments. The dashed box in Figure~\ref{fig:overview} highlights the
+persistence baseline benchmark: a competitor with no model at all is already right about seven
+times out of ten, and every metric in this report evaluates performance relative to it.}}
 
 \end{figure}

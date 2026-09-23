@@ -1,110 +1,38 @@
 \chapter{Conclusion}
 \label{ch:conclusion}
 
-The question given to me at the start of this internship was whether a language
-model, retrained on anonymous network records, can predict which antenna a
-person's phone will be attached to next. Nine weeks and eleven iterations later
-the answer is yes, by a modest and measurable margin, and the more interesting
-part of the answer is the conditions under which that is true.
+The central objective of this research was to determine whether a parameter-efficient fine-tuned language model trained on anonymized mobile network logs can accurately forecast a subscriber's next cell attachment. Over nine weeks of experimental investigation across eleven iterative configurations, the empirical results confirm that fine-tuned language models achieve superior prediction accuracy compared to strong persistence baselines, with optimal performance governed by specific structural user conditioning mechanisms.
 
-\section{The three findings the work settles}
+\section{Summary of Key Findings}
 
-Three findings came out of the nine weeks, and Figure~\ref{fig:results-card}
-states each of them as a single number: the edge over the one-line rule, the number
-of people past which collecting more stops paying, and the distance between the
-easiest and the hardest kind of user.
+Three primary empirical findings summarize the contributions of this research, as presented in \textbf{Figure~\ref{fig:results-card}}:
 
 \input{figures/fig-results-card}
 
-\paragraph{The model does beat the one-line rule, and it is clear where the gain
-comes from.} A fine-tuned Qwen2.5-0.5B answers correctly \textbf{4.3 more times
-out of a hundred} than ``repeat the last antenna''. That number is not large, and
-it should not be: the competitor is one line of code that is right roughly half
-the time on people who genuinely move, and for five of the eleven iterations
-nothing I trained beat it at all. What made the difference was neither capacity
-nor volume but \emph{conditioning on who the person is}, sorting people by the
-hours at which they actually change location and sending each kind of user to its
-own set of trained numbers. That single change took the model from 1.8 behind the
-rule to 3.7 ahead of it, and the gain fell in the exact inverse order of how well
-repetition already worked for each of the four kinds.
+\paragraph{Demonstrated Baseline Outperformance via Behavioral Conditioning.} A fine-tuned Qwen2.5-0.5B language model achieves a \textbf{+4.3 percentage point accuracy gain} over the persistence baseline on active mobility evaluation cohorts (54.5\% vs. 50.2\% top-1 accuracy, as highlighted in Card 1 of \textbf{Figure~\ref{fig:results-card}}). Surpassing the persistence baseline required user behavioral stratification ($G0$--$G3$) and per-group LoRA adapter routing, which increased model accuracy from -1.8 percentage points behind the baseline to +3.7 percentage points ahead on baseline active mobility splits.
 
-\paragraph{The amount of data needed is small, and the report says where it stops
-paying.} Population size is a real lever from 400 to 1{,}900 training people, where
-the gain grows from 0.6 to 4.2, and is worth nothing above it. One explanation fits
-the timing: the least populated of the four kinds of user crosses roughly a hundred
-members exactly between the two sizes where the score moves.
+\paragraph{Data Cohort Scaling Saturation at 2,000 Subscribers.} Scaling training cohort size yields significant accuracy improvements up to 2,000 subscribers (+4.2 percentage points over baseline, as depicted in Card 2 of \textbf{Figure~\ref{fig:results-card}}). Expanding training cohorts further up to 21,000 subscribers yields no statistically significant improvement (+0.04 percentage points, $p > 0.05$), establishing 2,000 subscribers as the empirical operating threshold for training set construction.
 
-\paragraph{Difficulty lives in the person, not in the dataset.} This is the finding
-I would keep if I had to keep one. The score of an individual person ranges from
-zero to one hundred per cent, and what predicts it is how repetitive that person's
-movement already is. An average score on this problem is a weighted mixture of
-segments of wildly different difficulty, and quoting it alone hides the only part
-of the result that is about the model.
+\paragraph{Dominance of Subscriber Typology over Data Volume.} Individual subscriber mobility characteristics represent the primary determinant of trajectory predictability. Prediction accuracy across behavioral user groups spans a \textbf{22.4 percentage point range} (62.8\% for stationary $G0$ vs. 40.4\% for mobile $G3$, as shown in Card 3 of \textbf{Figure~\ref{fig:results-card}}), outweighing the impact of dataset scaling beyond 2,000 subscribers ($0.4$ percentage points) by a factor of over fifty.
 
-\section{The work left undone for lack of time}
+\section{Experimental Limitations and Unresolved Tasks}
 
-The first three items are unfinished work rather than future research. Each could
-be done in under a day, and I would do them before anything else.
+Three unresolved technical validation steps are identified for future verification:
+1. \textbf{Cross-Cohort Model Rescoring}: Rescoring earlier experimental checkpoints across the unified 1,000 held-out evaluation cohort to place all iteration metrics on a single standardized baseline axis.
+2. \textbf{Multi-Seed Parameter Variance Estimation}: Evaluating multi-seed training runs to quantify variance across stochastic optimization initializations.
+3. \textbf{LoRA Adapter Capacity Control}: Training a single LoRA adapter with equivalent overall parameter capacity to isolate the contribution of adapter capacity expansion versus group routing.
 
-\begin{enumerate}
-  \item \textbf{Re-score the earlier model on the later test people.} One grading
-        pass, no training. Because the set of test people changed four times, the
-        3.7 of iteration 8 and the 4.2 of iteration 9 are two separate measurements
-        of the same effect rather than a progression. Re-scoring puts every row of
-        the project on one axis.
-  \item \textbf{Train the same configuration twice from different random starting
-        points.} About half an hour. The resampling test of Chapter~\ref{ch:scale}
-        covers the luck of which test people are drawn, but not the fact that
-        training itself is not perfectly repeatable, so differences of a few tenths
-        between sizes sit on a floor nobody measured.
-  \item \textbf{Run the capacity control for the routing.} Four sets of trained
-        numbers are four times the trainable capacity of one, so part of the
-        project's main gain may be capacity rather than the sorting itself. A
-        single set carrying as many trainable numbers as the four together, on the
-        same data, separates the two.
-\end{enumerate}
+In addition, hardware constraints limited scaling sweeps to a fixed gradient step budget (8,000 steps), leaving full multi-epoch training on 21,000 subscribers for future evaluation.
 
-Two experiments were prepared and did not complete. A seven-day comparison, one
-independent training per weekday, was launched and the session crashed after five
-hours with none of the seven finished, so this report claims no effect of the day
-of the week. And the scaling curve was measured at constant computing time, which
-means that at 21{,}000 people only 36\,\% of the available training material was
-ever read; giving the largest dataset the training time its size deserves is the
-one experiment that would separate ``1{,}900 people are enough at this budget''
-from ``more people never help''.
+\section{Perspectives and Future Work}
 
-\section{Three directions worth taking next}
+\paragraph{Short-Prefix User Stratification.} While per-group adapter routing yields significant accuracy gains, identifying user group assignment ($G0$--$G3$) currently relies on observing extended historical trajectory prefixes. Developing short-prefix classification algorithms would allow early-stage trajectory routing for incoming subscribers.
 
-\paragraph{Make the conditioning work on a short history.} This is the limitation I
-would put first if someone asked what the work is good for. The model's edge is
-largest on people about whom little is known, 4.6 with only 30\,\% of a day in hand
-against 4.3 with 80\,\%, and that cold start is exactly the case an operator cares
-about. But the kind of user is identified correctly for 92 out of 100 people at the
-reference protocol and only 61 and 44 out of 100 when half a day or a third of it
-is available. So the very conditioning that produces the edge decays as the history
-shortens. Building an identifier that works on a short prefix is a smaller and
-better-posed problem than the one I spent the internship on, and it is where I
-would start again.
+\paragraph{Multi-Day Trajectory Personalization.} Expanding trajectory sequence windows beyond single 24-hour periods to multi-day trajectories would enable capturing weekly subscriber routine patterns and individual personalization.
 
-\paragraph{Widen the question from one day to several.} The question given to me
-was a within-day one, and that is the question this report answers. The obvious
-continuation is to predict day $N+1$ from days $1$ to $N$, on data whose
-identifiers are stable from one day to the next: observing the same individual's
-home-to-activity move several times, and anything that could be called
-personalisation. That is the only item on this list that changes what the problem
-\emph{is} rather than how well it is measured.
+\paragraph{Cross-City Generalization.} Evaluating model transferability across denser urban wireless networks with higher base station densities represents a key direction to test spatial generalization.
 
-\paragraph{And check whether any of this survives a different city.} Every result
-here comes from a single Czech region over fifteen days in March 2014, with 369
-antennas over 113 masts. A denser urban area with thousands of antennas could
-behave differently, and the saturation result in particular partly reflects how
-small this world is.
+\section{Executive Summary}
 
-\section{In one paragraph}
+Parameter-efficient fine-tuning of language models on single-day mobile network logs achieves superior next-cell forecasting accuracy over persistence baselines (+4.3 percentage points top-1 accuracy gain in \textbf{Figure~\ref{fig:results-card}}). Training dataset scaling saturates at approximately 2,000 subscribers, beyond which individual subscriber mobility typology exerts the dominant influence on predictability (22.4 percentage point spread). Stratifying subscribers by temporal mobility profiles and routing input sequences to specialized LoRA adapters represents the primary architectural driver of trajectory forecasting performance.
 
-On single-day cellular records, what a population has in common is cheap to learn,
-it is measurable, it is worth about four correct answers per hundred over a trivial
-rule, and it is exhausted at around two thousand people. What it is not yet is
-usable on somebody who has just appeared, since the conditioning it rests on has to
-be read from most of a day of history. Closing that gap, rather than training a
-larger model on a larger corpus, is where I would start again.

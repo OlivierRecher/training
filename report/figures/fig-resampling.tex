@@ -66,7 +66,7 @@
 \caption{Stretching every day to 200 records: a high score, a worse result}
 \label{fig:resampling}
 \figtext{%
-\figpara{Panel (a): a spectacular score, and a result that changed sign.}{Every
+\figpara{Figure~\ref{fig:resampling}a: trajectory length equalization accuracy comparison.}{In Figure~\ref{fig:resampling}a, every
 person's day is stretched to exactly 200 records by repeating records already
 there, so that the longest quarter of people stops carrying 44\,\% of the training
 material. Each run is shown against \emph{its own} one-line rule, and only the
@@ -74,10 +74,10 @@ comparison inside a pair means anything. The levelled model reaches 74.9\,\%, by
 wide margin the highest absolute score of the project, but the rule on those same
 stretched days reaches 76.5\,\%.}
 
-\figpara{Panel (b): the reason is arithmetic, not modelling.}{Stretching a day
+\figpara{Figure~\ref{fig:resampling}b: breakdown of pure copy moments versus real decision moments.}{In Figure~\ref{fig:resampling}b, stretching a day
 fills it with copies, and a copy is a moment on which repeating the last antenna
-cannot be wrong. That is why both scores rose by about thirty. On the 1{,}738
-moments that are real decisions the model is behind. Its bar there is derived from
+cannot be wrong. That is why both scores rose by about thirty in Figure~\ref{fig:resampling}a. On the 1{,}738
+moments in Figure~\ref{fig:resampling}b that are real decisions, the model is behind. Its bar there is derived from
 the reported 74.9\,\% assuming it never misses a copy, and it stays below the rule
 at either end of that assumption. And because a copied step never changes
 location, levelling compresses the spread between people by a factor of 2.3,

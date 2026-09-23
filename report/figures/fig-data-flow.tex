@@ -53,13 +53,9 @@
 \caption{From a raw file to training material, in four steps}
 \label{fig:data-flow}
 \figtext{%
-\figpara{The raw line, and the four steps.}{At the top is one person's whole day
+\figpara{Data preprocessing pipeline of Figure~\ref{fig:data-flow}.}{At the top of Figure~\ref{fig:data-flow} is one person's whole day
 as it arrives from the operator: eight administrative fields, then the name of an
-antenna and the time in seconds since midnight, over and over. \textbf{(1)} Throw
-away everything that is not a trajectory. \textbf{(2)} Turn each time into the
-hour of day it falls in. \textbf{(3)} Write one line per person, their day as an
-ordered list of events. \textbf{(4)} Split the people into those the model studies
-and those it is graded on. The two circles hold different people, so nothing the
+antenna and the time in seconds since midnight, over and over. \textbf{(1)} Filter non-trajectory records. \textbf{(2)} Prepend explicit hourly tokens. \textbf{(3)} Construct single-subscriber sequence lines. \textbf{(4)} Partition subscribers into disjoint training and held-out evaluation sets. The two circles in Figure~\ref{fig:data-flow} hold different people, so nothing the
 model is scored on can have been memorised, and the split is balanced so that both
 sides get the same mix of short and long histories.}}
 

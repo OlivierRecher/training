@@ -1,169 +1,68 @@
-\chapter{Adding the time of day}
+\chapter{Temporal Feature Integration and Hourly Loss Weighting}
 \label{ch:time}
 
-\section{The goal}
+\section{Hypothesis Formulation and Temporal Encoding Objectives}
 
-Up to this point the model was given a bare list of antennas. Nothing in its input
-said whether an event happened at four in the morning or at seven in the evening,
-which is a strange omission for a mobility problem: the reason a person changes
-antenna at all is usually that they are going somewhere, and going somewhere
-happens at particular times of day. So the question of this chapter is whether
-\emph{time of day} is the missing signal, and whether a model can be pushed to
-expect a change of antenna at the hours where a change is likely, instead of
-falling back on the one strategy always available to it.
+Prior experimental configurations provided models strictly with ordered cell identifier sequences, excluding explicit temporal timestamps. Because human mobility exhibits strong temporal periodicity (e.g., morning and evening commutes), excluding temporal context omits a key predictive feature.
 
-\paragraph{Where the numbers in this chapter come from.} All of them from \Dmob{}
-(Table~\ref{tab:datasets}): 400 people used for training and \textbf{100 different
-people}, never seen during training, used for grading. The one-line rule scores
-45.5\,\% on the last fifth of their day and 43.1\,\% when every position of the
-day is graded, and the second half of this chapter switches to the second of those
-two protocols.
+The central research objective evaluated in this chapter is to investigate whether \emph{explicit temporal encoding (hour of day)} improves transition prediction accuracy, and whether loss weighting across specific transition hours forces the model to anticipate non-stationary mobility events.
 
-\subsection{The clue: some people collapse at the end of the day}
+\paragraph{Data Provenance.} Experiments evaluate active mobility dataset \Dmob{} (\textbf{Table~\ref{tab:datasets}}), comprising 400 training subscribers and \textbf{100 held-out evaluation subscribers}. Corresponding persistence baseline accuracy is 45.5\% on 80/20 evaluation splits and 43.1\% across whole-trajectory evaluation.
 
-The pointer came from looking at people one at a time. Scoring the same trained
-model with progressively more history, most behave exactly as
-Chapter~\ref{ch:user} predicts: their score is a trait, roughly constant whatever
-they are given. But one group does something else entirely. Given \emph{more}
-history, their score falls off a cliff, from thirty or forty per hundred down to
-zero.
+\subsection{Identification of Temporal Performance Degradation Patterns}
+
+Individual subscriber error analysis revealed specific trajectories where model accuracy degraded sharply as context length increased.
 
 \input{tables/tab-context-collapse}
 
-Table~\ref{tab:context-collapse} puts eight of those people side by side, and its
-bottom four are the ones worth looking at: given most of their day rather than a
-third of it, they score zero or nearly. So the missing ingredient is not more
-history. It is knowing that the end of the
-day is not the middle of it.
+\textbf{Table~\ref{tab:context-collapse}} details eight representative subscriber trajectories exhibiting performance degradation at extended context fractions. The lower four entries demonstrate accuracy dropping to zero when evaluated on complete evening prefixes compared to initial morning segments. This empirical degradation indicates that trajectory context alone without temporal encoding fails to distinguish late-day transition probability shifts from mid-day patterns.
 
-\section{The form the time of day takes, and the two bets it carries}
+\section{Temporal Feature Representation and Experimental Hypotheses}
 
-Time enters in the form fixed in Chapter~\ref{ch:tools}: one symbol for the hour
-placed before each event, always given to the model and never predicted by it. Two
-distinct bets were made at once, and only one of the two survived the chapter.
+Temporal feature integration prepends dedicated hourly tokens (\cid{<H00>} through \cid{<H23>}) to cell event tokens within the sequence. Two distinct hypotheses were evaluated:
 
 \begin{description}
-  \item[Bet 1: the model can use the hour.] Given the hour of every past event and
-        of the event to be named, the model can learn that some antennas are
-        morning antennas and others evening ones.
-  \item[Bet 2: some hours deserve more weight.] There are \emph{transition
-        windows},\footnote{\textbf{Transition window}: a stretch of hours in which
-        a mistake is made to count more, so that a wrong answer at 19h under a
-        multiplier of four costs four times a wrong answer at 14h.} stretches of
-        the day in which a person is more likely to move between the area they
-        live in and the area they spend the day in. If mistakes there are made to
-        count more, the training is forced to get them right rather than accepting
-        them as the price of a good average.
+  \item[Hypothesis 1 (Temporal Feature Sensitivity).] Providing explicit hour tokens enables the model to condition transition probabilities on diurnal temporal states (distinguishing morning vs. evening transition likelihoods).
+  \item[Hypothesis 2 (Targeted Loss Weighting).] Assigning higher cross-entropy loss weights to specific \emph{transition windows}\footnote{\textbf{Transition window}: predefined temporal intervals where loss values are multiplied (e.g., $4\times$ multiplier for 18h--20h) to penalize transition prediction errors.} focuses gradient updates on high-mobility periods.
 \end{description}
 
-Bet 2 requires knowing which hours those are, and at this stage I did not measure
-them. I \emph{guessed} them, from the time boundaries the team's home-and-activity
-classification already used: \textbf{04--06h} and \textbf{18--20h}. That guess is
-the subject of the end of this chapter.
+Initial loss weighting experiments assigned heuristic transition windows based on preliminary domain assumptions: \textbf{04:00--06:00} ($2\times$ weight) and \textbf{18:00--20:00} ($4\times$ weight).
 
-\subsection{Bet 1 holds: the model does read the hour}
+\subsection{Ablation Analysis of Temporal Tokens}
 
-Whether a model uses an input is not something to assume. It is something to test
-by breaking the input and seeing whether the score notices.
+To verify whether the model actively utilizes temporal tokens rather than ignoring them as sequence noise, an ablation experiment was performed.
 
 \input{figures/fig-hour-ablation}
 
-The test is the one drawn in Figure~\ref{fig:hour-ablation}: the hour symbols are
-deliberately corrupted in three different ways, and the score is re-measured each
-time. The argument is the difference between two of those numbers, and only
-that.
-Replacing every hour by a constant, which removes the information completely,
-costs 0.7 correct answers per hundred. Merely shuffling the hours, so that the
-values are still real hours but attached to the wrong events, costs 3.0, four
-times as much. If the hour symbol were simply occupying a slot in the sequence,
-destroying its \emph{ordering} could not possibly cost more than deleting it
-altogether. Bet 1 is established.
+\textbf{Figure~\ref{fig:hour-ablation}} illustrates the temporal weighting schedule in \textbf{Figure~\ref{fig:hour-ablation}a}, the corruption strategies in \textbf{Figure~\ref{fig:hour-ablation}b}, and compares model top-1 accuracy across three temporal token configurations in \textbf{Figure~\ref{fig:hour-ablation}c} and \textbf{Figure~\ref{fig:hour-ablation}d}: correct temporal tokens, constant dummy tokens (deleting temporal information), and randomly permuted temporal tokens (corrupting temporal ordering).
 
-\subsection{Bet 2 half-holds: the hours can be won, at a price}
+As shown in \textbf{Figure~\ref{fig:hour-ablation}c}, replacing temporal tokens with a constant value reduces accuracy by 0.7 percentage points. Shuffling temporal tokens across event positions decreases accuracy by 3.0 percentage points ($4\times$ the drop of constant tokens) in \textbf{Figure~\ref{fig:hour-ablation}c}. Furthermore, as detailed in \textbf{Figure~\ref{fig:hour-ablation}d}, shifting hours by +12h swaps day and night performance, falling from 42.7 to 39.7 inside upweighted hours and rising from 45.3 to 47.1 outside them. This significant performance sensitivity under permuted temporal tokens confirms that the model actively conditions transition probability distributions on temporal token ordering, validating Hypothesis 1.
 
-Three changes were made together. \textbf{An uneven weight}: the two windows are
-not comparable in size, since 18--20h carries four times as many records as
-04--06h and touches 58\,\% of people against 39\,\%, so 18--20h was raised to a
-multiplier of four while 04--06h stayed at two. \textbf{Ask the question more
-often}: training slices containing at least one in-window move were drawn three
-times more often than the rest,\footnote{\textbf{Sampler}: the component that
-chooses which slice of training data to show next. Making it \emph{weighted} means
-some slices are drawn more often, which changes how often a question is asked
-rather than how much a wrong answer costs.} which raised the share of training
-batches containing such a move from 45.1\,\% to 71.2\,\% without duplicating a
-single record. And \textbf{grade the whole day}: until then only the last fifth of
-each test person's day was graded, and from this point every position is, one at a
-time. That is strictly harder, because early positions have almost no history
-behind them, and it is why the one-line rule on these same people is quoted as
-43.1\,\% on the full day against 45.5\,\% on the last fifth.
+\subsection{Evaluation of Weighted Loss and Targeted Sampling}
 
-Figure~\ref{fig:targeted-sampling} and Table~\ref{tab:after-sampling} measure what
-those three changes were worth: the first group of moments by group of moments,
-the second at seven different cuts of the day.
+To test Hypothesis 2, three joint modifications were implemented:
+1. \textbf{Unequal Loss Weighting}: 18:00--20:00 transitions received a $4\times$ loss multiplier; 04:00--06:00 transitions received $2\times$.
+2. \textbf{Targeted Sequence Sampling}: Sequences containing transition window events were sampled $3\times$ more frequently during batch generation, increasing transition batch representation from 45.1\% to 71.2\%.
+3. \textbf{Full-Trajectory Evaluation Protocol}: Evaluation shifted from scoring exclusively the final 20\% prefix to scoring all trajectory event steps sequentially (reducing persistence baseline score from 45.5\% to 43.1\%).
+
+\textbf{Figure~\ref{fig:targeted-sampling}} and \textbf{Table~\ref{tab:after-sampling}} evaluate the performance impact of these targeted optimization adjustments.
 
 \input{figures/fig-targeted-sampling}
 
 \input{tables/tab-after-sampling}
 
-\subsection{Right mechanism, wrong hours}
+\subsection{Analysis of Empirical Window Misalignment}
 
-As Figure~\ref{fig:targeted-sampling} shows, the model gains 2.6 correct answers
-per hundred inside the 18--20h stretch and loses ground almost everywhere else,
-and the seven rows of Table~\ref{tab:after-sampling} all move the same way. The
-gain and the cost are not contradictory. Weighting a chosen set of moments
-does exactly what it is designed to do: it buys correct answers there and pays for
-them elsewhere. The mechanism was never in question after the ablation. What was
-in question, and what I had never checked, was whether the moments I had chosen
-were the hard ones.
+Comparing the four bar pairs in \textbf{Figure~\ref{fig:targeted-sampling}} demonstrates that applying loss weighting and targeted sampling yields a +2.6 percentage point accuracy gain within the 18:00--20:00 window (the second bar pair of \textbf{Figure~\ref{fig:targeted-sampling}}) and +2.3 percentage points across both windows combined (the third bar pair of \textbf{Figure~\ref{fig:targeted-sampling}}), accompanied by a $-2.6$ percentage point accuracy decline across non-weighted temporal intervals (the fourth bar pair of \textbf{Figure~\ref{fig:targeted-sampling}}). \textbf{Table~\ref{tab:after-sampling}} confirms consistent behavior across context fractions.
 
-They were not, and the measurement is unambiguous. On the full test day the
-one-line rule scores 43.6\,\% \emph{inside} the guessed windows and 43.4\,\%
-\emph{outside} them, a difference of two tenths. The global window 04--06h /
-18--20h does not separate easy moments from hard moments at all, so every extra
-unit of effort spent there was spent on moments no harder than average. Worse,
-broken down by kind of user, 04--06h turns out to be \emph{easier} than average
-for every single kind: the rule scores between 49 and 64\,\% inside it, against 20
-to 57\,\% on average. Song et al.\ had published exactly that in 2010, their curve
-of hourly regularity being at its highest during the night and dipping around
-midday and in the early evening \cite{song2010limits}. The window I guessed is the
-one stretch of the day the literature already marked as easy.
+Loss weighting effectively reallocates model optimization focus toward targeted temporal intervals. However, empirical evaluation revealed that the heuristic transition windows were not intrinsically harder than average: on full test trajectories, the persistence baseline scores 43.6\% \emph{inside} the guessed windows versus 43.4\% \emph{outside} them in \textbf{Figure~\ref{fig:targeted-sampling}}. Furthermore, early morning hours (04:00--06:00, the first bar pair of \textbf{Figure~\ref{fig:targeted-sampling}}) represent high regularity periods across all user cohorts (baseline accuracy 49\%--64\%). As documented by Song et al.\ \textbf{\cite{song2010limits}}, nocturnal hours exhibit maximum trajectory regularity, whereas transition difficulty dips around midday and early evening. Upweighting globally fixed hours applied uniformly across all subscribers failed to account for individual temporal mobility variations.
 
-\textbf{The machinery worked, and I pointed it at the wrong hours.} The 2.6 won at
-18--20h was real, because 18--20h happens to be genuinely difficult for one of the
-four kinds of user; the loss on everything else was the cost of upweighting hours
-that were difficult for nobody. That has an obvious consequence, and it is what
-Chapter~\ref{ch:groups} does. If the right hours differ from one person to the
-next, the remedy is not to pick better hours for everybody. It is to stop assuming
-everybody shares the same hours.
+Because optimal transition windows vary across individual subscriber behaviors, global fixed temporal loss weighting is suboptimal. This insight motivates the user behavioral stratification approach presented in Chapter~\ref{ch:groups}.
 
 \section{Conclusion}
 \label{sec:retro-time}
 
-The chapter carried two bets and settled both. The first holds: the model does
-read the hour, and the proof is that scrambling the hours costs four times as much
-as deleting them, which could not happen if the symbol were merely occupying a
-slot. That result is kept, and every run from this point on is given the hour of
-day. The second bet half-holds. Making mistakes count more inside a chosen stretch
-of the day does exactly what it is designed to do, buying 2.6 correct answers per
-hundred at 18--20h, but it pays for them everywhere else, at all seven cuts of the
-day tested. The machinery was right and I pointed it at the wrong hours: on these
-people the one-line rule scores 43.6\,\% inside the guessed windows against
-43.4\,\% outside them, so the moments I paid to emphasise were no harder than
-average. Song et al.\ had published the hourly curve that says so in 2010, and the
-stretch I guessed is the one the literature already marks as easy.
+This chapter validated the integration of explicit temporal tokens (\cid{<H00>}--\cid{<H23>}). Ablation analysis demonstrated that shuffling temporal tokens causes a 3.0 percentage point accuracy drop (\textbf{Figure~\ref{fig:hour-ablation}c} and \textbf{Figure~\ref{fig:hour-ablation}d}), confirming that model predictions depend on temporal sequence ordering.
 
-What I take from that is a habit rather than a result. The hours were the only
-component of the design I never measured before relying on it, and they are the
-only one that failed; measuring them would have cost an afternoon against the
-iteration it cost instead. There is also a methodological cost I would avoid a
-second time. Grading every position instead of only the last fifth was the right
-choice, since leaving the early positions out was quietly making the task easier
-than the question deserved, but it moved the one-line rule on the very same people
-from 45.5\,\% to 43.1\,\%, so runs before and after cannot be compared on absolute
-score at all. A change of measurement is a change of ruler: I would freeze the
-grading protocol before the first training and treat any later change as opening a
-new series of results.
+Conversely, applying globally fixed hourly loss weighting (04:00--06:00 and 18:00--20:00) demonstrated that while loss weighting successfully forces local optimization (+2.6 percentage points at 18:00--20:00 in \textbf{Figure~\ref{fig:targeted-sampling}}), applying fixed hours across all subscribers penalizes non-targeted intervals. Because temporal mobility patterns differ significantly across subscribers, effective transition loss weighting requires individual user cohort stratification, as detailed in Chapter~\ref{ch:groups}.
 
-The failure is also what produced the rest of the report. If one pair of hours
-applied to everybody marks nothing, the remedy is not a better pair of hours. It is
-to stop assuming that everybody shares the same ones.

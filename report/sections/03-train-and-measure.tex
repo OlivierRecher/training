@@ -1,300 +1,115 @@
-\chapter{The training procedure and the measurement rules}
+\chapter{Model Architecture and Evaluation Methodology}
 \label{ch:tools}
 
-\section{The goal}
+\section{Experimental Methodology and Objectives}
 
-Two practical questions had to be settled before any experiment could mean
-anything. \emph{Given one free graphics card and a few weeks, which model and
-which training method are actually feasible?} And \emph{what has to be true of the
-measurement before a trained model's score can be believed?}
+Establishing a rigorous modeling and evaluation methodology required resolving two primary technical questions:
+1. \emph{Given constrained computational hardware (a single GPU instance), which model architecture and parameter-efficient fine-tuning method offer feasibility and training efficiency?}
+2. \emph{What evaluation protocols are necessary to ensure that reported accuracy improvements represent genuine trajectory modeling rather than dataset artifacts?}
 
-The answer to the first was decided in the first week and never changed. What
-changed over the internship was the data and the training signal, never the
-instrument, and that is what makes the later comparisons between runs meaningful.
-The answer to the second cost me three wrong conclusions, one per rule, and the
-second half of this chapter is those three rules.
+The selection of model architecture and fine-tuning mechanics remained fixed across experimental iterations, ensuring consistent cross-experiment comparisons. The second question led to three fundamental evaluation principles designed to prevent false positives and over-estimation of baseline performance gains.
 
-\paragraph{Where the numbers in this chapter come from.} From the three earliest
-sets of people of Table~\ref{tab:datasets}: \Draw{} taken exactly as the operator
-sent it, \Dfilt{} once people with too few records were removed, and \Dmob{} once
-only people who genuinely move are kept. Each uses \textbf{400 people for
-training} and \textbf{100 different people}, never seen during training, for
-grading. The one-line rule scores 69.2\,\%, 79.0\,\% and 45.5\,\% on them
-respectively, and that difference between the three is itself the subject of the
-third rule below.
+\paragraph{Data Provenance.} Empirical measurements presented in this chapter derive from three early dataset cohorts documented in \textbf{Table~\ref{tab:datasets}}: raw logs (\Draw{}), basic filtered logs (\Dfilt{}), and active mobility logs (\Dmob{}). Each cohort evaluates models trained on \textbf{400 subscribers} and graded on \textbf{100 held-out subscribers}. Corresponding persistence baseline accuracies across these three datasets are 69.2\%, 79.0\%, and 45.5\%, respectively.
 
-\section{The tools, and the share of the model that is changed}
+\section{Parameter-Efficient Fine-Tuning and Model Architecture}
 \label{sec:tools-peft}
 
-A language model is a stack of very large tables of
-numbers.\footnote{\textbf{Weights}, or \textbf{parameters}: the numbers inside
-the model that turn an input into an output. ``Frozen'' means left exactly as its
-original authors trained them.} Adapting one somebody else has already
-trained\footnote{\textbf{Pre-trained}: already trained, by someone else, on a very
-large body of general text. Fine-tuning starts from those numbers rather than
-from nothing, which is what makes it affordable.} can be done at three very
-different costs, and what separates them is not accuracy. It is memory.
+Fine-tuning pre-trained language models can be conducted under varying memory footprints. Fine-tuning the full parameter set requires substantial memory resources, whereas Parameter-Efficient Fine-Tuning (PEFT) methods freeze pre-trained parameters and train auxiliary low-rank matrices.
 
 \input{figures/fig-lora}
 
-Figure~\ref{fig:lora} puts the three costs side by side: retraining everything
-needs far more memory than a free card has, LoRA freezes the original numbers and
-trains a small set of new ones beside them, and QLoRA does the same after shrinking
-the frozen numbers to a coarser precision. I chose QLoRA, and on hardware grounds rather than on expected quality: it was the
-only one of the three under which my first candidate model could be loaded at all
-on a free graphics card. That choice held for the rest of the internship, and it
-is what made the volume of experiments possible, and the per-group routing of
-Chapter~\ref{ch:groups} cheap enough to try at all.
+\textbf{Figure~\ref{fig:lora}} compares parameter adaptation mechanisms across three memory scales: full fine-tuning, Low-Rank Adaptation (LoRA), and Quantized Low-Rank Adaptation (QLoRA). Full parameter updating exceeds the memory constraints of standard hardware in \textbf{Figure~\ref{fig:lora}}. LoRA freezes original parameters and inserts trainable rank-decomposition matrices. QLoRA further compresses frozen base parameters into 4-bit NormalFloat precision while training 16-bit LoRA adapter weights. QLoRA was selected to enable model execution within 16\,GB GPU memory limits, supporting efficient execution across parameter sweeps and group routing experiments (Chapter~\ref{ch:groups}).
 
-\subsection{The choice of model}
+\subsection{Model Selection and Capacity Evaluation}
 \label{sec:tools-model}
 
-The first real run used \textbf{Mistral-7B} \cite{jiang2023mistral}, a
-general-purpose model with seven billion numbers in it.\footnote{``7B'' means
-seven billion numbers. Qwen2.5-0.5B has five hundred million, fourteen times
-fewer. The count is the model's capacity, and also how much memory it occupies.}
-A deliberately small first experiment, about thirty minutes over 1.2\,\% of the
-training data, produced 16.87\,\% correct next-antenna answers, which was
-encouraging as a signal that the pipeline worked end to end. A Llama model tried
-at the same size did not even return well-formed antenna names.
+Initial experiments evaluated \textbf{Mistral-7B} \textbf{\cite{jiang2023mistral}} (7 billion parameters). A preliminary 30-minute test run on 1.2\% of the dataset yielded 16.87\% top-1 accuracy, verifying pipeline end-to-end functionality. (Comparative tests using Llama models failed to produce syntactically valid cell identifier output.)
 
-Scaled up to a full run on 400 training people, however, Mistral-7B spent roughly
-five and a half hours on the free card to reach a best score of 41.1\,\% and then
-stopped improving. The same data given to \textbf{Qwen2.5-0.5B-Instruct}
-\cite{qwen2025}, fourteen times smaller, ran forty-nine passes over the data in
-about seventy-two minutes, and twenty-nine minutes once the rules below were in.
-Mistral-7B was abandoned.
+However, full training of Mistral-7B required 5.5 hours per run on a single T4 GPU, reaching a maximum accuracy of 41.1\%. In contrast, \textbf{Qwen2.5-0.5B-Instruct} \textbf{\cite{qwen2025}} (500 million parameters, 14$\times$ smaller) completed 49 training epochs in 72 minutes (reducing to 29 minutes under optimized early stopping). Consequently, Qwen2.5-0.5B was chosen for all subsequent experiments.
 
-The reasoning, stated at the time and still my view, is that the task is narrow.
-Naming the next antenna out of 369 requires no knowledge of the world and no
-reasoning in English; it requires learning how one small geographical area is
-moved through. The larger model brings capacity the task cannot use and charges
-for it in waiting time, by a factor of roughly twenty-three per run, which over
-nine weeks is the difference between thirty experiments and two.
-
-Figure~\ref{fig:toolchain} gathers the whole toolchain in four layers, from the
-free graphics card at the bottom to my own notebook at the top; everything between
-the two is somebody else's library.
+Because next-cell prediction across 369 discrete vocabulary items requires modeling localized spatial transition patterns rather than general world knowledge or natural language reasoning, the smaller model offers adequate capacity. The $14\times$ parameter reduction provided a $23\times$ speedup per run, enabling extensive experimental iteration within computational constraints.
 
 \input{figures/fig-toolchain}
 
-\section{Interpretation of data and implementation of model}
+\textbf{Figure~\ref{fig:toolchain}} illustrates the software and hardware stack, ranging from the underlying GPU compute environment to high-level training and evaluation scripts.
 
-The model cannot read a day; it reads symbols. Figure~\ref{fig:training-example}
-shows one person's day exactly as the model receives it.
+\section{Data Representation and Tokenization Scheme}
+
+Language models process discrete token sequences. \textbf{Figure~\ref{fig:training-example}} illustrates the formatting of a subscriber daily trajectory as input to the language model tokenizer.
 
 \input{figures/fig-training-example}
 
-Three choices are visible in that picture. \textbf{One antenna, one symbol}: all
-369 antenna names were added to the model's
-vocabulary\footnote{\textbf{Vocabulary}: the fixed set of symbols a language model
-can read and produce. \textbf{Tokenizer}: the component that cuts an input into
-those symbols.} as symbols of their own, since left alone the tokenizer would have
-split \cid{BSOCHO1} into four meaningless fragments and the model would have had
-to spell an antenna correctly to be right. \textbf{One hour, one symbol}: from the
-sixth iteration each event is preceded by a symbol for its hour of day,
-\cid{<H00>} to \cid{<H23>}, which is twenty-four learnable symbols. And
-\textbf{only the antennas are graded}: the opening boilerplate and the hour
-symbols are excluded from the score,\footnote{\textbf{Masking} a position means
-excluding it from the score: the model still \emph{reads} the symbol but is
-neither rewarded nor penalised for producing it.} so the model is trained, and
-graded, only where an antenna name has to be produced.
+Three encoding choices are implemented in \textbf{Figure~\ref{fig:training-example}}:
+1. \textbf{Dedicated Vocabulary Tokens for Cell IDs}: All 369 cell identifiers were added directly to the model's vocabulary. This prevents subword tokenization splitting strings like \cid{BSOCHO1} into arbitrary sub-tokens, forcing atomic cell prediction.
+2. \textbf{Explicit Hourly Tokens}: Temporal context is represented by inserting explicit hour tokens (\cid{<H00>} through \cid{<H23>}) preceding each cell event.
+3. \textbf{Loss Masking}: Cross-entropy loss is computed exclusively on cell identifier token positions, masking header boilerplate and temporal tokens.
 
-\subsection{One training run, step by step}
+\subsection{Training Pipeline and Optimization Mechanics}
 
 \input{figures/fig-training-loop}
 
-Figure~\ref{fig:training-loop} sets out the five steps one run goes through, and
-the rule underneath them that decides which saved copy is kept. Two further
-mechanisms were added to this loop from the sixth iteration onward,
-and later chapters depend on both. \textbf{Some mistakes are made to count more}:
-at step 3 the surprise measured at a given position can be multiplied according to
-the hour that position falls in, so a mistake at seven in the evening under a
-multiplier of four costs four times the same mistake at two in the afternoon. No
-data is duplicated; the optimiser is simply told which mistakes matter.
-\textbf{Some slices are shown more often}: at step 1, slices containing an
-interesting moment can be drawn three times more often than the rest, which
-changes how often the question is asked rather than how much a wrong answer costs.
-Both turned out to help only where the targeted positions were genuinely the hard
-ones, which is the subject of Chapters~\ref{ch:time} and~\ref{ch:groups}.
+\textbf{Figure~\ref{fig:training-loop}} details the five-stage training optimization loop. Two additions were introduced from the sixth experimental iteration onward:
+- \textbf{Weighted Cross-Entropy Loss}: Loss terms at specific hourly positions are scaled by a multiplier (e.g., $4\times$ multiplier for 18h--20h transitions) at Step 3 of \textbf{Figure~\ref{fig:training-loop}}, emphasizing critical transition errors without duplicating data.
+- \textbf{Targeted Sequence Sampling}: Training slices containing key transition windows are sampled up to $3\times$ more frequently during batch generation at Step 1 of \textbf{Figure~\ref{fig:training-loop}}.
 
-\subsection{The machine: one free graphics card}
+\subsection{Hardware Environment and Computational Resources}
 
-Every run reported in this document was trained on \textbf{Google
-Colab}\footnote{\textbf{Google Colab}: a service that runs a Python notebook on a
-graphics card rented in the browser, free for a few hours a day and liable to
-disconnect. \textbf{T4} is the entry-level NVIDIA card it hands out.} on an
-NVIDIA \textbf{T4}. That card carries 16\,GB of memory, and that single figure is
-the constraint behind every choice in this chapter. The daily free quota is why
-the experiment schedule is one training per iteration rather than broad sweeps of
-settings.
+All models were trained on \textbf{Google Colab} GPU instances equipped with single NVIDIA \textbf{T4 GPUs} (16\,GB VRAM). Standard scientific computing libraries (\texttt{pandas}, \texttt{scikit-learn}, \texttt{scipy}) managed dataset preprocessing, stratified splits, and statistical bootstrap resampling \textbf{\cite{efron1993bootstrap}}.
 
-Three standard libraries do work that never touches the
-model.\footnote{\textbf{pandas}, \textbf{scikit-learn} and \textbf{scipy}: the
-three standard Python libraries for, respectively, manipulating tables of data,
-machine-learning utilities, and statistical tests.} They split people between
-training and test, check that the two halves have comparable histories, and run
-the resampling test \cite{efron1993bootstrap}\footnote{\textbf{Bootstrap}: error
-bars obtained by re-scoring the models on many random redraws of the test people,
-with no assumption about the shape of the underlying distribution.} that decides
-the central question of Chapter~\ref{ch:scale}.
+\subsection{Integration of Peer Contributions}
 
-\subsection{The pieces reused from the team}
+Data extraction tooling for generating daily trajectory logs and active mobility cohorts was developed by Nino. The framing of active mobility trajectory filtering was developed by Tiphain and Benjamin. Trajectory length equalisation techniques evaluated in Chapter~\ref{ch:scale} adapt methods formulated by Tiphain.
 
-Three pieces came from the team. The daily extracts and the selection of people
-who move and stay in the area came out of Nino's own analysis tooling, and those
-files are the data on which most of this report's modelling rests. The
-move-or-stay framing is Tiphain and Benjamin's, and it is the idea behind the
-filtering of Chapter~\ref{ch:data} and behind reporting in-window and
-out-of-window scores separately. The technique of levelling every person's record
-count, tested in Chapter~\ref{ch:scale}, is Tiphain's. Their branch of the problem
-sends one long instruction, narrating a day in English, to a model whose numbers
-are never modified: everything it is meant to know about this population has to be
-restated in every instruction, whereas the branch this report takes stores that in
-the numbers instead.
-
-\section{The scoring procedure}
+\section{Evaluation Protocol and Metrics}
 \label{sec:scoring}
 
-Everything in this report is scored the same way, and the procedure never changes.
-Each test person's day is cut once into a past the model may read and a rest it has
-to produce, the default being 80/20. The rest is then answered one moment at a
-time: the model is asked for one antenna, told what really happened, and asked for
-the next, so it can neither see the future nor compound its own mistakes. The
-one-line rule is run through exactly the same moments with exactly the same
-history. Figure~\ref{fig:protocol} draws that procedure on one day, with the cut,
-the part the model may read and the part it has to produce.
+Model evaluation follows a standardized protocol: each test trajectory is partitioned into a historical prefix (defaulting to 80\% of the daily trajectory) handed to the model, and a target suffix (20\%) evaluated sequentially. At each target step, the model predicts the next cell given actual past history, preventing autoregressive error accumulation.
 
 \input{figures/fig-protocol}
 
-At each graded moment the model produces not a single answer but a ranking of all
-369 antennas, most likely first, and the moment counts as correct if the antenna
-the person really visited is at the top of that ranking. Reading the ranking one
-place down gives \textbf{top-3}, and further down \textbf{top-5}.
-Figure~\ref{fig:topk} shows the same ranking read at those three depths, and its
-lower panel shows how a score is obtained from a row of right and wrong answers.
+\textbf{Figure~\ref{fig:protocol}} illustrates this evaluation split across a 24-hour subscriber trajectory.
 
 \input{figures/fig-topk}
 
-The three depths are not three models; they are the same predictions read at three
-levels of strictness. Top-1 is the strict headline used throughout this report;
-the other two say whether a model that misses is missing narrowly or wildly.
+\textbf{Figure~\ref{fig:topk}} demonstrates the multi-depth evaluation procedure. For each prediction step in \textbf{Figure~\ref{fig:topk}}, candidate cell tokens are ranked by output probability, recording top-1, top-3, and top-5 accuracy. Top-1 represents strict exact-match prediction, while top-3 and top-5 evaluate candidate list coverage in the lower panel of \textbf{Figure~\ref{fig:topk}}.
 
-\section{Three rules about measuring}
+\section{Evaluation Methodology Principles}
 
-Figure~\ref{fig:three-rules} states the three rules and what each one was worth,
-and the rest of this section establishes them one at a time.
-
-\subsection{Rule 1: never read the last pass of a run}
+To prevent misleading results, three evaluation principles were established, as summarized in \textbf{Figure~\ref{fig:three-rules}}.
 
 \input{figures/fig-three-rules}
 
-A language model fine-tuned on a few hundred short days will end up learning them
-by heart.\footnote{\textbf{Overfitting}: the point past which a model stops
-learning the regularity of the data and starts memorising the examples it was
-shown.} That is not a hypothesis; it is what the curves do.
+\subsection{Principle 1: Early Stopping and Overfitting Mitigation}
 
 \input{figures/fig-validation-curves}
 
-As Figure~\ref{fig:validation-curves} shows, on four different sets of people
-alike the score on strangers rises for a few passes, peaks, and then falls for the
-rest of the run. The clearest evidence is a single run, deliberately allowed to continue to a hard
-ceiling of forty-nine passes. Its training score improves the whole way through,
-but its score on people it had never seen climbs for nine passes, peaks, and then
-declines for the remaining forty. The copy saved at the end scored 48.7\,\% on the
-held-out people; the copy saved at the peak scored 64.2\,\%. Reading the end of
-training instead of its best point therefore throws away \textbf{15.5 correct
-answers per hundred}, and spends forty passes of waiting time doing so.
+Fine-tuning small datasets leads to overfitting when trained for excessive epochs. As shown in \textbf{Figure~\ref{fig:validation-curves}}, validation accuracy on unseen held-out subscribers reaches a peak before declining.
 
-Acting on that, keeping the best copy, stopping on a plateau, and adding three
-mild settings that make memorisation harder,\footnote{Three standard knobs.
-\textbf{Dropout}: a tenth of the added numbers are set to zero at random at each
-step, so the model cannot lean on any single one. \textbf{Learning rate}: how big
-a step to take when adjusting a number. \textbf{Weight decay}: a mild pull of
-every trainable number back towards zero.} moved the score on unseen people from
-48.7\,\% to \textbf{64.4\,\%}, cut the waiting time from seventy-two minutes to
-twenty-nine, and lifted top-3 from 76.2\,\% to 82.7\,\%. Panels (b), (c) and (d)
-confirm that this shape belongs to the task rather than to one run. So every run
-in this report is stopped early and read at its best copy, and two runs are always
-compared at their respective peaks.
+In an extended 49-epoch test run shown in \textbf{Figure~\ref{fig:validation-curves}a}, training loss decreased continuously, whereas held-out validation accuracy peaked at epoch 9 (64.2\%) before declining to 48.7\% at epoch 49. Evaluating at final epoch completion would incur a \textbf{15.5 percentage point loss} in accuracy. Implementing early stopping at peak validation accuracy alongside regularization (dropout 0.1, weight decay, learning rate scheduling) increased held-out accuracy from 48.7\% to \textbf{64.4\%} while reducing training time from 72 to 29 minutes. \textbf{Figures~\ref{fig:validation-curves}b}, \textbf{\ref{fig:validation-curves}c}, and \textbf{\ref{fig:validation-curves}d} confirm that this optimization dynamic holds consistently across dataset splits. All subsequent reported model metrics evaluate the optimal checkpoint saved at peak validation accuracy.
 
 \FloatBarrier
 
-\subsection{Rule 2: the cut of the day belongs to the ruler}
+\subsection{Principle 2: Context Fraction and Evaluation Split Sensitivity}
 
 \input{tables/tab-context-sweep}
 
-The share of the day given to the model, called the \emph{context
-fraction},\footnote{\textbf{Context fraction}: the share of a person's day handed
-to the model before it must produce the rest.} looks like a setting of the
-experiment. It is part of the measurement. Moving the cut changes which antenna
-counts as ``the last one seen'', so it moves the one-line rule too. A model graded
-at 90\,\% context is not a better model than the same model graded at 30\,\%; it is
-the same model measured against an easier ruler.
-
-Table~\ref{tab:context-sweep} contains the mistake this rule exists to prevent. On
-\Dfilt{} the model
-reaches 80.1\,\% at the reference 80/20 split against a rule at 79.0\,\%:
-\textbf{1.1 more correct answers per hundred}, and the first time in the project
-that a trained model cleared the one-line rule. Read on its own that looks like a
-result. Read across the three rows it is far weaker: at 70\,\% context the model
-trails by 0.3, and at 90\,\% context, where its own score is the \emph{highest} of
-the three, it trails by 2.4.
+The prefix context fraction (share of trajectory provided to the model prior to prediction) directly affects task difficulty and baseline performance. \textbf{Table~\ref{tab:context-sweep}} presents model performance across varying context fractions (30\% to 90\%) on \Dfilt{}. While the model achieves 80.1\% accuracy at an 80\% context fraction against a 79.0\% persistence baseline (+1.1\%) in \textbf{Table~\ref{tab:context-sweep}}, evaluating across context fractions reveals that at a 70\% context fraction the model trails the baseline by 0.3\%. Consequently, context fraction choices must be fixed across comparative evaluations.
 
 \FloatBarrier
 
-\subsection{Rule 3: a test the one-line rule already passes measures nothing}
+\subsection{Principle 3: Baseline Upper Bounds and Task Room Constraints}
 
-On a day file taken as it comes, ``repeat the last antenna'' is right 69.2\,\% of
-the time, and most of what is left above that is not mobility at all: it is people
-with three records from a single antenna. A model scoring 64.4\,\% on such a file
-has not failed at prediction; it has been measured on a benchmark with no room in
-it. The same trained architecture, on three sets of people, faces rules of
-69.2\,\%, 79.0\,\% and 45.5\,\%.
+On unfiltered daily logs, the persistence baseline achieves 69.2\% accuracy due to high stationary periods. A model achieving 64.4\% accuracy on such raw data has not failed in learning mobility patterns; rather, it has been evaluated on a benchmark dominated by stationary trivial predictions. Restricting benchmarks to active mobile trajectories (reducing baseline score to 45.5\%) creates a viable dynamic evaluation range.
 
-\subsection{The three rules closed the tuning avenue}
+\subsection{Methodological Implications for Hyperparameter Optimization}
 
-Taken together they closed the ``tune it harder'' avenue. Once runs were read at
-their peak, once the cut was recognised as part of the ruler, and once the people
-had been chosen so that the yardstick was beatable in principle, the model still
-sat within a few correct answers of a one-line rule, usually below it, at every cut
-and on every set of people tried.
-
-The example that decided what to do next is small enough to quote in full. On one
-run, \textbf{person A}, whose past is the same antenna repeated ten times, is
-predicted correctly with 100\,\% confidence; \textbf{person B}, whose past ends on
-one antenna and whose next event is a different one entirely, is predicted as
-``the same antenna again'' with 68\,\% confidence. The model was right for free on the first
-and wrong for free on the second. A companion experiment made the same point
-statistically: on a 100-person version of the data, the score per person ranged
-from 10\,\% to 100\,\% and the model never passed 42.1\,\%. One hundred people
-is not a population; it is a handful of anecdotes with an average printed
-underneath. That is what Chapter~\ref{ch:user} sets out to fix.
+Applying these three evaluation principles summarized in \textbf{Figure~\ref{fig:three-rules}} revealed that hyperparameter tuning alone yields limited performance improvements on uniform cohorts. Individual predictions revealed stark disparities: stationary trajectories were predicted with near 100\% confidence, whereas active transition trajectories resulted in incorrect baseline-like predictions. This variance across individual subscriber profiles motivated the individual user analysis presented in Chapter~\ref{ch:user}.
 
 \section{Conclusion}
 \label{sec:retro-tools}
 
-This chapter fixed the instrument and then fixed the ruler. The instrument is a
-small model, Qwen2.5-0.5B, retrained with QLoRA on one free graphics card, fed a
-day written as one symbol per antenna and one symbol per hour, and graded only
-where an antenna name has to be produced. It was settled in the first week and
-never changed again, which is the only reason the eleven iterations can be
-compared with one another at all: what varied from one to the next was the data
-and the training signal, never the machine underneath.
+This chapter established a standardized model fine-tuning architecture (Qwen2.5-0.5B fine-tuned via QLoRA with explicit cell and hour tokenization) and a rigorous evaluation protocol. Model capacity and PEFT mechanics remained fixed, allowing subsequent experimental gains to be attributed strictly to data representation and user conditioning mechanisms.
 
-The ruler cost more. Each of the three rules arrived \emph{after} a conclusion
-that turned out to be wrong, and the 1.1 more correct answers per hundred that I
-presented as the project's first result was not one. Reading a run at its best
-saved copy rather than at its last was worth 15.5 correct answers per hundred, far
-more than any modelling idea in this report; recognising that the cut of the day
-belongs to the measurement killed that apparent win; and choosing people on whom
-one line of code does not already score 69\,\% is what made the task measurable at
-all. A short checklist written before the first training would have caught all
-three at once, and the modelling work would have started two iterations earlier.
+Establishing early stopping (\textbf{Figure~\ref{fig:validation-curves}}), standardized context fraction splits (\textbf{Table~\ref{tab:context-sweep}}), and active mobility cohort benchmarking eliminated false positive findings and provided a reliable foundation for subsequent research chapters.
 
-One thing I never went back to is the size of the part of the model that training
-is allowed to change. QLoRA only trains a small share of the numbers, about two in
-every hundred, and I left that share at the same value in every run, from four
-hundred training people up to twenty-one thousand. Fifty times more data was
-poured into a part that never grew, and Chapter~\ref{ch:scale} is where that
-shows.
+

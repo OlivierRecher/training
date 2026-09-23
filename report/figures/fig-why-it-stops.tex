@@ -60,23 +60,23 @@
 \caption{The reason the curve climbs, and the reason it stops}
 \label{fig:why-it-stops}
 \figtext{%
-\figpara{Panel (a): one mechanism fits the timing of the jump.}{The bars are how
+\figpara{Figure~\ref{fig:why-it-stops}a: subgroup sample size threshold enabling transition estimation.}{In Figure~\ref{fig:why-it-stops}a, the bars show how
 many people fall in the least populated of the four kinds, the evening-moving
 user, at 14\,\% of the population. Under each bar is what the model gained over
 the one-line rule at that training size. The count crosses roughly a hundred
 members exactly between the two sizes where the gain jumps from 0.6 to 2.8. A
 label can only carry information if the group it names has enough inhabitants for
 its rhythm to be estimated at all, which is precisely what the failed run of
-Chapter~\ref{ch:groups} showed.}
+\textbf{Chapter~\ref{ch:groups}} showed.}
 
-\figpara{Panel (b): above the threshold every new person is a duplicate.}{Each
+\figpara{Figure~\ref{fig:why-it-stops}b: cell ID spatial vocabulary coverage saturation.}{In Figure~\ref{fig:why-it-stops}b, each
 square is one of a hundred antennas the test people actually use. At the smallest
 training size the model has already met 99 of them, and from 5{,}000 people
-onward, all of them; the four rhythms of Figure~\ref{fig:group-profiles} keep the
+onward, all of them; the four rhythms of \textbf{Figure~\ref{fig:group-profiles}} keep the
 same shape at every size as well. So more people can only bring more of the same.
 This is an explanation that fits, not a proof: the alternative reading, that the
 training budget rather than the population ran out, is stated in
-Section~\ref{sec:scale-limits}.}}
+\textbf{Section~\ref{sec:scale-limits}}.}}
 
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the eight-tier scaling notebook; the member counts are the group shares of Chapter~\ref{ch:groups} applied to each size}
 \end{figure}

@@ -23,20 +23,20 @@
 \caption{Emphasising two stretches of the day: the win, and the price}
 \label{fig:targeted-sampling}
 \figtext{%
-\figpara{How to read the four pairs.}{Each pair is one group of graded moments,
+\figpara{Reading the four bar pairs of Figure~\ref{fig:targeted-sampling}.}{Each pair in Figure~\ref{fig:targeted-sampling} is one group of graded moments,
 with the number of moments printed under its label so the weight it carries is
-visible. Grey-blue is the one-line rule, dark blue my model, on exactly the same
+visible. Grey-blue is the one-line rule, dark blue fine-tuned model, on exactly the same
 moments. Before this run, training slices containing a move inside one of the two
 chosen stretches of the day were shown three times more often than the rest, and
 a mistake at 18--20h was made to cost four times an ordinary one.}
 
-\figpara{The win is real; the price is larger.}{At 18--20h the model gains 2.6
+\figpara{Targeted window gains versus non-targeted losses in Figure~\ref{fig:targeted-sampling}.}{At 18--20h in Figure~\ref{fig:targeted-sampling}, the model gains 2.6
 correct answers per hundred, and 2.3 over the two chosen stretches combined, the
 first time in the project that a trained model beat ``repeat the last antenna''
-on a segment chosen \emph{in advance}. But the fourth pair is everything outside
+on a segment chosen \emph{in advance}. But the fourth pair in Figure~\ref{fig:targeted-sampling} is everything outside
 those stretches: 7{,}893 moments, more than ten times the volume of the win, and
 the model loses 2.6 there. The trade is only worth making if the emphasised hours
-really are the hard ones, and Table~\ref{tab:group-windows} shows they were not.
+really are the hard ones, and \textbf{Table~\ref{tab:group-windows}} shows they were not.
 \smob, 100 held-out people, every position graded; the 04--06h bar rests on 128
 moments only and should be read as ``not worse'' rather than as a win.}}
 

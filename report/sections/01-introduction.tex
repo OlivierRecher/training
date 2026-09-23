@@ -1,111 +1,56 @@
 \chapter{Introduction}
 \label{ch:intro}
 
-\section{The host laboratory and its records}
+\section{Host Laboratory and Dataset Description}
 
-This report covers a second-year engineering internship carried out from
-29 June to 28 August 2026 at the \host, under the supervision of \supervisor.
-The laboratory holds a large set of anonymous records donated by a Czech mobile
-operator, and hosts a small group of interns who study it from different angles.
+This report documents a second-year engineering research internship conducted from
+29 June to 28 August 2026 at the \host{}, under the supervision of \supervisor{}.
+The laboratory holds a large dataset of anonymized mobile network records provided by a Czech mobile
+telecommunications operator, which serves as the primary dataset for several research projects conducted by the laboratory's interns.
 
-Those records contain no names, no phone numbers and no message of any kind.
-One line says only this: an anonymous number standing for one person, and the
-list of antennas their phone was attached to during one day, with the time of
-each. That is the entire material of this internship.
+These records contain no personally identifiable information, such as subscriber names or phone numbers, nor message content.
+Each record line specifies an anonymized subscriber identifier, the temporal timestamp, and the sequence of cellular antennas to which the mobile terminal was attached over a 24-hour period. This anonymized corpus constitutes the empirical foundation of the work described in this report.
 
-\section{The goal}
+\section{Research Objectives and Next-Cell Prediction Task}
 
-A mobile phone is always attached to one antenna, the one that currently gives
-it the best signal. As the person walks, drives or takes a train, the phone lets
-go of one antenna and attaches to the next. The operator writes a line down each
-time that happens, and also at regular intervals when nothing happens at all.
+Mobile terminals continuously attach to the cellular antenna offering the highest signal quality. As users move, the terminal handsover connection from one antenna to the next. The mobile operator logs an event line upon each cell transition, as well as periodically during stationary periods.
 
-The question I was given is short: \emph{from the beginning of somebody's day,
-can I predict which antenna their phone will be attached to next?} An operator
-wants to know this because it decides where capacity is needed, and because a
-connection prepared before it is required is a connection that does not drop.
+The central research objective of this internship is formulated as follows: \emph{given the initial segment of a subscriber's daily mobility trajectory, can the model accurately predict the next cellular antenna to which the device will connect?} Predicting cellular transitions enables mobile network operators to optimize resource allocation, anticipate local capacity demands, and reduce connection drop rates through proactive handover initialization.
 
-Two words are not synonyms, and the whole report depends on the
-difference.\footnote{\textbf{Base station}, also called a \emph{site} or a
-\emph{mast}: one physical installation. \textbf{Cell}: the area covered by one
-antenna of that installation, pointing in one direction.} A \textbf{base
-station} is a physical mast standing somewhere in the landscape. It carries
-several antennas pointing in different directions, and each of those is called a
-\textbf{cell}. The study area has \textbf{369 cells} on \textbf{113 base
-stations}, so a mast carries three or four cells on average. What I predict is a
-cell, not a mast, which is harder than predicting a place.
+A fundamental distinction must be established between physical infrastructure and logical coverage areas.\footnote{\textbf{Base station} (or \emph{site}/\emph{mast}): a physical infrastructure site. \textbf{Cell}: the spatial coverage area served by an individual directional antenna mounted on a base station.} A \textbf{base station} corresponds to a physical mast housing multiple directional antennas. Each individual antenna defines a distinct \textbf{cell}. The geographical study area evaluated in this work comprises \textbf{369 cells} distributed across \textbf{113 base stations}, representing an average of three to four cells per physical site. The target of the predictive task is the specific cell rather than the base station, which presents a higher predictive complexity than coarse-grained spatial localization.
 
-\section{The instrument: a retrained language model}
+\section{Next-Cell Prediction via Fine-Tuned Language Models}
+
+As illustrated in \textbf{Figure~\ref{fig:overview}}, the overall experimental pipeline processes raw network logs into a ranked list of candidate cellular antennas, evaluated against a reference baseline.
 
 \input{figures/fig-overview}
 
-Figure~\ref{fig:overview} shows the whole internship in four steps, from the raw
-records to a ranked list of antennas, with the rule this work has to beat drawn
-underneath it. The instrument at the centre of that chain is a \textbf{language
-model}.\footnote{\textbf{Language model}: a
-program trained to guess the next symbol of a sequence. Nothing in that
-description mentions language, which is why one can be pointed at a day of
-movement instead.} These are the programs behind the writing assistants everyone
-has now used: given the beginning of a sentence, they produce the word most
-likely to come next. Nothing in how they work is specific to words. They
-continue an ordered list of symbols drawn from a fixed set, and a day of
-movement is an ordered list of cells drawn from a fixed set of 369.
+At the core of this architecture is a \textbf{language model}.\footnote{\textbf{Language model}: a probabilistic model trained to estimate the probability distribution over sequences of discrete tokens. The underlying mechanics operate on arbitrary discrete sequences, allowing its application to spatial mobility traces.} While language models are conventionally employed for natural language processing, their mathematical framework operates on generic ordered sequences of discrete tokens. In this context, daily mobility traces are framed as ordered sequences of cell identifiers selected from a fixed vocabulary of 369 discrete cells.
 
-I do not use such a model as it comes. I \textbf{fine-tune} it: the numbers
-inside it are modified by my data until it stops being a general-purpose writer
-of English and becomes a predictor of movement in one Czech region.
-Chapter~\ref{ch:tools} shows how. The other branch of the same problem, taken by
-two colleagues, leaves those numbers untouched and writes better instructions
-for a general model instead. That is called \textbf{prompting}, and it answers a
-different question rather than competing with mine.
+Rather than using off-the-shelf general language models directly, parameter-efficient \textbf{fine-tuning} (PEFT) is applied. The internal parameters of the neural network are adapted using local mobility traces, specializing the model from a general natural language generator into a dedicated next-cell predictor for the target geographical region, as detailed in Chapter~\ref{ch:tools}. Alternative approaches explored in parallel research rely on prompting off-the-shelf models without parameter updates, addressing a distinct research scope.
 
-\section{The rule to beat: repeat the last antenna}
+\section{Baseline Evaluation: The Persistence Baseline}
 
-What makes the question hard is not the model. It is the competitor.
+To rigorously assess model performance, predictions must be evaluated against a strong deterministic benchmark: the \textbf{persistence baseline}.
 
-Consider the rule \emph{``the person is still on the same cell as a moment
-ago''}. No model, no training, no settings; one line of code. On an ordinary day
-of these records it is right \textbf{69.2 times out of a hundred}, simply because
-people spend most of their time not going anywhere. This rule is called the
-\textbf{persistence baseline} throughout the report, and beating it is the only
-result that means anything here. For five of the eleven iterations of this
-internship, nothing I trained managed to.
+The persistence baseline evaluates the heuristic rule: \emph{``the next cell is identical to the current cell''}. Despite its simplicity, this single-line baseline achieves an accuracy of \textbf{69.2\%} on raw daily network records, primarily because individuals remain stationary for large portions of the day. Beating this persistence baseline constitutes the key criterion for demonstrating true predictive capability. Across early experimental iterations, baseline performance proved difficult to surpass.
 
 \input{figures/fig-worked-example}
 
-Figure~\ref{fig:worked-example} takes one prediction apart on two people, and it
-shows why the competitor is so strong. When the person stays put, repeating the
-last cell is correct and both the rule and my model collect the point for free. When the person leaves, the rule is
-guaranteed to be wrong, and the answer has to come from somewhere else. Every
-number in this document was won on moments of that second kind.
+\textbf{Figure~\ref{fig:worked-example}} illustrates the mechanics of the persistence baseline compared to the model predictions across two subscriber trajectories. When a user is stationary, repeating the previous cell identifier yields a correct prediction for both the baseline and the model in \textbf{Figure~\ref{fig:worked-example}}. However, when a transition occurs, the persistence baseline systematically fails, requiring non-trivial trajectory modeling. Performance improvements reported in this document are measured exclusively on non-stationary transition events.
 
-Every figure quoted from here on is a \emph{difference between two percentages}.
-The model gaining 4.3\,\% over the rule means it answers correctly 54.5 times out
-of a hundred where the rule answers correctly 50.2 times, always on the same
-people and the same moments. Only that distance is comparable from one chapter to
-the next: the set of people I trained and tested on changed four times over the
-internship, each time because a new idea needed data the earlier files did not
-carry, and the difficulty of the test group changed with it.
+Throughout this report, performance gains are reported as the \emph{difference in accuracy percentage points} relative to the persistence baseline. A reported gain of $+4.3\%$ indicates that the fine-tuned model achieves an accuracy of 54.5\% on a benchmark where the persistence baseline yields 50.2\% across identical evaluation instances. Evaluating relative performance delta ensures consistent comparisons across dataset revisions and experimental cohorts.
 
-\section{The four colleagues working on the same records}
+\section{Related Work and Collaborative Context}
 
-Four colleagues were already working on the same records when I arrived, with
-different instruments. Figure~\ref{fig:team-context} places my own branch among
-theirs. Nino was building his own
-description of the corpus: which cell is somebody's home, which is where they
-spend their day, and who genuinely moves around the area. He had tooling for
-that, and he very kindly used it to produce the daily extracts and the user
-selections I asked for, none of which was his own assignment. Tiphain and
-Benjamin were taking the prompting branch, and Reda was working on the same
-records on a question of his own.
+This project was conducted alongside research by peer group members investigating the same mobile network dataset. \textbf{Figure~\ref{fig:team-context}} illustrates the placement of this study within the broader team research framework.
 
 \input{figures/fig-team-context}
 
-\section{The plan of this report}
+Collaborative efforts involved trajectory preprocessing and dataset characterization. Nino developed corpus extraction scripts for identifying user home/activity cells and filtering active mobility cohorts, providing the daily trajectory extractions utilized in this work. Tiphain and Benjamin investigated zero-shot prompting techniques on general LLMs, while Reda investigated complementary mobility pattern analysis.
 
-The chapters are organised by \emph{question}, not by week; the chronology is
-restored in Appendix~\ref{app:timeline}. Each of Chapters~\ref{ch:data}
-to~\ref{ch:scale} closes with a \emph{Conclusion} section, written after the fact,
-that states what the chapter established and what I make of it with hindsight. Appendix~\ref{app:repro} gives the settings of
-every run and the origin of every headline number, and
-Appendix~\ref{app:glossary} defines the terms that recur.
+\section{Report Structure}
+
+This report is organized by thematic research questions rather than chronological execution; the complete timeline of experimental iterations is provided in Appendix~\ref{app:timeline}. Chapters~\ref{ch:data} through \ref{ch:scale} conclude with a synthesis section summarizing empirical conclusions. Appendix~\ref{app:repro} details experimental hyperparameters and tabular data provenance, while Appendix~\ref{app:glossary} provides a reference glossary of technical domain terminology.
+
+

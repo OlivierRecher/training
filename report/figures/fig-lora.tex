@@ -43,13 +43,12 @@
 \caption{Three ways to adapt a model, and their cost in memory}
 \label{fig:lora}
 \figtext{%
-\figpara{Three ways to adapt a model, at the same scale.}{The grey square is the
+\figpara{Comparison of parameter adaptation methods in Figure~\ref{fig:lora}.}{The grey square in Figure~\ref{fig:lora} is the
 model, a stack of very large tables of numbers. In (a) every number is modified,
 which has the highest ceiling in principle but requires holding each number
-together with about three more used to track how to adjust it, and it does not fit
-on a free card. LoRA (b) \cite{hu2022lora} freezes the big table and trains two
+together with about three more used to track how to adjust it. LoRA (b) \textbf{\cite{hu2022lora}} freezes the big table and trains two
 narrow ones added beside it, so about 2 numbers in every 100 ever move. QLoRA (c)
-\cite{dettmers2023qlora}, used throughout this report, does the same and stores
+\textbf{\cite{dettmers2023qlora}}, used throughout this report, does the same and stores
 the frozen table with four bits per number instead of sixteen, which is safe
 precisely because those numbers are read and never updated. What this decides is
 not accuracy but waiting time: one run in half an hour rather than five and a

@@ -4,10 +4,10 @@
 Three tables record what would be needed to reproduce the results: the training
 settings of every family of runs, the run behind every number quoted in the body,
 and the configuration keys that encode a decision argued somewhere in the report
-rather than a preference. Table~\ref{tab:hyperparams} gives the settings,
-Table~\ref{tab:provenance} the origin of every number quoted in the body, and
-Table~\ref{tab:config-keys} the eleven keys that encode an argued decision. The
-sets of people themselves are described in Table~\ref{tab:datasets}.
+rather than a preference. \textbf{Table~\ref{tab:hyperparams}} gives the settings,
+\textbf{Table~\ref{tab:provenance}} the origin of every number quoted in the body, and
+\textbf{Table~\ref{tab:config-keys}} the eleven keys that encode an argued decision. The
+sets of people themselves are described in \textbf{Table~\ref{tab:datasets}}.
 
 \bigskip
 \input{tables/tab-hyperparams}
@@ -24,16 +24,16 @@ sets of people themselves are described in Table~\ref{tab:datasets}.
 \toprule
 \textbf{Key} & \textbf{Value} & \textbf{The decision it encodes} \\
 \midrule
-\texttt{context\_fraction}              & 0.8            & where each day is cut; part of the ruler (Ch.~\ref{ch:tools}) \\
+\texttt{context\_fraction}              & 0.8            & where each day is cut; part of the ruler (Ch.~\textbf{\ref{ch:tools}}) \\
 \texttt{max\_epochs}                    & 20             & also the decay horizon: lowering it changes the regime \\
-\texttt{early\_stop\_patience}           & 4              & the best pass arrives early on this task (Ch.~\ref{ch:tools}) \\
-\texttt{transition\_windows}             & (4,6,$\times2$), (18,20,$\times4$) & the \emph{guessed} hours of Ch.~\ref{ch:time}; fallback only \\
-\texttt{group\_windows}                  & \texttt{None}  & derive the hours from the data, per kind of user (Ch.~\ref{ch:groups}) \\
+\texttt{early\_stop\_patience}           & 4              & the best pass arrives early on this task (Ch.~\textbf{\ref{ch:tools}}) \\
+\texttt{transition\_windows}             & (4,6,$\times2$), (18,20,$\times4$) & the \emph{guessed} hours of Ch.~\textbf{\ref{ch:time}}; fallback only \\
+\texttt{group\_windows}                  & \texttt{None}  & derive the hours from the data, per kind of user (Ch.~\textbf{\ref{ch:groups}}) \\
 \texttt{transition\_chunk\_oversample}   & 3.0            & show slices containing a move three times more often \\
 \texttt{group\_bands}                    & 4 stretches    & coarse enough for each stretch to be estimable \\
 \texttt{group\_shrinkage}                & 8.0            & a thin stretch must not dominate a profile \\
 \texttt{group\_detect\_fraction}         & past only      & no leakage: the kind of user is read from the past \\
-\texttt{max\_steps} (scaling)            & 1{,}000        & the same training time at every size (Ch.~\ref{ch:scale}) \\
+\texttt{max\_steps} (scaling)            & 1{,}000        & the same training time at every size (Ch.~\textbf{\ref{ch:scale}}) \\
 \texttt{val\_subsample} (scaling)        & 250 fixed people & the same stopping rule at every size \\
 \bottomrule
 \end{tabular}
@@ -43,5 +43,5 @@ sets of people themselves are described in Table~\ref{tab:datasets}.
 a tuning knob. Each one encodes a decision argued somewhere in the body, so that
 a reader who changes one knows which claim of the report they are changing. The
 ordinary settings, learning rate and the rest, are in
-Table~\ref{tab:hyperparams}.}}
+\textbf{Table~\ref{tab:hyperparams}}.}}
 \end{minipage}

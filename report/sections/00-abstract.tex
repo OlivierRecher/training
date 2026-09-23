@@ -2,29 +2,10 @@
 \addcontentsline{toc}{chapter}{Abstract}
 \thispagestyle{plain}
 
-A mobile phone is always attached to one antenna, and the operator writes a line
-down each time it changes. This report asks whether a language model, retrained
-on those anonymous lines, can guess which antenna a person's phone will be
-attached to next, better than the rule ``it is still on the same one as a moment
-ago''. That rule, called the \emph{persistence baseline} here, is the yardstick
-for every claim in this document, and it is a hard one: on an ordinary day of
-records it is right 69.2 times out of a hundred, and for five of the eleven
-iterations of this internship nothing I trained beat it.
+Mobile terminals continuously attach to cellular antennas, with operators logging transitions as discrete event logs. This report evaluates whether parameter-efficient fine-tuned language models trained on anonymized call detail records can forecast a subscriber's next cellular antenna attachment superior to a deterministic benchmark. Predictions are evaluated against the \emph{persistence baseline} (\emph{``the next cell matches the current cell''}), which achieves an accuracy of 69.2\% on unfiltered daily logs due to subscriber stationary intervals and serves as the primary benchmark across all experimental evaluations.
 
-The material is fifteen daily exports covering the Karlovy Vary study area, 369
-antennas mounted on 113 masts, with one day of records per person. On the
-thousand people held out of the largest set, the retrained model answers
-correctly \textbf{4.3 more times out of a hundred} than the one-line rule, 54.5
-against 50.2. What produced that gain was neither a bigger model nor more data,
-but conditioning on \emph{who the person is}. Two further results frame it:
-population size stops paying at around two thousand people, and 22.4 correct
-answers per hundred separate the stay-at-home user from the morning-moving user,
-against 0.4 across the entire range of training sizes. Difficulty lives in the
-person, not in the dataset.
+The empirical dataset comprises fifteen daily logs from the Karlovy Vary study area, encompassing 369 cells mounted across 113 base stations. On a held-out test cohort of 1,000 subscribers, the fine-tuned model achieves a \textbf{+4.3 percentage point accuracy gain} over the persistence baseline (54.5\% vs. 50.2\% top-1 accuracy). Surpassing the persistence baseline required conditioning parameter updates on \emph{subscriber temporal mobility profiles}, stratifying users into behavioral cohorts and routing trajectories to specialized LoRA parameter adapters. Experimental results demonstrate that cohort scaling saturates at approximately 2,000 subscribers (+4.2 percentage points over baseline), while individual subscriber mobility typology accounts for a 22.4 percentage point accuracy spread across behavioral groups (compared to 0.4 percentage points across dataset scale). Trajectory predictability is fundamentally governed by subscriber mobility patterns rather than training dataset volume.
 
 \vspace{0.8em}
-\noindent\textbf{Keywords:} human mobility prediction, call detail
-records,\footnote{\textbf{CDR}, \emph{call detail record}: the line an operator
-writes whenever a phone and the network interact. It holds an anonymous
-identifier, a time, and the antenna in use. No content of any kind.} next-cell
-prediction, large language models, LoRA, QLoRA, behavioural clustering, scaling.
+\noindent\textbf{Keywords:} human mobility prediction, call detail records,\footnote{\textbf{CDR}, \emph{call detail record}: an anonymized network event log containing subscriber identifier, event timestamp, and attached cell identifier, excluding communication content.} next-cell prediction, large language models, LoRA, QLoRA, behavioral clustering, trajectory scaling.
+

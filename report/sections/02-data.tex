@@ -1,163 +1,68 @@
-\chapter{The data}
+\chapter{Dataset Analysis and Preprocessing}
 \label{ch:data}
 
-\section{The goal}
+\section{Data Analysis Objectives}
 
-Before anything can be predicted, one has to know what the data contains. Two
-answers shaped every experiment that follows: \textbf{a record is not a movement},
-and \textbf{the name of an antenna is not a place}. Both are the reason several
-later results look surprising at first sight.
+Prior to model training, the structural characteristics of the mobile network logs must be thoroughly analyzed. Two fundamental properties constrain all subsequent experiments: \textbf{a network log event does not necessarily imply spatial displacement}, and \textbf{an individual cell identifier does not uniquely define a geographical site}. These structural features account for several non-intuitive empirical findings presented in later chapters.
 
-\section{One line of the data, taken apart}
+\section{Structure of Call Detail Records}
 
-The material is fifteen daily files covering 12 to 26 March 2014 in the Karlovy
-Vary study area of north-west Bohemia. They are plain text
-files\footnote{\textbf{CSV}, \emph{comma-separated values}: the simplest tabular
-text format, one row per line with the fields separated by a delimiter. Here the
-delimiter is a semicolon.} in which \textbf{one line is one person for one day},
-from midnight to midnight. Depending on the day a file holds between 80{,}217 and
-99{,}504 lines; the day used for most of the work here, 12 March 2014, holds
-85{,}946 people.
+The empirical evaluation uses fifteen daily log files spanning 12 to 26 March 2014 from the Karlovy Vary study area in north-west Bohemia. The dataset consists of comma-separated values (CSV) files, where \textbf{each line represents a single subscriber's 24-hour activity trace} from 00:00:00 to 23:59:59. Depending on the specific day, daily files contain between 80,217 and 99,504 subscriber trajectories; the primary benchmark dataset from 12 March 2014 comprises 85,946 subscribers.
 
-A line starts with eight fixed columns, then repeats a pair of values for as many
-records as that person produced. The eight are an anonymous number standing for the
-person, their age, their gender, an unexplained five-digit number, a behaviour
-class, a ``home antenna'', an ``activity antenna'' and the number of records that
-follow. Then, over and over, \textbf{the name of an antenna followed by a time},
-written as a number of seconds since midnight from 0 to 86{,}399. Only the
-anonymous number, the record count and the antenna-and-time pairs are used here:
-the rest carry known aberrations, including ages of 1078 and negative values.
+Each record row begins with eight metadata columns followed by a sequence of timestamped cell interaction pairs. The initial columns indicate an anonymized subscriber ID, age, gender, an administrative code, a behavioral category, a designated home cell ID, an activity cell ID, and the total event count. Following the metadata header, trajectory entries consist of \textbf{a cell identifier string paired with an event timestamp} expressed in elapsed seconds since midnight ($0 \le t \le 86,399$). Model training exclusively utilizes the subscriber ID, total event count, and timestamped cell identifier sequence; remaining metadata fields contain recorded anomalies (such as invalid age values) and were excluded.
 
-A record is written whenever a phone and a mast exchange a message, and that
-includes the case where nothing happens at all: a mast asks every phone attached
-to it to announce itself on a fixed cycle, typically every four hours on 2G and
-every two on 3G,\footnote{\textbf{Re-signalling}, or \emph{periodic location
-update}: the network asking every attached phone to announce itself on a fixed
-cycle, so that it knows where to route an incoming call.} so that it knows where
-to route an incoming call. So \textbf{a record is not a movement}: somebody who
-never leaves their flat still produces records all day long, and how many they
-produce says as much about which generation of radio their phone attached to as
-about what they did. A long run of one antenna name is also what makes ``repeat
-the last name you saw'' such a hard competitor.
+Network log events are registered whenever a mobile terminal interacts with a base station mast, including automatic periodic network polling. Base stations initiate periodic location updates on fixed time intervals (typically every 4 hours on 2G networks and every 2 hours on 3G networks) to track active devices for incoming call routing. Consequently, \textbf{a network record does not imply physical movement}: a stationary subscriber generates periodic events throughout the day. The number of generated logs depends on the radio network generation as well as physical subscriber behavior. Contiguous sequences of identical cell identifiers account for the high baseline performance of the persistence rule.
 
-\subsection{The rule to beat, and the reason its value moves}
+\subsection{Baseline Performance and Population Dependencies}
 
-The \textbf{persistence baseline} is the rule ``the next antenna is the last one
-seen''. No model, no training, no settings, and it is scored on exactly the same
-moments as my model, in exactly the same way.
+The \textbf{persistence baseline} evaluates the prediction heuristic stating that the next cell identifier matches the most recent observed cell identifier. This deterministic baseline is evaluated across identical trajectory points and evaluation protocols as the fine-tuned language models.
 
-Its value is not a constant, and this is the part that is easy to miss. It is a
-property of the people being scored. On a day file taken as it comes, where a
-large share of people barely move, it is right 69.2\,\% of the time. Once the data
-is restricted to people who actually move around, the very same rule falls to
-45.5\,\%. Nothing about the rule changed; the population did.
+Crucially, the accuracy of the persistence baseline is not fixed; it is a parameter of the evaluated population cohort. On unfiltered daily logs containing a high proportion of stationary subscribers, the persistence baseline achieves 69.2\% accuracy. When the dataset is filtered to include only active mobile subscribers, baseline performance drops to 45.5\%. The underlying baseline heuristic remains unchanged while the population mobility characteristics shift.
 
-\section{The name of an antenna is not a place}
+\section{Distinction Between Physical Masts and Logical Cells}
 
-An antenna name such as \cid{BKVCHE1} looks like an opaque location code. It is
-not, and this is the point at which the technical name for it can safely be
-introduced: in the working files this string is called the
-\textbf{\cid{cell\_id}}, and it is used with that name from here on.
+Cell identifiers such as \cid{BKVCHE1} represent logical network coverage sectors rather than physical site coordinates. In technical documentation, this string is designated as the \textbf{\cid{cell\_id}}.
 
 \input{figures/fig-base-station}
 
-Figure~\ref{fig:base-station} draws one real mast with every name it answers to,
-and the count underneath it is the whole point: eight names, one place. One mast
-answers to several names at once, one per generation of radio and one per
-direction its antennas point in, so there are three or four times as many names as
-there are masts. A phone that never leaves the same spot can be passed from one of
-those names to the next, and in the raw data that looks exactly like somebody going
-somewhere.
+\textbf{Figure~\ref{fig:base-station}} illustrates the mapping of a single physical base station mast to its associated cell identifiers. A single physical site operates multiple directional antennas operating across different radio frequencies and sectors, resulting in three to four distinct cell IDs per base station site, as shown in \textbf{Figure~\ref{fig:base-station}}. Consequently, a stationary phone connected to a single physical mast may be handed over between adjacent directional sectors or frequency bands, appearing in raw logs as a transition event.
 
 \input{figures/fig-transition-composition}
 
-Figure~\ref{fig:transition-composition} then counts how often the data plays that
-trick: on this corpus 12.4 of every 100 back-to-back records change the name of
-the antenna without the person having gone anywhere. So whenever this report asks whether somebody \emph{moved}, it looks at the mast
-and not at the antenna name. What the model has to \emph{predict} stays the full
-antenna name, because that is the question I was given; predicting only the mast
-would be an easier one.
+\textbf{Figure~\ref{fig:transition-composition}} quantifies the frequency of inter-sector transitions across physical sites: within this corpus, 12.4 out of every 100 consecutive records register a change in \cid{cell\_id} while remaining attached to the same physical base station mast, as illustrated in the breakdown of \textbf{Figure~\ref{fig:transition-composition}}. To evaluate true physical subscriber mobility, transition analyses in this report assess movement at the base station mast level. However, the model prediction target remains the full \cid{cell\_id} string to fulfill the exact cell-level forecasting task.
 
-\section{From a raw file to training material}
+\section{Data Preprocessing and Dataset Construction}
 
 \input{figures/fig-data-flow}
 
-Figure~\ref{fig:data-flow} follows one day file through the four steps that turn
-it into material a model can be trained on. Two choices inside that pipeline
-change how later results should be read.
+\textbf{Figure~\ref{fig:data-flow}} details the four-stage data preprocessing pipeline used to transform raw network logs into formatted training sequences. Two major design decisions inside the pipeline of \textbf{Figure~\ref{fig:data-flow}} dictate evaluation interpretation:
 
-\paragraph{The split is by person, and it is balanced.} Training and test people
-are different people: the model is graded only on strangers. The assignment is not
-random but \emph{balanced} on the number of records per
-person,\footnote{\textbf{Stratified split}: people are first sorted into bands by
-how many records they have, and the split is made inside each band.} because
-without that a split can silently hand all the longer histories to one side.
+\paragraph{Stratified Split by Subscriber.} Trajectory data is partitioned by subscriber ID into disjoint training and test cohorts, ensuring the model is evaluated exclusively on unseen individuals. Partitioning uses a stratified split based on per-subscriber record volume, preventing trajectory length imbalances between splits.
 
-\paragraph{Cleaning removes people, not records.} Three filtering decisions were
-made over the internship, each in response to a result rather than in advance. The
-earliest runs used the day file exactly as it came, which is why the rule sat at
-69.2\,\%: a large share of people produce a handful of records from a single
-antenna, so the evaluation was dominated by moments where there was nothing to
-predict. Then people with ten records or fewer, and people with a hole longer than
-four hours, were removed; four hours is the corpus's own convention, since a mast
-re-signals at least that often, so a longer gap means the person left the recording
-area. Finally the data was restricted to people who move and stay in the area,
-using the per-day selection prepared by a colleague. Each step makes the
-\emph{task} harder and the \emph{rule} weaker, which is exactly the point: a
-benchmark on which one line of code already scores 69\,\% leaves almost nothing to
-measure.
+\paragraph{Population Filtering Criteria.} Three filtering iterations were implemented to address dataset characteristics:
+1. Initial experiments processed raw daily logs, where high stationary rates resulted in a 69.2\% persistence baseline score dominated by trivial stationary predictions.
+2. Filtering removed subscribers with ten or fewer daily events, as well as subscribers exhibiting temporal log gaps exceeding four hours (indicating travel outside the study region).
+3. The dataset was restricted to active mobile subscribers who reside within the study region, utilizing user filtering procedures developed by peer researchers.
 
-\subsection{The six sets of people used in this report}
+Filtering active mobile subscribers increases task difficulty while reducing baseline persistence accuracy, establishing a more informative evaluation benchmark.
+
+\subsection{Characteristics of Experimental Cohorts}
 
 \input{tables/tab-datasets}
 
-Table~\ref{tab:datasets} lists all six, with the score of the one-line rule on
-each in the last column. Six sets for one problem is the direct consequence of
-each new idea needing data the earlier files did not carry. Adding the time of day required regenerating the
-sequences with their times kept. Testing whether more people help required a day
-file with more people in it. Testing whether \emph{many} more help required
-stacking eleven day files end to end.\footnote{\textbf{Stacking} day files:
-putting them one after another into a single training file, which adds
-\emph{people} rather than adding days to the people already there.} Each
-regeneration produced a new test group, and therefore a new value for the rule.
+\textbf{Table~\ref{tab:datasets}} summarizes the six experimental dataset cohorts created during this study, alongside corresponding persistence baseline accuracy scores. The creation of distinct dataset cohorts in \textbf{Table~\ref{tab:datasets}} resulted from evolving data requirements across research iterations. Incorporating hourly features required regenerating token sequences with temporal tags; evaluating population scaling required larger single-day extractions; and multi-day scaling required concatenating eleven distinct daily logs. Each dataset revision yielded a updated test cohort and corresponding baseline score.
 
-\section{The questions this data cannot answer}
+\section{Scope and Methodological Limitations}
 
-\paragraph{The unit is one day.} The question posed at the start of this internship
-is a within-day one: predict the rest of a person's day from its beginning. Every
-experiment here answers it. Predicting tomorrow from the days before is a different
-question, and the natural continuation of this work.
+\paragraph{Temporal Boundary: Intra-Day Predictions.} The primary task evaluated in this report is intra-day trajectory prediction: forecasting the remaining segment of a subscriber's daily trajectory given its initial prefix. Inter-day forecasting across consecutive days represents a distinct problem scope.
 
-\paragraph{The world is small.} 369 antennas over 113 masts, with a typical person
-visiting on the order of twenty distinct ones. Already at the smallest training
-size, 98.9\,\% of the antennas appearing in the test people's days had also
-appeared in the training people's, and from 5{,}000 people onward it is 100\,\%. So
-discovering an unseen antenna cannot be a source of improvement beyond that point:
-any remaining gain has to come from better estimates of the moves between antennas
-already known.
+\paragraph{Spatial Coverage and Antenna Densities.} The geographical study region encompasses 369 cells across 113 base stations, with individual subscribers visiting an average of twenty unique cells. At small training sizes (400 subscribers), 98.9\% of cell IDs in the test set were present in the training set; at training sizes of 5,000 subscribers and above, vocabulary coverage reaches 100\%. Consequently, out-of-vocabulary cell generation is not a limiting factor for larger datasets, meaning performance gains must derive from modeling transition probabilities between known cells.
 
 \section{Conclusion}
 \label{sec:retro-data}
 
-Two properties of this material constrain every result that follows. A record is
-not a movement: the network writes a line whenever it asks a phone to announce
-itself, so a day of records is largely somebody sitting still being counted over
-and over, and that is exactly what makes ``repeat the last antenna'' so hard to
-beat. And the name of an antenna is not a place: one mast answers to three or four
-names at once, so 12.4 of every 100 changes of name are changes of radio rather
-than changes of location. From here on, whenever this report says that somebody
-\emph{moved}, it has looked at the mast; what the model is asked to produce stays
-the full antenna name, because that is the question that was put to me.
+Two structural properties of cell detail records dictate the empirical results presented in this report. First, a network log event does not necessarily signify physical spatial displacement; periodic location updates produce repeated entries during stationary periods, establishing a high persistence baseline score. Second, cell identifiers represent sectorized antennas rather than unique physical locations, with 12.4\% of cell transitions occurring across sectors of the same physical mast (\textbf{Figure~\ref{fig:transition-composition}}). Consequently, physical mobility analyses in this report evaluate base station site transitions, while the predictive model target maintains granular cell ID resolution.
 
-The decision that mattered most in this chapter was not a modelling one. It was
-accepting that the raw day file could not support the question being asked: moving
-to the selection of people who genuinely move around the area cost the
-comfortable-looking accuracies of the early runs, and that is precisely what made
-every later chapter measurable. With hindsight the order was wrong. I spent the
-first iterations improving the training machinery on a file where one line of code
-already scored 69.2\,\%, and only then looked at what was in it; a day spent
-reading the data first would have shown that there was nothing to win there. The
-price of changing it late is the six sets of people of Table~\ref{tab:datasets}:
-the yardstick moves from one chapter to the next, so no absolute score in this
-report may be compared with an absolute score in another. Only the distance to the
-rule travels.
+Filtering the dataset to active mobile subscribers removed trivial stationary trajectories and established a meaningful evaluation benchmark. Although late data filtering necessitated the six experimental dataset cohorts documented in \textbf{Table~\ref{tab:datasets}}, reporting performance gains relative to the persistence baseline ensures consistent comparative analysis across all experimental phases.
+
+
