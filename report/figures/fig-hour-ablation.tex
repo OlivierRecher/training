@@ -10,7 +10,7 @@
   w4/.style={cell,draw=clgain,fill=clgain!55},
 ]
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel,text width=13cm] at (0,1.15)
-  {(a) The 24 hours of the day, and how much a mistake costs in each};
+  {\panelnum{fig:hour-ablation}{a} The 24 hours of the day, and how much a mistake costs in each};
 \foreach \h in {0,1,2,3,6,7,8,9,10,11,12,13,14,15,16,17,20,21,22,23}
   {\node[cell] at (\h*0.58,0) {};}
 \foreach \h in {4,5}   {\node[w2] at (\h*0.58,0) {$\times2$};}
@@ -34,7 +34,7 @@
   cmt/.style={font=\scriptsize,text=clrule,anchor=west,text width=5.0cm},
 ]
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (-3.5,1.50)
-  {(b) What was done to the hours, and only to the hours};
+  {\panelnum{fig:hour-ablation}{b} What was done to the hours, and only to the hours};
 \node[cmt,text width=11cm,font=\scriptsize] at (-3.5,1.02)
   {\textcolor{clrule}{The same trained model, the same test people, the same
    sequence of antennas. Only the hour symbols change.}};
@@ -68,7 +68,7 @@
   every node near coord/.append style={font=\scriptsize},
 ]
 % ---- (c) the four conditions ----
-\nextgroupplot[title={\footnotesize (c) what each corruption costs},
+\nextgroupplot[title={\footnotesize \panelnum{fig:hour-ablation}{c} what each corruption costs},
   symbolic x coords={ha,hb,hc,hd},
   xticklabels={{left\\alone},{shuffled\\\textcolor{clloss}{$-3.0$}},
                {all 12h\\\textcolor{clloss}{$-0.7$}},{$+12$h\\\textcolor{clgain}{$+0.5$}}},
@@ -77,7 +77,7 @@
 \addplot[fill=clmodel,draw=none] coordinates {(ha,44.7)(hb,41.7)(hc,44.0)(hd,45.2)};
 %
 % ---- (d) where the shift lands ----
-\nextgroupplot[title={\footnotesize (d) the $+12$h shift swaps the two halves of the day},
+\nextgroupplot[title={\footnotesize \panelnum{fig:hour-ablation}{d} the $+12$h shift swaps the two halves of the day},
   symbolic x coords={win,out},
   xticklabels={{inside the\\upweighted hours},{outside them}},
   x tick label style={font=\scriptsize,align=center},
@@ -89,20 +89,20 @@
 \caption{The model does read the hour}
 \label{fig:hour-ablation}
 \figtext{%
-\figpara{Figure~\ref{fig:hour-ablation}a and Figure~\ref{fig:hour-ablation}b: temporal weighting schedule and hour corruption strategies.}{Each event
+\figpara{Figures~\panelnum{fig:hour-ablation}{a} and \panelnum{fig:hour-ablation}{b}: temporal weighting schedule and hour corruption strategies.}{Each event
 enters the sequence as an hour symbol followed by an antenna name, and mistakes in
-two chosen stretches of the day were made to count more in Figure~\ref{fig:hour-ablation}a, twice as much at 04h and
-05h and four times as much at 18h and 19h. Figure~\ref{fig:hour-ablation}b re-grades the same trained
+two chosen stretches of the day were made to count more in \panelref{fig:hour-ablation}{a}, twice as much at 04h and
+05h and four times as much at 18h and 19h. \panelref{fig:hour-ablation}{b} re-grades the same trained
 model on the same people three more times, never touching the list of antennas:
 the hours are shuffled, so they are real hours attached to the wrong events; or
 all replaced by one value, which deletes the information; or all moved forward by
 twelve, so the ordering survives but every label is wrong.}
 
-\figpara{Figure~\ref{fig:hour-ablation}c and Figure~\ref{fig:hour-ablation}d: performance impact of temporal corruptions and day/night shift inversion.}{In Figure~\ref{fig:hour-ablation}c, deleting
+\figpara{Figures~\panelnum{fig:hour-ablation}{c} and \panelnum{fig:hour-ablation}{d}: performance impact of temporal corruptions and day/night shift inversion.}{In \panelref{fig:hour-ablation}{c}, deleting
 the hour costs 0.7 correct answers per hundred; merely shuffling it costs 3.0. If
 the hour symbol were just occupying a slot, destroying its \emph{ordering} could
 not cost more than deleting it altogether, so the model has genuinely learned
-which hour goes with which antenna. In Figure~\ref{fig:hour-ablation}d, moving every hour forward by twelve changes
+which hour goes with which antenna. In \panelref{fig:hour-ablation}{d}, moving every hour forward by twelve changes
 the overall score by only $+0.5$, which is not indifference: inside the two
 upweighted stretches the score falls from 42.7 to 39.7 while outside them it rises
 from 45.3 to 47.1. The two halves of the day exchanged their difficulty along with

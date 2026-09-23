@@ -34,9 +34,9 @@ To verify whether the model actively utilizes temporal tokens rather than ignori
 
 \input{figures/fig-hour-ablation}
 
-\textbf{Figure~\ref{fig:hour-ablation}} illustrates the temporal weighting schedule in \textbf{Figure~\ref{fig:hour-ablation}a}, the corruption strategies in \textbf{Figure~\ref{fig:hour-ablation}b}, and compares model top-1 accuracy across three temporal token configurations in \textbf{Figure~\ref{fig:hour-ablation}c} and \textbf{Figure~\ref{fig:hour-ablation}d}: correct temporal tokens, constant dummy tokens (deleting temporal information), and randomly permuted temporal tokens (corrupting temporal ordering).
+\textbf{Figure~\ref{fig:hour-ablation}} illustrates the temporal weighting schedule in \textbf{\panelref{fig:hour-ablation}{a}}, the corruption strategies in \textbf{\panelref{fig:hour-ablation}{b}}, and compares model top-1 accuracy across three temporal token configurations in \textbf{\panelref{fig:hour-ablation}{c}} and \textbf{\panelref{fig:hour-ablation}{d}}: correct temporal tokens, constant dummy tokens (deleting temporal information), and randomly permuted temporal tokens (corrupting temporal ordering).
 
-As shown in \textbf{Figure~\ref{fig:hour-ablation}c}, replacing temporal tokens with a constant value reduces accuracy by 0.7 percentage points. Shuffling temporal tokens across event positions decreases accuracy by 3.0 percentage points ($4\times$ the drop of constant tokens) in \textbf{Figure~\ref{fig:hour-ablation}c}. Furthermore, as detailed in \textbf{Figure~\ref{fig:hour-ablation}d}, shifting hours by +12h swaps day and night performance, falling from 42.7 to 39.7 inside upweighted hours and rising from 45.3 to 47.1 outside them. This significant performance sensitivity under permuted temporal tokens confirms that the model actively conditions transition probability distributions on temporal token ordering, validating Hypothesis 1.
+As shown in \textbf{\panelref{fig:hour-ablation}{c}}, replacing temporal tokens with a constant value reduces accuracy by 0.7 percentage points. Shuffling temporal tokens across event positions decreases accuracy by 3.0 percentage points ($4\times$ the drop of constant tokens) in \textbf{\panelref{fig:hour-ablation}{c}}. Furthermore, as detailed in \textbf{\panelref{fig:hour-ablation}{d}}, shifting hours by +12h swaps day and night performance, falling from 42.7 to 39.7 inside upweighted hours and rising from 45.3 to 47.1 outside them. This significant performance sensitivity under permuted temporal tokens confirms that the model actively conditions transition probability distributions on temporal token ordering, validating Hypothesis 1.
 
 \subsection{Evaluation of Weighted Loss and Targeted Sampling}
 
@@ -62,7 +62,7 @@ Because optimal transition windows vary across individual subscriber behaviors, 
 \section{Conclusion}
 \label{sec:retro-time}
 
-This chapter validated the integration of explicit temporal tokens (\cid{<H00>}--\cid{<H23>}). Ablation analysis demonstrated that shuffling temporal tokens causes a 3.0 percentage point accuracy drop (\textbf{Figure~\ref{fig:hour-ablation}c} and \textbf{Figure~\ref{fig:hour-ablation}d}), confirming that model predictions depend on temporal sequence ordering.
+This chapter validated the integration of explicit temporal tokens (\cid{<H00>}--\cid{<H23>}). Ablation analysis demonstrated that shuffling temporal tokens causes a 3.0 percentage point accuracy drop (\textbf{\panelref{fig:hour-ablation}{c}} and \textbf{\panelref{fig:hour-ablation}{d}}), confirming that model predictions depend on temporal sequence ordering.
 
 Conversely, applying globally fixed hourly loss weighting (04:00--06:00 and 18:00--20:00) demonstrated that while loss weighting successfully forces local optimization (+2.6 percentage points at 18:00--20:00 in \textbf{Figure~\ref{fig:targeted-sampling}}), applying fixed hours across all subscribers penalizes non-targeted intervals. Because temporal mobility patterns differ significantly across subscribers, effective transition loss weighting requires individual user cohort stratification, as detailed in Chapter~\ref{ch:groups}.
 

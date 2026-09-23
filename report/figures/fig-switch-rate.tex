@@ -14,7 +14,7 @@
   title style={font=\footnotesize,yshift=1pt},
   xlabel style={at={(0.5,-0.22)},anchor=north,font=\scriptsize},
 ]
-\nextgroupplot[title={(a) a raw day, 500 people},
+\nextgroupplot[title={\panelnum{fig:switch-rate}{a} a raw day, 500 people},
   symbolic x coords={qa,qb,qc,qd,qe},
   xticklabels={{never\\changes},{0--21\%},{21--38\%},{38--60\%},{60--100\%}},
   xlabel={the five groups, moving least on the left}]
@@ -23,7 +23,7 @@
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qd,74) {$+3.7\pt$};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qe,52) {$+7.8\pt$};
 %
-\nextgroupplot[title={(b) \smob, 100 held-out people},
+\nextgroupplot[title={\panelnum{fig:switch-rate}{b} \smob, 100 held-out people},
   symbolic x coords={pa,pb,pc,pd},
   xticklabels={{moves\\least 25\%},{next\\25\%},{next\\25\%},{moves\\most 25\%}},
   x tick label style={font=\scriptsize,align=center,anchor=north},
@@ -39,20 +39,20 @@
 \caption{The score follows the rate at which a person changes antenna}
 \label{fig:switch-rate}
 \figtext{%
-\figpara{Reading the cell-switch quintile panels of Figure~\ref{fig:switch-rate}a and Figure~\ref{fig:switch-rate}b.}{People are sorted by how often they change
+\figpara{Figures~\panelnum{fig:switch-rate}{a} and \panelnum{fig:switch-rate}{b}: reading the cell-switch quintile panels.}{People are sorted by how often they change
 antenna, from those who move least to those who move most, and the sorted list is
-cut into equal groups, five on the left in Figure~\ref{fig:switch-rate}a and four on the right in Figure~\ref{fig:switch-rate}b; movement increases
+cut into equal groups, five on the left in \panelref{fig:switch-rate}{a} and four on the right in \panelref{fig:switch-rate}{b}; movement increases
 left to right in both. Grey-blue is the one-line rule, dark blue fine-tuned model, both
 scored on exactly the same moments of the same people, and the number above each
 pair is the distance between them.}
 
-\figpara{Performance spread in Figure~\ref{fig:switch-rate}a and performance degradation in Figure~\ref{fig:switch-rate}b.}{The fifth
-of people who never change antenna are predicted at 100\,\% by both in Figure~\ref{fig:switch-rate}a; the fifth that
+\figpara{Figures~\panelnum{fig:switch-rate}{a} and \panelnum{fig:switch-rate}{b}: performance spread on one day, performance degradation on another set of people.}{The fifth
+of people who never change antenna are predicted at 100\,\% by both in \panelref{fig:switch-rate}{a}; the fifth that
 moves most plateaus at 34.4\,\%. That is 65 correct answers per hundred between the
 two ends of one population, on one trained model. The two bars are the same height
-in the three groups that move least in Figure~\ref{fig:switch-rate}a: the model only pulls ahead in the two hardest,
+in the three groups that move least in \panelref{fig:switch-rate}{a}: the model only pulls ahead in the two hardest,
 by 3.7 and 7.8, and those hold 18.5\,\% of the graded moments. On a second,
-independent set of people in Figure~\ref{fig:switch-rate}b, the model \emph{loses} to the rule in the three quarters
+independent set of people in \panelref{fig:switch-rate}{b}, the model \emph{loses} to the rule in the three quarters
 that move less, by 7.1, 5.3 and 3.4, and only draws level in the one that moves
 most. Same ordering, same mechanism, negative result overall.}}
 

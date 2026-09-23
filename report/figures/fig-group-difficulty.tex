@@ -12,7 +12,7 @@
   title style={font=\footnotesize,yshift=1pt},
 ]
 % ---- (a) mobility vs predictability ----
-\nextgroupplot[title={(a) the more they move, the worse the rule does},
+\nextgroupplot[title={\panelnum{fig:group-difficulty}{a} the more they move, the worse the rule does},
   symbolic x coords={G0,G1,G2,G3},
   xticklabels={G0 stay-at-home,G1 steady,G2 evening,G3 morning},
   x tick label style={font=\scriptsize,rotate=35,anchor=east},
@@ -22,7 +22,7 @@
 \addplot[fill=clbase,draw=none] coordinates {(G0,56.3)(G1,41.7)(G2,19.7)(G3,17.8)};
 %
 % ---- (b) detection from the context prefix ----
-\nextgroupplot[title={(b) can the kind be read from the past alone?},
+\nextgroupplot[title={\panelnum{fig:group-difficulty}{b} can the kind be read from the past alone?},
   symbolic x coords={ca,cb,cc,cd},
   xticklabels={30\%,50\%,80\%,90\%},
   xlabel={share of the day available as history},
@@ -36,8 +36,8 @@
 \caption{The kind of user predicts difficulty, and can be read from the past}
 \label{fig:group-difficulty}
 \figtext{%
-\figpara{Figure~\ref{fig:group-difficulty}a: subscriber trajectory mobility versus persistence baseline predictability.}{Two
-bars per kind of user in Figure~\ref{fig:group-difficulty}a, on two different scales, so read each colour against its
+\figpara{\panelref{fig:group-difficulty}{a}: subscriber trajectory mobility versus persistence baseline predictability.}{Two
+bars per kind of user in \panelref{fig:group-difficulty}{a}, on two different scales, so read each colour against its
 own neighbours. Orange is how often that kind changes location over the day;
 grey-blue is what the one-line rule scores on them. The two rankings are exact
 opposites, with no exception: the stay-at-home user changes location about a third
@@ -45,9 +45,9 @@ of the time and the rule is already right 56.3\,\% of the time for them, while t
 morning-moving user changes half again as often and the rule is right only
 17.8\,\%.}
 
-\figpara{Figure~\ref{fig:group-difficulty}b: behavioral group detection accuracy from prefix context fractions.}{At the moment a prediction is asked for, only the person's past exists,
+\figpara{\panelref{fig:group-difficulty}{b}: behavioral group detection accuracy from prefix context fractions.}{At the moment a prediction is asked for, only the person's past exists,
 so the kind of user has to be worked out from that past or the exercise is
-circular. The bars in Figure~\ref{fig:group-difficulty}b measure how often the kind read from the past matches the
+circular. The bars in \panelref{fig:group-difficulty}{b} measure how often the kind read from the past matches the
 kind computed from the complete day. Given 80\,\% of the day it is right for 92 of
 the 100 held-out people; below roughly 60\,\% it collapses, 61\,\% at half a day
 and 44\,\% at 30\,\%. That is worth nothing on somebody who has just appeared,

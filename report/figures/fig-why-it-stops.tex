@@ -10,7 +10,7 @@
 % ================= panel (a) : the smallest kind becomes estimable ========
 \begin{scope}
 \node[ttl,text width=8.0cm] at (0,0.40)
-  {(a) Why it climbs: the smallest kind of user crosses a hundred members};
+  {\panelnum{fig:why-it-stops}{a} Why it climbs: the smallest kind of user crosses a hundred members};
 \draw[clrule] (0.60,-0.45) -- (0.60,-3.30) -- (8.30,-3.30);
 \node[axl,rotate=90,anchor=south] at (0.36,-1.90)
   {people in the evening-moving user};
@@ -35,7 +35,7 @@
 % ================= panel (b) : every antenna is already known =============
 \begin{scope}[shift={(8.95,0)}]
 \node[ttl,text width=6.35cm] at (0,0.40)
-  {(b) Why it stops: every antenna is already known};
+  {\panelnum{fig:why-it-stops}{b} Why it stops: every antenna is already known};
 \node[anchor=north west,align=left,text width=4.30cm,font=\scriptsize,
       text=clrule] at (0,-0.52)
   {100 antennas the test people use};
@@ -60,7 +60,7 @@
 \caption{The reason the curve climbs, and the reason it stops}
 \label{fig:why-it-stops}
 \figtext{%
-\figpara{Figure~\ref{fig:why-it-stops}a: subgroup sample size threshold enabling transition estimation.}{In Figure~\ref{fig:why-it-stops}a, the bars show how
+\figpara{\panelref{fig:why-it-stops}{a}: subgroup sample size threshold enabling transition estimation.}{In \panelref{fig:why-it-stops}{a}, the bars show how
 many people fall in the least populated of the four kinds, the evening-moving
 user, at 14\,\% of the population. Under each bar is what the model gained over
 the one-line rule at that training size. The count crosses roughly a hundred
@@ -69,7 +69,7 @@ label can only carry information if the group it names has enough inhabitants fo
 its rhythm to be estimated at all, which is precisely what the failed run of
 \textbf{Chapter~\ref{ch:groups}} showed.}
 
-\figpara{Figure~\ref{fig:why-it-stops}b: cell ID spatial vocabulary coverage saturation.}{In Figure~\ref{fig:why-it-stops}b, each
+\figpara{\panelref{fig:why-it-stops}{b}: cell ID spatial vocabulary coverage saturation.}{In \panelref{fig:why-it-stops}{b}, each
 square is one of a hundred antennas the test people actually use. At the smallest
 training size the model has already met 99 of them, and from 5{,}000 people
 onward, all of them; the four rhythms of \textbf{Figure~\ref{fig:group-profiles}} keep the

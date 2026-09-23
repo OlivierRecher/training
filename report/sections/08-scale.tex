@@ -29,6 +29,8 @@ To establish whether performance plateauing above 2,000 subscribers reflects tru
 
 \textbf{Table~\ref{tab:bootstrap}} presents bootstrap confidence intervals across cohort scale transitions. For all transitions above 5,000 subscribers in \textbf{Table~\ref{tab:bootstrap}}, 95\% confidence intervals contain zero (e.g., net delta between 5,000 and 21,000 subscribers is $+0.04$ percentage points, 95\% CI $[-0.45, +0.52]$). \textbf{Table~\ref{tab:all-metrics}} confirms saturation across six complementary evaluation metrics (top-1, top-3, top-5, weighted metrics). \textbf{Table~\ref{tab:context-scale}} demonstrates that saturation holds consistently across all prefix context fractions (30\% to 90\%).
 
+\FloatBarrier
+
 \subsection{Sensitivity Analysis: User Typology vs. Data Scale}
 
 Evaluating the 21,000-subscriber model across behavioral cohorts reveals substantial variance: top-1 accuracy reaches 62.8\% for stationary subscribers ($G0$, 22\% of cohort), 53.6\% for regular mobile subscribers ($G1$, 37\%), 43.0\% for evening-mobile subscribers ($G2$, 22\%), and 40.4\% for morning-mobile subscribers ($G3$, 18\%). This establishes a performance spread of \textbf{22.4 percentage points across user types}, compared to a marginal \textbf{0.4 percentage point spread across dataset scale} (from 1,900 to 21,000 subscribers in \textbf{Figure~\ref{fig:scaling-ladder}}).
@@ -40,8 +42,10 @@ Subscriber mobility typology exerts a $50\times$ stronger impact on prediction a
 \input{figures/fig-why-it-stops}
 
 \textbf{Figure~\ref{fig:why-it-stops}} illustrates the mechanics underlying performance saturation:
-- \textbf{Figure~\ref{fig:why-it-stops}a} shows that at 2,000 subscribers, even the smallest behavioral subgroup ($G2$) achieves sufficient trajectory samples ($\approx 280$ subscribers) to robustly estimate subgroup transition matrices.
-- \textbf{Figure~\ref{fig:why-it-stops}b} shows spatial cell vocabulary coverage. Beyond 2,000 subscribers, 100\% of test cell IDs are present in the training set vocabulary, meaning additional subscribers contribute redundant transition paths across previously observed cell graphs.
+- \textbf{\panelref{fig:why-it-stops}{a}} shows that at 2,000 subscribers, even the smallest behavioral subgroup ($G2$) achieves sufficient trajectory samples ($\approx 280$ subscribers) to robustly estimate subgroup transition matrices.
+- \textbf{\panelref{fig:why-it-stops}{b}} shows spatial cell vocabulary coverage. Beyond 2,000 subscribers, 100\% of test cell IDs are present in the training set vocabulary, meaning additional subscribers contribute redundant transition paths across previously observed cell graphs.
+
+\FloatBarrier
 
 \subsection{Methodological Constraints and Scope Boundaries}
 \label{sec:scale-limits}
@@ -54,7 +58,7 @@ An alternative preprocessing approach was evaluated: equalizing subscriber traje
 
 \input{figures/fig-resampling}
 
-\textbf{Figure~\ref{fig:resampling}} evaluates trajectory equalization: \textbf{Figure~\ref{fig:resampling}a} shows apparent absolute accuracy gains (reaching 74.9\%), while \textbf{Figure~\ref{fig:resampling}b} reveals underlying distortion. As detailed in \textbf{Figure~\ref{fig:resampling}b}, oversampling short trajectories fills the evaluation set with 2,262 pure copy moments that inflate the baseline to 76.5\%, while performance on the 1,738 real decision moments falls 3.7 percentage points behind the baseline (42.2\% vs. 45.9\%). Artificially equalizing trajectory lengths distorts empirical transition distributions.
+\textbf{Figure~\ref{fig:resampling}} evaluates trajectory equalization: \textbf{\panelref{fig:resampling}{a}} shows apparent absolute accuracy gains (reaching 74.9\%), while \textbf{\panelref{fig:resampling}{b}} reveals underlying distortion. As detailed in \textbf{\panelref{fig:resampling}{b}}, oversampling short trajectories fills the evaluation set with 2,262 pure copy moments that inflate the baseline to 76.5\%, while performance on the 1,738 real decision moments falls 3.7 percentage points behind the baseline (42.2\% vs. 45.9\%). Artificially equalizing trajectory lengths distorts empirical transition distributions.
 
 \section{Conclusion}
 \label{sec:retro-scale}

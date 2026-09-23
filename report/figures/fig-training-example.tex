@@ -2,7 +2,7 @@
 \begin{figure}[!htbp]
 \centering
 
-{\textbf{(a) One person's day, as it is stored on disk.} One line of the
+{\textbf{\panelnum{fig:training-example}{a} One person's day, as it is stored on disk.} One line of the
 training file, spread over several lines here so that it can be read. Nothing is
 a conversation in any real sense: the three labels are simply the slots the
 training library expects to find.\par}
@@ -33,7 +33,7 @@ training library expects to find.\par}
 \hrule height 0.4pt
 \vspace{0.45cm}
 
-{\textbf{(b) The same line, once it has been cut into symbols.} This is what
+{\textbf{\panelnum{fig:training-example}{b} The same line, once it has been cut into symbols.} This is what
 the model actually reads. Each antenna name is \emph{one} symbol, not a spelling;
 each event is preceded by its hour. Only the dark blue positions are graded.\par}
 \vspace{5pt}
@@ -77,9 +77,9 @@ each event is preceded by its hour. Only the dark blue positions are graded.\par
 \caption{One person's day, as the model receives it}
 \label{fig:training-example}
 \figtext{%
-\figpara{Figure~\ref{fig:training-example}a (JSON disk format) and Figure~\ref{fig:training-example}b (tokenized input sequence).}{Each
-person's day is written in Figure~\ref{fig:training-example}a as a record with three slots, two of them boilerplate and
-the trajectory in the third, a layout chosen for compatibility with the TRL library. In Figure~\ref{fig:training-example}b, the grey symbols set the scene and
+\figpara{Figures~\panelnum{fig:training-example}{a} and \panelnum{fig:training-example}{b}: JSON disk format and tokenized input sequence.}{Each
+person's day is written in \panelref{fig:training-example}{a} as a record with three slots, two of them boilerplate and
+the trajectory in the third, a layout chosen for compatibility with the TRL library. In \panelref{fig:training-example}{b}, the grey symbols set the scene and
 are excluded from the grade; then the day arrives as pairs, an orange symbol for
 the hour and a dark blue symbol for the antenna. Each antenna name is a single
 symbol rather than a spelling, so the model chooses among 369 known answers

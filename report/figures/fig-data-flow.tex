@@ -53,7 +53,7 @@
 \caption{From a raw file to training material, in four steps}
 \label{fig:data-flow}
 \figtext{%
-\figpara{Data preprocessing pipeline of Figure~\ref{fig:data-flow}.}{At the top of Figure~\ref{fig:data-flow} is one person's whole day
+\figpara{Figure~\ref{fig:data-flow}: data preprocessing pipeline.}{At the top of Figure~\ref{fig:data-flow} is one person's whole day
 as it arrives from the operator: eight administrative fields, then the name of an
 antenna and the time in seconds since midnight, over and over. \textbf{(1)} Filter non-trajectory records. \textbf{(2)} Prepend explicit hourly tokens. \textbf{(3)} Construct single-subscriber sequence lines. \textbf{(4)} Partition subscribers into disjoint training and held-out evaluation sets. The two circles in Figure~\ref{fig:data-flow} hold different people, so nothing the
 model is scored on can have been memorised, and the split is balanced so that both

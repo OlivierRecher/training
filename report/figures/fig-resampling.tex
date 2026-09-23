@@ -15,7 +15,7 @@
 ]
 % ================= panel (a) : two runs, each against its own rule ========
 \node[ttl,text width=13.0cm] at (0,1.42)
-  {(a) Stretching the days raises both scores, and turns the distance negative};
+  {\panelnum{fig:resampling}{a} Stretching the days raises both scores, and turns the distance negative};
 \draw[clrule] (3.60,0.14) -- (11.10,0.14);
 \foreach \vv in {0,25,50,75,100}{
   \draw[clrule] (3.60+\vv*0.075,0.14) -- (3.60+\vv*0.075,0.24);
@@ -49,7 +49,7 @@
 
 % ================= panel (b) : what the graded moments became ============
 \node[ttl,text width=13.4cm] at (0,-2.78)
-  {(b) Why: what the 4{,}000 graded moments are once the days have been stretched};
+  {\panelnum{fig:resampling}{b} Why: what the 4{,}000 graded moments are once the days have been stretched};
 \fill[clnonsig] (0,-3.30) rectangle (7.36,-3.86);
 \draw[clrule,fill=white] (7.36,-3.30) rectangle (13.00,-3.86);
 \node[font=\scriptsize\bfseries,text=clmodel] at (3.68,-3.58) {2{,}262 pure copies};
@@ -57,7 +57,7 @@
 \node[anchor=north west,align=left,text width=7.10cm,font=\scriptsize] at (0,-4.02)
   {The antenna asked for is a copy of the one just before, so anything that
    repeats is right: \textbf{100 out of 100}, for the rule and for the model
-   alike. This block is the whole of the rise in panel (a).};
+   alike. This block is the whole of the rise in \panelref{fig:resampling}{a}.};
 \node[anchor=north west,align=left,text width=5.55cm,font=\scriptsize] at (7.45,-4.02)
   {The moments where somebody had to be predicted. Here the rule is right
    \textbf{45.9} times in 100 and my model \textbf{42.2}:
@@ -66,7 +66,7 @@
 \caption{Stretching every day to 200 records: a high score, a worse result}
 \label{fig:resampling}
 \figtext{%
-\figpara{Figure~\ref{fig:resampling}a: trajectory length equalization accuracy comparison.}{In Figure~\ref{fig:resampling}a, every
+\figpara{\panelref{fig:resampling}{a}: trajectory length equalization accuracy comparison.}{In \panelref{fig:resampling}{a}, every
 person's day is stretched to exactly 200 records by repeating records already
 there, so that the longest quarter of people stops carrying 44\,\% of the training
 material. Each run is shown against \emph{its own} one-line rule, and only the
@@ -74,10 +74,10 @@ comparison inside a pair means anything. The levelled model reaches 74.9\,\%, by
 wide margin the highest absolute score of the project, but the rule on those same
 stretched days reaches 76.5\,\%.}
 
-\figpara{Figure~\ref{fig:resampling}b: breakdown of pure copy moments versus real decision moments.}{In Figure~\ref{fig:resampling}b, stretching a day
+\figpara{\panelref{fig:resampling}{b}: breakdown of pure copy moments versus real decision moments.}{In \panelref{fig:resampling}{b}, stretching a day
 fills it with copies, and a copy is a moment on which repeating the last antenna
-cannot be wrong. That is why both scores rose by about thirty in Figure~\ref{fig:resampling}a. On the 1{,}738
-moments in Figure~\ref{fig:resampling}b that are real decisions, the model is behind. Its bar there is derived from
+cannot be wrong. That is why both scores rose by about thirty in \panelref{fig:resampling}{a}. On the 1{,}738
+moments in \panelref{fig:resampling}{b} that are real decisions, the model is behind. Its bar there is derived from
 the reported 74.9\,\% assuming it never misses a copy, and it stays below the rule
 at either end of that assumption. And because a copied step never changes
 location, levelling compresses the spread between people by a factor of 2.3,

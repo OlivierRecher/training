@@ -13,7 +13,7 @@
   no markers, title style={yshift=2pt},
 ]
 % ---------- (a) D1, unfiltered day, 500 users, 49 epochs ----------
-\nextgroupplot[title={\footnotesize (a) \sraw, 49 passes},
+\nextgroupplot[title={\footnotesize \panelnum{fig:validation-curves}{a} \sraw, 49 passes},
                xmin=0, xmax=50, xtick={1,10,20,30,40,49}]
 \addplot[clbase,dashed,thick,domain=0:50,samples=2]{69.2};
 \addplot[clmodel,thick,mark=*,mark size=0.8pt] coordinates {
@@ -27,7 +27,7 @@
 \node[font=\scriptsize,anchor=south east,text=clbase] at (axis cs:49,70) {baseline 69.2\,\%};
 %
 % ---------- (b) D2, filtered, 14 epochs ----------
-\nextgroupplot[title={\footnotesize (b) \sfilt, 14 passes},
+\nextgroupplot[title={\footnotesize \panelnum{fig:validation-curves}{b} \sfilt, 14 passes},
                xmin=0, xmax=15, xtick={1,4,...,14}]
 \addplot[clbase,dashed,thick,domain=0:15,samples=2]{79.0};
 \addplot[clmodel,thick,mark=*,mark size=1pt] coordinates {
@@ -38,7 +38,7 @@
 \node[font=\scriptsize,anchor=south east,text=clbase] at (axis cs:14.5,80) {79.0\,\%};
 %
 % ---------- (c) D3, mobile users, 9 epochs ----------
-\nextgroupplot[title={\footnotesize (c) \smob, 9 passes},
+\nextgroupplot[title={\footnotesize \panelnum{fig:validation-curves}{c} \smob, 9 passes},
                xmin=0, xmax=10, xtick={1,3,...,9}]
 \addplot[clbase,dashed,thick,domain=0:10,samples=2]{43.5};
 \addplot[clmodel,thick,mark=*,mark size=1pt] coordinates {
@@ -48,7 +48,7 @@
 \node[font=\scriptsize,anchor=north east,text=clbase] at (axis cs:9.7,41.5) {43.5\,\%};
 %
 % ---------- (d) D3 + hour tokens, 11 epochs ----------
-\nextgroupplot[title={\footnotesize (d) \smob\ with hour symbols, 11 passes},
+\nextgroupplot[title={\footnotesize \panelnum{fig:validation-curves}{d} \smob\ with hour symbols, 11 passes},
                xmin=0, xmax=12, xtick={1,3,...,11}]
 \addplot[clbase,dashed,thick,domain=0:12,samples=2]{45.5};
 \addplot[clmodel,thick,mark=*,mark size=1pt] coordinates {
@@ -61,21 +61,21 @@
 \caption{The score on unseen people, pass by pass, on four sets of people}
 \label{fig:validation-curves}
 \figtext{%
-\figpara{Validation loss and accuracy trajectories in Figure~\ref{fig:validation-curves}.}{Four separate training runs in Figure~\ref{fig:validation-curves} on four different sets of
+\figpara{Figures~\panelnum{fig:validation-curves}{a} to \panelnum{fig:validation-curves}{d}: validation loss and accuracy trajectories.}{Four separate training runs, one per panel, on four different sets of
 people. The horizontal axis counts the passes a run made over its training data;
 the vertical axis is the score on people it is \emph{not} training on. The solid
 line is the model, the star marks its best pass, and the dashed line is the
-one-line rule on that same set of people. In all four panels of Figure~\ref{fig:validation-curves}, the score climbs for four to
+one-line rule on that same set of people. In all four panels, from \panelref{fig:validation-curves}{a} to \panelnum{fig:validation-curves}{d}, the score climbs for four to
 nine passes, peaks, then declines, while the score on the run's own training data
 keeps improving: that divergence is the model switching from learning how the
 population moves to learning its examples by heart.}
 
-\figpara{Overfitting dynamics and optimal checkpoint selection in Figure~\ref{fig:validation-curves}.}{In Figure~\ref{fig:validation-curves}a, the best pass scores 65.0\,\% and the last one 48.1\,\%, so
+\figpara{Figures~\panelnum{fig:validation-curves}{a} to \panelnum{fig:validation-curves}{d}: overfitting dynamics and optimal checkpoint selection.}{In \panelref{fig:validation-curves}{a}, the best pass scores 65.0\,\% and the last one 48.1\,\%, so
 reading the end of a run instead of its best point throws away 16.9 correct
 answers per hundred plus forty passes of waiting time; measured on the held-out
 people rather than the validation ones the same choice costs 15.5. The dashed line
-moves between panels of Figure~\ref{fig:validation-curves}, from 69.2\,\% on the unfiltered day to 43.5\,\% once only
-mobile people are kept, because the people are different. The four panels of Figure~\ref{fig:validation-curves} are
+moves between panels, from 69.2\,\% on the unfiltered day in \panelref{fig:validation-curves}{a} to 43.5\,\% once only
+mobile people are kept, because the people are different. The four panels \panelref{fig:validation-curves}{a} to \panelnum{fig:validation-curves}{d} are
 comparable only on the distance between solid and dashed, and in all four that
 distance is negative: none of these runs beats the rule.}}
 

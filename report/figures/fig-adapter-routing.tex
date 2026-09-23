@@ -12,7 +12,7 @@
   ar/.style={-{Latex[length=4pt]},clrule},
 ]
 % ================= (a) the group as a token: it failed =================
-\node[lbl,anchor=south] at (2.4,2.35) {\textbf{(a) What failed:} the kind of user is one symbol in the text};
+\node[lbl,anchor=south] at (2.4,2.35) {\textbf{\panelnum{fig:adapter-routing}{a} What failed:} the kind of user is one symbol in the text};
 \node[gtok] (g) at (0,1.7) {\cid{<G2>}};
 \node[seq,right=2pt of g] (s1) {\cid{<H07>}};
 \node[seq,right=2pt of s1] (s2) {\cid{BSOCHO1}};
@@ -26,7 +26,7 @@
    symbol. One symbol among five hundred is free to ignore.};
 
 % ================= (b) the group as a routing decision =================
-\node[lbl,anchor=south] at (12.1,2.35) {\textbf{(b) What worked:} the kind of user chooses which numbers run};
+\node[lbl,anchor=south] at (12.1,2.35) {\textbf{\panelnum{fig:adapter-routing}{b} What worked:} the kind of user chooses which numbers run};
 \node[gtok] (g2) at (8.9,1.7) {G2};
 \node[lbl,anchor=north,text=clGtwo] at (8.9,1.32) {identified from the past};
 \node[seq,right=2pt of g2] (r1) {\cid{<H07>}};
@@ -49,13 +49,13 @@
 \caption{The kind of user as a piece of text, and as a switch}
 \label{fig:adapter-routing}
 \figtext{%
-\figpara{Figure~\ref{fig:adapter-routing}a: textual group token conditioning failure.}{Same people, same
-protocol, same emphasised hours in both panels of Figure~\ref{fig:adapter-routing}; only the channel differs. In Figure~\ref{fig:adapter-routing}a, the kind of user was one extra symbol, \cid{<G0>} to \cid{<G3>}, at
+\figpara{\panelref{fig:adapter-routing}{a}: textual group token conditioning failure.}{Same people, same
+protocol, same emphasised hours in \panelref{fig:adapter-routing}{a} and \panelnum{fig:adapter-routing}{b}; only the channel differs. In \panelref{fig:adapter-routing}{a}, the kind of user was one extra symbol, \cid{<G0>} to \cid{<G3>}, at
 the head of a sequence of up to five hundred. Feeding the correct kind, a
 deliberately wrong kind, or none at all gave 41.3, 41.2 and 41.1\,\%: three
 numbers inside two tenths, so the model was not reading it.}
 
-\figpara{Figure~\ref{fig:adapter-routing}b: physical parameter routing via per-group LoRA adapters.}{In Figure~\ref{fig:adapter-routing}b, four separate sets of
+\figpara{\panelref{fig:adapter-routing}{b}: physical parameter routing via per-group LoRA adapters.}{In \panelref{fig:adapter-routing}{b}, four separate sets of
 added numbers are trained on the same frozen model, one per kind, and the kind
 read from a person's past decides which set runs. There is nothing left to
 dilute, and the distance to the one-line rule moved from 1.8 behind to 3.7 ahead.

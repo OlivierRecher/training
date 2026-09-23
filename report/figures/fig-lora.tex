@@ -11,7 +11,7 @@
 ]
 % ---------------- (a) full fine-tuning ----------------
 \node[big,fill=clloss!25,draw=clloss] (fa) at (0,0) {};
-\node[lbl,above=3pt of fa] {\textbf{(a) Full fine-tuning}};
+\node[lbl,above=3pt of fa] {\textbf{\panelnum{fig:lora}{a} Full fine-tuning}};
 \node[lbl,below=3pt of fa,align=center] {every weight is updated\\ \textcolor{clloss}{100\,\% trainable}\\ does not fit on a free GPU};
 \node[font=\scriptsize,text=clloss] at (fa) {$W$};
 
@@ -22,7 +22,7 @@
 \node[small]  (bB) at (6.35,-1.0) {};
 \node[font=\scriptsize] at (bA) {$A$};
 \node[font=\scriptsize] at (bB) {$B$};
-\node[lbl,above=3pt of fb] {\textbf{(b) LoRA}};
+\node[lbl,above=3pt of fb] {\textbf{\panelnum{fig:lora}{b} LoRA}};
 \node[lbl,below=17pt of fb,align=center,xshift=0.9cm]
   {the frozen matrix is left alone; only the two\\ thin \textcolor{clgain}{$A$} and
    \textcolor{clgain}{$B$} matrices are trained\\ \textcolor{clgain}{$\approx$2\,\% trainable}};
@@ -34,7 +34,7 @@
 \node[small]  (cB) at (12.15,-1.0) {};
 \node[font=\scriptsize] at (cA) {$A$};
 \node[font=\scriptsize] at (cB) {$B$};
-\node[lbl,above=3pt of fc] {\textbf{(c) QLoRA}, used here};
+\node[lbl,above=3pt of fc] {\textbf{\panelnum{fig:lora}{c} QLoRA}, used here};
 \node[lbl,below=17pt of fc,align=center,xshift=0.9cm]
   {same, plus the frozen matrix is stored\\ at 4 bits per number instead of 16\\
    \textcolor{clmodel}{$\approx$1/4 of the frozen memory}};
@@ -43,11 +43,11 @@
 \caption{Three ways to adapt a model, and their cost in memory}
 \label{fig:lora}
 \figtext{%
-\figpara{Comparison of parameter adaptation methods in Figure~\ref{fig:lora}.}{The grey square in Figure~\ref{fig:lora} is the
-model, a stack of very large tables of numbers. In (a) every number is modified,
+\figpara{Figures~\panelnum{fig:lora}{a} to \panelnum{fig:lora}{c}: comparison of parameter adaptation methods.}{The grey square in Figure~\ref{fig:lora} is the
+model, a stack of very large tables of numbers. In \panelref{fig:lora}{a} every number is modified,
 which has the highest ceiling in principle but requires holding each number
-together with about three more used to track how to adjust it. LoRA (b) \textbf{\cite{hu2022lora}} freezes the big table and trains two
-narrow ones added beside it, so about 2 numbers in every 100 ever move. QLoRA (c)
+together with about three more used to track how to adjust it. LoRA (\panelref{fig:lora}{b}) \textbf{\cite{hu2022lora}} freezes the big table and trains two
+narrow ones added beside it, so about 2 numbers in every 100 ever move. QLoRA (\panelref{fig:lora}{c})
 \textbf{\cite{dettmers2023qlora}}, used throughout this report, does the same and stores
 the frozen table with four bits per number instead of sixteen, which is safe
 precisely because those numbers are read and never updated. What this decides is

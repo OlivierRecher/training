@@ -11,7 +11,7 @@
 ]
 % ---- (a) the split ------------------------------------------------------
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (0,1.05)
-  {(a) Each person's day is cut in two, once and for all};
+  {\panelnum{fig:protocol}{a} Each person's day is cut in two, once and for all};
 \fill[clmodel!22] (0,0) rectangle (11.1,0.65);
 \fill[clink!25]  (11.1,0) rectangle (13.9,0.65);
 \draw[clrule] (0,0) rectangle (13.9,0.65);
@@ -24,7 +24,7 @@
 
 % ---- (b) scoring one position at a time ---------------------------------
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (0,-1.20)
-  {(b) The rest is then answered one moment at a time, never in one go};
+  {\panelnum{fig:protocol}{b} The rest is then answered one moment at a time, never in one go};
 \begin{scope}[yshift=-1.60cm]
   \node[ctx] (b0) at (5.30,-0.35)  {given events 1 to 40};
   \node[prd] (p0) at (8.60,-0.35)  {name event 41};
@@ -40,10 +40,10 @@
 \caption{The cut of the day, and the answering of each moment}
 \label{fig:protocol}
 \figtext{%
-\figpara{Figure~\ref{fig:protocol}a (prefix context split) and Figure~\ref{fig:protocol}b (sequential step evaluation).}{In Figure~\ref{fig:protocol}a, each
+\figpara{Figures~\panelnum{fig:protocol}{a} and \panelnum{fig:protocol}{b}: prefix context split and sequential step evaluation.}{In \panelref{fig:protocol}{a}, each
 test person's day is split once into a part the model may read and a part it has
 to produce (default 80/20). Where that cut falls is part of the
-\emph{measurement} rather than a property of the model. In Figure~\ref{fig:protocol}b, the model is then not
+\emph{measurement} rather than a property of the model. In \panelref{fig:protocol}{b}, the model is then not
 asked to invent a whole afternoon: it is asked for one antenna, told what really
 happened, and asked for the next, so it can neither see the future nor compound
 its own errors. The one-line rule is run through exactly the same moments with

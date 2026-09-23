@@ -14,7 +14,7 @@
 ]
 % ================= (a) one prediction, ranked =================
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (-0.35,3.55)
-  {(a) The model never answers once. It ranks all 369 antennas.};
+  {\panelnum{fig:topk}{a} The model never answers once. It ranks all 369 antennas.};
 \node[anchor=west,font=\scriptsize,text=clrule] at (-0.35,3.18)
   {Here are its first five, for one moment of one person's day, with how sure it
    is of each.};
@@ -46,7 +46,7 @@
 % ================= (b) how a score is computed =================
 \draw[clrule,dotted] (-0.45,-1.05) -- (14.4,-1.05);
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (-0.35,-1.45)
-  {(b) The score is then just a count, over every graded moment of every test
+  {\panelnum{fig:topk}{b} The score is then just a count, over every graded moment of every test
    person.};
 
 \foreach \i/\st in {0/ok,1/ko,2/ok,3/ok,4/ko,5/ok,6/ok,7/ok,8/ko,9/ok}{
@@ -62,7 +62,7 @@
 \caption{Top-1, top-3 and top-5, and the way a score is obtained}
 \label{fig:topk}
 \figtext{%
-\figpara{Panel (a): the model does not give an answer, it gives an order.}{Asked
+\figpara{\panelref{fig:topk}{a}: the model does not give an answer, it gives an order.}{Asked
 what comes next, it assigns a degree of confidence to all 369 antennas and sorts
 them, most likely first: here 52\,\% for \cid{UKVBER101}, 23\,\% for
 \cid{UKVTGM104}, and so on. \textbf{Top-1} asks whether the right answer is in
@@ -72,7 +72,7 @@ the same prediction fails at top-1 and succeeds at the other two. Reporting thre
 depths is the convention of this literature rather than a choice of mine
 \cite{luca2021survey,qin2025mobllm}.}
 
-\figpara{Panel (b): where a percentage comes from.}{The score is a plain count.
+\figpara{\panelref{fig:topk}{b}: where a percentage comes from.}{The score is a plain count.
 Every graded moment is answered, marked right or wrong at the chosen depth, and
 the score is the number of right answers over the number of moments: ten moments,
 seven right, 70\,\%. The one-line rule answers the very same moments and gets its

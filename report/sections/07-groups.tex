@@ -42,7 +42,7 @@ The inverse temporal mobility trends between $G2$ and $G3$ in \textbf{Figure~\re
 
 \input{figures/fig-group-difficulty}
 
-\textbf{Figure~\ref{fig:group-difficulty}} validates the efficacy of behavioral stratification: \textbf{Figure~\ref{fig:group-difficulty}a} demonstrates that cluster assignments account for 72\% of predictability variance on held-out test subscribers, while \textbf{Figure~\ref{fig:group-difficulty}b} confirms that cluster assignments computed from historical prefix segments correlate strongly with full-day assignments.
+\textbf{Figure~\ref{fig:group-difficulty}} validates the efficacy of behavioral stratification: \textbf{\panelref{fig:group-difficulty}{a}} demonstrates that cluster assignments account for 72\% of predictability variance on held-out test subscribers, while \textbf{\panelref{fig:group-difficulty}{b}} confirms that cluster assignments computed from historical prefix segments correlate strongly with full-day assignments.
 
 \subsection{Data-Driven Derivation of Critical Mobility Windows}
 
@@ -58,15 +58,15 @@ Utilizing group-specific temporal profiles from \textbf{Figure~\ref{fig:group-pr
 
 Initial conditioning experiments inserted explicit text tokens (\cid{<G0>} through \cid{<G3>}) at the beginning of input sequence prefixes. However, this textual conditioning model achieved 41.3\% accuracy against a 43.1\% persistence baseline (-1.8 percentage points).
 
-Diagnostic ablation revealed the root cause: evaluating the model with correct group tokens (41.3\%), incorrect group tokens (41.2\%), or omitted group tokens (41.1\%) yielded virtually identical accuracies. As illustrated in \textbf{Figure~\ref{fig:adapter-routing}a}, self-attention layers diluted the single prefix group token across extended trajectory sequences, effectively ignoring the conditioning signal.
+Diagnostic ablation revealed the root cause: evaluating the model with correct group tokens (41.3\%), incorrect group tokens (41.2\%), or omitted group tokens (41.1\%) yielded virtually identical accuracies. As illustrated in \textbf{\panelref{fig:adapter-routing}{a}}, self-attention layers diluted the single prefix group token across extended trajectory sequences, effectively ignoring the conditioning signal.
 
 \input{figures/fig-adapter-routing}
 
-\textbf{Figure~\ref{fig:adapter-routing}} compares input prefix token conditioning in \textbf{Figure~\ref{fig:adapter-routing}a} against physical parameter routing via separate LoRA adapters in \textbf{Figure~\ref{fig:adapter-routing}b}.
+\textbf{Figure~\ref{fig:adapter-routing}} compares input prefix token conditioning in \textbf{\panelref{fig:adapter-routing}{a}} against physical parameter routing via separate LoRA adapters in \textbf{\panelref{fig:adapter-routing}{b}}.
 
 \subsection{Implementation of Per-Group LoRA Adapter Routing}
 
-To enforce group conditioning, per-group LoRA adapter routing was implemented (\textbf{Figure~\ref{fig:adapter-routing}b}):
+To enforce group conditioning, per-group LoRA adapter routing was implemented (\textbf{\panelref{fig:adapter-routing}{b}}):
 1. Base language model parameters remain frozen.
 2. Four independent LoRA adapter modules are instantiated, corresponding to $G0$--$G3$.
 3. Input trajectories are dynamically routed to the LoRA adapter corresponding to the subscriber's historical cluster assignment.
@@ -84,5 +84,5 @@ The five bar pairs in \textbf{Figure~\ref{fig:group-gain}} illustrate accuracy g
 \section{Conclusion}
 \label{sec:retro-groups}
 
-Integrating user stratification with per-group LoRA adapter routing produced the first experimental model to surpass the persistence baseline across complete held-out evaluation trajectories (+3.7 percentage points in \textbf{Figure~\ref{fig:group-gain}}). Diagnostic analysis confirmed that routing trajectories to specialized subgroup parameters resolves text token dilution (\textbf{Figure~\ref{fig:adapter-routing}b}) while enabling collaborative parameter sharing among subscriber cohorts.
+Integrating user stratification with per-group LoRA adapter routing produced the first experimental model to surpass the persistence baseline across complete held-out evaluation trajectories (+3.7 percentage points in \textbf{Figure~\ref{fig:group-gain}}). Diagnostic analysis confirmed that routing trajectories to specialized subgroup parameters resolves text token dilution (\textbf{\panelref{fig:adapter-routing}{b}}) while enabling collaborative parameter sharing among subscriber cohorts.
 

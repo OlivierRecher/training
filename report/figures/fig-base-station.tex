@@ -24,7 +24,7 @@
   \node[nm,text=clbase] at (135:1.05) {BKVCHE2};
   \node[nm,text=clbase] at (225:1.05) {BKVCHE3};
   \node[nm,text=clbase] at (315:1.05) {BKVCHE4};
-  \node[ttl] at (0,2.95) {(a) One mast carries four 2G cells};
+  \node[ttl] at (0,2.95) {\panelnum{fig:base-station}{a} One mast carries four 2G cells};
   \node[scap,text width=5.0cm] at (0,-2.95)
     {one installation, four names in the data};
 \end{scope}
@@ -48,9 +48,9 @@
   \draw[clmove] (1.24,1.44) -- (0.82,0.82);
   \node[anchor=west,font=\scriptsize,text=clmove,align=left,text width=1.95cm]
         at (1.24,1.72) {a new name,\\ nobody moved};
-  \node[ttl] at (0,2.95) {(b) The same mast also carries 3G: eight cells};
+  \node[ttl] at (0,2.95) {\panelnum{fig:base-station}{b} The same mast also carries 3G: eight cells};
   \node[scap,text width=5.4cm] at (0,-2.95)
-    {the smaller lobes are the 2G cells of panel (a)};
+    {the smaller lobes are the 2G cells of \panelnum{fig:base-station}{a}};
 \end{scope}
 
 % ================= the reading ===========================================
@@ -64,10 +64,10 @@
 \caption{One mast, and all the names it answers to}
 \label{fig:base-station}
 \figtext{%
-\figpara{What is drawn, and why it decides how movement is measured.}{Both panels
+\figpara{Figures~\panelnum{fig:base-station}{a} and \panelnum{fig:base-station}{b}: what is drawn, and why it decides how movement is measured.}{Both panels
 are the same mast of the study area seen from above, the crossed circle being the
 installation itself and each shaded lobe the area covered by one of its antennas
-pointing in one direction. Panel (a) has the four 2G cells alone; panel (b) adds
+pointing in one direction. \panelref{fig:base-station}{a} has the four 2G cells alone; \panelnum{fig:base-station}{b} adds
 the four 3G ones, which reach differently and point elsewhere. The eight lobes all
 start at the same point, so any hop among those eight names happens at one
 address. On the day used for Chapter~\ref{ch:groups} that is \textbf{12.4 out of
