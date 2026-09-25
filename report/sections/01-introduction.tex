@@ -21,7 +21,7 @@ A fundamental distinction must be established between physical infrastructure an
 
 \section{Next-Cell Prediction via Fine-Tuned Language Models}
 
-As illustrated in \textbf{Figure~\ref{fig:overview}}, the overall experimental pipeline processes raw network logs into a ranked list of candidate cellular antennas, evaluated against a reference baseline.
+As illustrated in \textbf{Figure~\ref{fig:overview}}, the overall experimental architecture processes raw mobile network logs into structured token lists, fine-tunes a language model on thousands of daily subscriber traces, and evaluates next-cell predictions against a reference benchmark. The pipeline transforms continuous 24-hour attachment records into discrete token sequences, enabling the model to output a ranked list of candidate cellular antennas out of 369 possibilities. As highlighted in the benchmark box of \textbf{Figure~\ref{fig:overview}}, predictions are systematically measured against the persistence baseline---a deterministic competitor requiring no training that already predicts correctly roughly seven times out of ten. Every performance metric in this report evaluates progress relative to this baseline.
 
 \input{figures/fig-overview}
 
@@ -37,7 +37,7 @@ The persistence baseline evaluates the heuristic rule: \emph{``the next cell is 
 
 \input{figures/fig-worked-example}
 
-\textbf{Figure~\ref{fig:worked-example}} illustrates the mechanics of the persistence baseline compared to the model predictions across two subscriber trajectories. When a user is stationary, repeating the previous cell identifier yields a correct prediction for both the baseline and the model in \textbf{Figure~\ref{fig:worked-example}}. However, when a transition occurs, the persistence baseline systematically fails, requiring non-trivial trajectory modeling. Performance improvements reported in this document are measured exclusively on non-stationary transition events.
+\textbf{Figure~\ref{fig:worked-example}} illustrates the mechanics of the persistence baseline compared to model predictions across two subscriber evaluation moments. The model receives a historical trajectory prefix composed of timestamped cell identifier tokens (left); at the evaluated moment, the temporal timestamp is provided while the true target cell is hidden (middle), and predictions are graded against ground truth alongside the persistence rule (right). In the first scenario of \textbf{Figure~\ref{fig:worked-example}}, the subscriber remains stationary, so repeating the previous cell identifier yields a correct prediction for both the baseline and the model without requiring predictive intelligence. In the second scenario, when a physical transition occurs to a new cell identifier, the persistence baseline systematically fails. Consequently, transition events constitute the only evaluation moments where a model can demonstrate genuine predictive gains over the baseline. Performance improvements reported in this document are evaluated specifically with respect to these non-trivial moments.
 
 Throughout this report, performance gains are reported as the \emph{difference in accuracy percentage points} relative to the persistence baseline. A reported gain of $+4.3\%$ indicates that the fine-tuned model achieves an accuracy of 54.5\% on a benchmark where the persistence baseline yields 50.2\% across identical evaluation instances. Evaluating relative performance delta ensures consistent comparisons across dataset revisions and experimental cohorts.
 
@@ -47,7 +47,7 @@ This project was conducted alongside research by peer group members investigatin
 
 \input{figures/fig-team-context}
 
-Collaborative efforts involved trajectory preprocessing and dataset characterization. Nino developed corpus extraction scripts for identifying user home/activity cells and filtering active mobility cohorts, providing the daily trajectory extractions utilized in this work. Tiphain and Benjamin investigated zero-shot prompting techniques on general LLMs, while Reda investigated complementary mobility pattern analysis.
+As depicted in \textbf{Figure~\ref{fig:team-context}}, all five researchers analyzed the shared 15-day mobile network corpus across distinct research questions and methodological frameworks. Nino established automated corpus extraction scripts for identifying user home/activity cells and extracting daily mobility trajectories utilized in this study. Tiphain and Benjamin investigated zero-shot and few-shot prompting techniques on frozen LLMs alongside move-versus-stay classification. Tiphain also evaluated trajectory length equalization techniques (Chapter~\ref{ch:scale}), while Reda conducted parallel mobility pattern analyses. The fine-tuned language model forecasting architecture established in this report operates at the bottom of \textbf{Figure~\ref{fig:team-context}}, using the common persistence baseline benchmark (``answer the last cell seen'') to ensure direct comparability across team findings.
 
 \section{Report Structure}
 

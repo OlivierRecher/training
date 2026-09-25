@@ -1,8 +1,8 @@
 \chapter{Timeline of the eleven iterations}
 \label{app:timeline}
 
-The body is organised by question rather than by date. This appendix restores
-the chronology. \textbf{Figure~\ref{fig:timeline}} gives one entry per iteration, with the
-question it asked, what changed, and the number it produced.
+The body is organised by question rather than by date. This appendix restores the chronology. \textbf{Figure~\ref{fig:timeline}} gives one entry per iteration, with the question it asked, what changed, and the number it produced.
 
 \input{figures/fig-timeline}
+
+When interpreting the chronology in \textbf{Figure~\ref{fig:timeline}}, performance across iterations must be evaluated strictly using accuracy deltas relative to the one-line persistence rule (``repeat last antenna'') rather than absolute accuracy percentages. Because subscriber filtering criteria and evaluation cohorts changed four times across the nine-week investigation, absolute scores fluctuate significantly—for example, Iteration 2 reached 64.4\% top-1 accuracy but lagged $-4.8\pt$ behind its 69.2\% baseline, whereas Iteration 8 reached 46.8\% top-1 accuracy while clearing its 43.1\% baseline by $+3.7\pt$. Across the eleven iterations, five early configurations operated below baseline, Iteration 4 produced an unverified transient gain ($+1.1\pt$), and sustained baseline outperformance ($+3.7\pt$ to $+4.3\pt$) was established from Iteration 8 onward following the introduction of behavioral user stratification and per-group LoRA adapter routing.

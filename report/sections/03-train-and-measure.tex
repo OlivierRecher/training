@@ -18,7 +18,7 @@ Fine-tuning pre-trained language models can be conducted under varying memory fo
 
 \input{figures/fig-lora}
 
-\textbf{Figure~\ref{fig:lora}} compares parameter adaptation mechanisms across three memory scales: full fine-tuning (\textbf{\panelref{fig:lora}{a}}), Low-Rank Adaptation, LoRA (\textbf{\panelref{fig:lora}{b}}), and Quantized Low-Rank Adaptation, QLoRA (\textbf{\panelref{fig:lora}{c}}). Full parameter updating exceeds the memory constraints of standard hardware in \textbf{\panelref{fig:lora}{a}}. LoRA freezes original parameters and inserts trainable rank-decomposition matrices. QLoRA further compresses frozen base parameters into 4-bit NormalFloat precision while training 16-bit LoRA adapter weights. QLoRA was selected to enable model execution within 16\,GB GPU memory limits, supporting efficient execution across parameter sweeps and group routing experiments (Chapter~\ref{ch:groups}).
+\textbf{Figure~\ref{fig:lora}} compares parameter adaptation mechanisms across three memory scales: full fine-tuning (\textbf{\panelref{fig:lora}{a}}), Low-Rank Adaptation, LoRA (\textbf{\panelref{fig:lora}{b}}), and Quantized Low-Rank Adaptation, QLoRA (\textbf{\panelref{fig:lora}{c}}). Full parameter updating (\textbf{\panelref{fig:lora}{a}}) modifies 100\% of model parameters, requiring memory to maintain optimizer states for all weights and exceeding the VRAM capacity of standard single-GPU instances. LoRA (\textbf{\panelref{fig:lora}{b}}) \textbf{\cite{hu2022lora}} freezes the original base weight matrices $W$ and inserts auxiliary low-rank decomposition matrices $A$ and $B$, training only $\approx 2\%$ of total parameters. QLoRA (\textbf{\panelref{fig:lora}{c}}) \textbf{\cite{dettmers2023qlora}} further compresses frozen base parameters into 4-bit NormalFloat precision (reducing base memory footprint to $\approx 1/4$) while training 16-bit LoRA adapter weights. QLoRA was selected to enable model execution within 16\,GB GPU memory limits. This selection primarily impacts training throughput rather than model accuracy, accelerating execution from 5.5 hours to 30 minutes per training run and supporting extensive hyperparameter sweeps and per-group adapter routing experiments (Chapter~\ref{ch:groups}).
 
 \subsection{Model Selection and Capacity Evaluation}
 \label{sec:tools-model}
@@ -31,7 +31,14 @@ Because next-cell prediction across 369 discrete vocabulary items requires model
 
 \input{figures/fig-toolchain}
 
-\textbf{Figure~\ref{fig:toolchain}} illustrates the software and hardware stack, ranging from the underlying GPU compute environment to high-level training and evaluation scripts.
+\textbf{Figure~\ref{fig:toolchain}} illustrates the four-layer software and hardware stack utilized throughout this study:
+- \textbf{Hardware Execution Layer} (bottom): Google Colab single NVIDIA T4 GPU instances (16\,GB VRAM), establishing the primary computational memory constraint.
+- \textbf{Model & Quantization Layer}: Qwen2.5-0.5B base parameters quantized to 4-bit precision using \texttt{bitsandbytes}.
+- \textbf{Open-Source Library Layer}: Hugging Face \texttt{Transformers} for model loading and optimization loops; \texttt{PEFT} for managing LoRA adapter parameters; and \texttt{TRL} for sequence dataset formatting.
+- \textbf{Custom Modeling Layer} (top): custom Python training and evaluation routines implementing weighted cross-entropy loss, dynamic sequence sampling, per-group LoRA adapter routing, and evaluation protocols.
+- \textbf{Analytical Tooling} (right): standard scientific computing libraries (\texttt{pandas}, \texttt{scikit-learn}, \texttt{scipy}) managing offline data splitting, feature engineering, and statistical bootstrap resampling without touching neural network parameters.
+
+Reaching inside the training step to implement custom loss weighting and parameter routing represented the primary design requirement governing the choice of this software toolchain.
 
 \section{Data Representation and Tokenization Scheme}
 
@@ -39,16 +46,23 @@ Language models process discrete token sequences. \textbf{Figure~\ref{fig:traini
 
 \input{figures/fig-training-example}
 
-Three encoding choices are implemented in \textbf{\panelref{fig:training-example}{b}}:
-1. \textbf{Dedicated Vocabulary Tokens for Cell IDs}: All 369 cell identifiers were added directly to the model's vocabulary. This prevents subword tokenization splitting strings like \cid{BSOCHO1} into arbitrary sub-tokens, forcing atomic cell prediction.
-2. \textbf{Explicit Hourly Tokens}: Temporal context is represented by inserting explicit hour tokens (\cid{<H00>} through \cid{<H23>}) preceding each cell event.
-3. \textbf{Loss Masking}: Cross-entropy loss is computed exclusively on cell identifier token positions, masking header boilerplate and temporal tokens.
+As shown in \textbf{\panelref{fig:training-example}{a}}, daily trajectories are structured on disk as JSON Lines records containing system, user, and assistant role slots to conform with \texttt{TRL} library conventions. When tokenized in \textbf{\panelref{fig:training-example}{b}}, three specific encoding choices are implemented:
+1. \textbf{Dedicated Vocabulary Tokens for Cell IDs}: All 369 cell identifiers were added directly to the model's vocabulary as atomic tokens (dark blue). This prevents subword tokenization splitting strings like \cid{BSOCHO1} into sub-tokens, forcing atomic cell predictions.
+2. \textbf{Explicit Hourly Tokens}: Temporal context is represented by inserting explicit hour tokens (\cid{<H00>} through \cid{<H23>}, orange) preceding each cell event. Hour tokens are provided as inputs for free during inference and consume one token position per event (compared to 5 tokens for text strings like ``07:31'').
+3. \textbf{Loss Masking}: Cross-entropy loss is computed exclusively on cell identifier token positions (dark blue), masking header boilerplate (grey) and temporal tokens.
 
 \subsection{Training Pipeline and Optimization Mechanics}
 
 \input{figures/fig-training-loop}
 
-\textbf{Figure~\ref{fig:training-loop}} details the five-stage training optimization loop. Two additions were introduced from the sixth experimental iteration onward:
+\textbf{Figure~\ref{fig:training-loop}} details the five-stage training optimization loop:
+1. \textbf{Sequence Slicing}: sampling sub-sequence windows of timestamped cell events.
+2. \textbf{Target Masking & Forward Pass}: predicting the next cell token given preceding historical context.
+3. \textbf{Surprise Loss Computation}: calculating cross-entropy loss between model prediction probabilities and true target cells.
+4. \textbf{Parameter Gradient Updates}: computing backpropagation gradients strictly for trainable LoRA adapter weights (~2\% of parameters) while base parameters remain frozen.
+5. \textbf{Validation Checkpointing & Early Stopping}: evaluating model accuracy on unseen held-out validation subscribers after each training pass and saving the optimal checkpoint.
+
+Two additions were introduced from the sixth experimental iteration onward:
 - \textbf{Weighted Cross-Entropy Loss}: Loss terms at specific hourly positions are scaled by a multiplier (e.g., $4\times$ multiplier for 18h--20h transitions) at Step 3 of \textbf{Figure~\ref{fig:training-loop}}, emphasizing critical transition errors without duplicating data.
 - \textbf{Targeted Sequence Sampling}: Training slices containing key transition windows are sampled up to $3\times$ more frequently during batch generation at Step 1 of \textbf{Figure~\ref{fig:training-loop}}.
 
@@ -67,11 +81,11 @@ Model evaluation follows a standardized protocol: each test trajectory is partit
 
 \input{figures/fig-protocol}
 
-\textbf{Figure~\ref{fig:protocol}} illustrates this evaluation across a 24-hour subscriber trajectory: the prefix and suffix split in \textbf{\panelref{fig:protocol}{a}}, and the step-by-step scoring of the suffix in \textbf{\panelref{fig:protocol}{b}}.
+\textbf{Figure~\ref{fig:protocol}} illustrates this evaluation protocol: \textbf{\panelref{fig:protocol}{a}} shows the trajectory partition into an 80\% prefix context (given to the model) and a 20\% suffix target (evaluated). As depicted in \textbf{\panelref{fig:protocol}{b}}, suffix evaluation operates sequentially: at each target step, the model is queried for the single next cell, graded against ground truth, and then provided with the true historical event for the next prediction step. This prevents compounding autoregressive errors and ensures that the model and the persistence baseline are evaluated on identical historical sequences.
 
 \input{figures/fig-topk}
 
-\textbf{Figure~\ref{fig:topk}} demonstrates the multi-depth evaluation procedure. For each prediction step in \textbf{\panelref{fig:topk}{a}}, candidate cell tokens are ranked by output probability, recording top-1, top-3, and top-5 accuracy. Top-1 represents strict exact-match prediction, while top-3 and top-5 evaluate candidate list coverage in the same \textbf{\panelref{fig:topk}{a}}. \textbf{\panelref{fig:topk}{b}} shows how these right-or-wrong answers are counted into a score.
+\textbf{Figure~\ref{fig:topk}} demonstrates the multi-depth evaluation procedure. As shown in \textbf{\panelref{fig:topk}{a}}, the model outputs a probability distribution over all 369 candidate cell tokens in the vocabulary. \textbf{Top-1} accuracy evaluates whether the true target cell receives the highest probability score; \textbf{Top-3} and \textbf{Top-5} evaluate whether the true cell is present within the top three or top five ranked candidates, respectively. Reporting multi-depth accuracy follows standard mobility modeling literature conventions \textbf{\cite{luca2021survey,qin2025mobllm}}. As illustrated in \textbf{\panelref{fig:topk}{b}}, accuracy metrics represent simple percentage counts of correctly matched target steps divided by total evaluated steps across held-out test subscribers.
 
 \section{Evaluation Methodology Principles}
 
@@ -81,9 +95,9 @@ Model evaluation follows a standardized protocol: each test trajectory is partit
 
 \input{figures/fig-validation-curves}
 
-This principle is the one drawn in \textbf{\panelref{fig:three-rules}{a}}. Fine-tuning small datasets leads to overfitting when trained for excessive epochs. As shown in \textbf{Figure~\ref{fig:validation-curves}}, validation accuracy on unseen held-out subscribers reaches a peak before declining.
+This principle corresponds to \textbf{\panelref{fig:three-rules}{a}}. Fine-tuning language models on small trajectory datasets leads to severe overfitting when trained for excessive epochs. As shown in \textbf{Figure~\ref{fig:validation-curves}}, validation accuracy on unseen held-out subscribers reaches a peak within 4 to 9 training passes before declining, even as training loss continues to decrease.
 
-In an extended 49-epoch test run shown in \textbf{\panelref{fig:validation-curves}{a}}, training loss decreased continuously, whereas held-out validation accuracy peaked at epoch 9 (64.2\%) before declining to 48.7\% at epoch 49. Evaluating at final epoch completion would incur a \textbf{15.5 percentage point loss} in accuracy. Implementing early stopping at peak validation accuracy alongside regularization (dropout 0.1, weight decay, learning rate scheduling) increased held-out accuracy from 48.7\% to \textbf{64.4\%} while reducing training time from 72 to 29 minutes. \textbf{Figures~\panelnum{fig:validation-curves}{b}}, \textbf{\panelnum{fig:validation-curves}{c}}, and \textbf{\panelnum{fig:validation-curves}{d}} confirm that this optimization dynamic holds consistently across dataset splits. All subsequent reported model metrics evaluate the optimal checkpoint saved at peak validation accuracy.
+In an extended 49-epoch test run shown in \textbf{\panelref{fig:validation-curves}{a}}, training loss decreased continuously, whereas held-out validation accuracy peaked at epoch 9 (65.0\% validation accuracy, 64.2\% test accuracy) before degrading to 48.1\% (48.7\% test accuracy) at epoch 49. Evaluating at final epoch completion would incur a \textbf{15.5 percentage point loss} in test accuracy on held-out subscribers. Implementing early stopping at peak validation accuracy alongside regularization (dropout 0.1, weight decay, learning rate scheduling) preserved model generalization while reducing training time from 72 to 29 minutes. \textbf{Figures~\panelnum{fig:validation-curves}{b}}, \textbf{\panelnum{fig:validation-curves}{c}}, and \textbf{\panelnum{fig:validation-curves}{d}} confirm that this overfitting dynamic holds consistently across dataset splits. All subsequent reported model metrics evaluate the optimal checkpoint saved at peak validation accuracy.
 
 \FloatBarrier
 
@@ -91,7 +105,19 @@ In an extended 49-epoch test run shown in \textbf{\panelref{fig:validation-curve
 
 \input{tables/tab-context-sweep}
 
-This principle is the one drawn in \textbf{\panelref{fig:three-rules}{b}}. The prefix context fraction (share of trajectory provided to the model prior to prediction) directly affects task difficulty and baseline performance. \textbf{Table~\ref{tab:context-sweep}} presents model performance across varying context fractions (30\% to 90\%) on \Dfilt{}. While the model achieves 80.1\% accuracy at an 80\% context fraction against a 79.0\% persistence baseline (+1.1\%) in \textbf{Table~\ref{tab:context-sweep}}, evaluating across context fractions reveals that at a 70\% context fraction the model trails the baseline by 0.3\%. Consequently, context fraction choices must be fixed across comparative evaluations.
+This principle corresponds to \textbf{\panelref{fig:three-rules}{b}}. The prefix context fraction (share of trajectory provided to the model prior to prediction) directly affects task difficulty and baseline performance. \textbf{Table~\ref{tab:context-sweep}} presents model performance across varying context fractions (30\% to 90\%) on \Dfilt{} and \Dmob{}. 
+
+As shown in \textbf{Table~\ref{tab:context-sweep}}, moving the context fraction cut alters the persistence baseline score because it shifts which event counts as ``the most recent cell.'' On \Dfilt{}, evaluating at an 80\% context fraction yields 80.1\% model accuracy against a 79.0\% persistence baseline (+1.1\%), whereas evaluating at a 70\% context fraction trails the baseline by 0.3\%. On \Dmob{}, absolute model accuracy increases from 41.5\% to 47.6\% as the context fraction expands from 30\% to 90\%; however, baseline accuracy increases at an identical rate (42.9\% to 50.9\%), leaving the performance delta negative across all cuts. Consequently, apparent accuracy gains resulting strictly from expanding historical context represent measurement ruler artifacts rather than model improvements, requiring context fractions to be held constant during comparative evaluations.
+
+\FloatBarrier
+
+\subsection{Principle 3: Baseline Upper Bounds and Task Room Constraints}
+
+This principle corresponds to \textbf{\panelref{fig:three-rules}{c}}. On unfiltered daily logs, the persistence baseline achieves 69.2\% accuracy due to high stationary periods. A model achieving 64.4\% accuracy on such raw data has not failed in learning mobility patterns; rather, it has been evaluated on a benchmark dominated by stationary trivial predictions. Restricting benchmarks to active mobile trajectories (reducing baseline score to 45.5\%) creates a viable dynamic evaluation range.
+
+\subsection{Methodological Implications for Hyperparameter Optimization}
+
+Applying these three evaluation principles summarized in \textbf{Figure~\ref{fig:three-rules}} revealed that hyperparameter tuning alone yields limited performance improvements on uniform cohorts. Individual predictions revealed stark disparities: stationary trajectories were predicted with near 100\% confidence, whereas active transition trajectories resulted in incorrect baseline-like predictions. This variance across individual subscriber profiles motivated the individual user analysis presented in Chapter~\ref{ch:user}.
 
 \FloatBarrier
 

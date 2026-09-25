@@ -79,17 +79,5 @@
 \end{tikzpicture}}
 \caption{The five steps of one training run}
 \label{fig:training-loop}
-\figtext{%
-\figpara{Figure~\ref{fig:training-loop}: training loop optimization steps 1 to 4.}{In Figure~\ref{fig:training-loop}, a slice of somebody's day is
-shown to the model with the next antenna hidden. The model answers, the answer is
-compared with the truth and turned into a single number measuring loss, and that number nudges the model's adjustable numbers in the
-direction that would have made it less wrong. Only a small part ever moves: the
-500 million numbers the model was published with are frozen, and the nudging
-applies to about 2 in every 100 added beside them.}
-
-\figpara{Figure~\ref{fig:training-loop}: step 5 early stopping validation check.}{Step 5 of Figure~\ref{fig:training-loop} is a safety rule: left to itself, a
-model trained on a few hundred short days stops learning general habits and starts memorizing, while training loss continues falling. Grading on separate people after
-each pass, and keeping the best copy rather than the last, was the largest single
-improvement of the whole internship (\textbf{Chapter~\ref{ch:tools}}).}}
 
 \end{figure}

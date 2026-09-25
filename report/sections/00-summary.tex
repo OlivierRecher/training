@@ -10,7 +10,7 @@
 
 \paragraph{Model Architecture.} A 500M-parameter language model (Qwen2.5-0.5B-Instruct) is fine-tuned using Quantized Low-Rank Adaptation (QLoRA) on single GPU instances, adapting discrete language representations to spatial transition modeling.
 
-\paragraph{Experimental Chronology.} \textbf{Table~\ref{tab:recap}} summarizes the experimental progression across eleven iterations, detailing cohort characteristics, architectural modifications, and baseline accuracy deltas.
+\paragraph{Experimental Chronology.} \textbf{Table~\ref{tab:recap}} summarizes the experimental progression across eleven iterations, detailing cohort characteristics, architectural modifications, and baseline accuracy deltas (\textbf{Gap} column). Because test subscriber filtering and evaluation protocols changed four times across project stages—such as shifting from grading the ``last fifth'' of a day to grading the harder ``whole day'' sequence, which lowers baseline accuracy from 45.5\% to 43.1\% on identical subscriber data—cross-iteration comparisons are valid only when evaluating relative baseline deltas rather than absolute accuracy scores. Early iterations (1--3, 5--7) operated below baseline, Iteration 4 produced a transient gain (+1.1 percentage points) resolved by subsequent filtering, and sustained baseline outperformance (+3.7 to +4.3 percentage points) was established from Iteration 8 onward with per-group LoRA adapter routing.
 
 \input{tables/tab-recap}
 

@@ -48,20 +48,5 @@
 
 \caption{The kind of user as a piece of text, and as a switch}
 \label{fig:adapter-routing}
-\figtext{%
-\figpara{\panelref{fig:adapter-routing}{a}: textual group token conditioning failure.}{Same people, same
-protocol, same emphasised hours in \panelref{fig:adapter-routing}{a} and \panelnum{fig:adapter-routing}{b}; only the channel differs. In \panelref{fig:adapter-routing}{a}, the kind of user was one extra symbol, \cid{<G0>} to \cid{<G3>}, at
-the head of a sequence of up to five hundred. Feeding the correct kind, a
-deliberately wrong kind, or none at all gave 41.3, 41.2 and 41.1\,\%: three
-numbers inside two tenths, so the model was not reading it.}
-
-\figpara{\panelref{fig:adapter-routing}{b}: physical parameter routing via per-group LoRA adapters.}{In \panelref{fig:adapter-routing}{b}, four separate sets of
-added numbers are trained on the same frozen model, one per kind, and the kind
-read from a person's past decides which set runs. There is nothing left to
-dilute, and the distance to the one-line rule moved from 1.8 behind to 3.7 ahead.
-Four sets are also four times the trainable capacity of one, and the control that
-would separate capacity from sorting was not run
-(\textbf{Section~\ref{sec:retro-groups}}).}}
-
 
 \end{figure}

@@ -17,20 +17,5 @@
 \bottomrule
 \end{tabular}
 
-\figtext{%
-\figpara{Table~\ref{tab:context-scale}: cross-context stability evaluation across cohort sizes.}{Two trained models in Table~\ref{tab:context-scale}, one on
-900 training people and one on 1{,}900, both graded on the same 100 held-out
-people, and each row hands them a different amount of that person's day as
-history. \textbf{Moments} is how many graded moments the row rests on,
-\textbf{the rule} is what ``repeat the last antenna'' scores on them, the two
-model columns give the score with the distance to the rule in brackets, and
-\textbf{Difference} is how much the larger training set was worth on that row.}
-
-\figpara{Table~\ref{tab:context-scale}: independence of cohort scale saturation and context fraction.}{The 1{,}900-person model in Table~\ref{tab:context-scale} is ahead of the rule by
-4.3 having seen only 30\,\% of the day, and by 4.2 having seen 80\,\%, so what it
-contributes is essentially independent of how much history it is handed. And going
-from 900 to 1{,}900 training people is worth between 0.9 and 1.7 on every row
-alike. \stwok, same 100 held-out people for both sizes.}}
-
 \figsource{\nbfinal}{train\_cellid\_final.ipynb}{the context-fraction evaluation at the smaller tiers}
 \end{table}

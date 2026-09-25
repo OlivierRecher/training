@@ -7,19 +7,26 @@ Stratifying 400 training subscribers across four behavioral user groups leaves s
 
 This observation leads to the central research question evaluated in this chapter: \emph{how does increasing subscriber cohort size impact next-cell prediction accuracy, and at what scale does performance saturate?}
 
-\paragraph{Data Provenance.} Evaluation spans three dataset cohorts from \textbf{Table~\ref{tab:datasets}}: 400 subscribers (\Dmob{}, 100 held-out subscribers, baseline 43.1\%), 900 to 1,900 subscribers (\Dtwok{}, 100 held-out subscribers, baseline 48.2\%), and 5,000 to 21,000 subscribers (\Deleven{}, \textbf{1,000 held-out subscribers}, baseline 50.2\%). Because baseline scores vary across cohorts, evaluations report accuracy deltas relative to baseline benchmarks rather than absolute percentages.
+\paragraph{Data Provenance.} Evaluation spans three dataset cohorts from \textbf{Table~\ref{tab:datasets}}: 400 subscribers (\Dmob{}, 100 held-out subscribers, baseline 43.1\%), 900 to 1,900 subscribers (\Dtwok{}, 100 held-out subscribers, baseline 48.2\%), and 5,000 to 21,000 subscribers (\Deleven{}, \textbf{1,000 held-out subscribers}, baseline 50.2\%). Because baseline scores vary across evaluation cohorts, performance is evaluated strictly using accuracy deltas relative to each cohort's one-line baseline (``repeat the last antenna'') rather than absolute accuracy percentages, ensuring robust comparisons across varying test subscriber pools.
 
 \section{Experimental Setup for Cohort Size Sweep}
 
-The cohort scaling evaluation sweeps training population size across eight nested steps (400 to 21,000 subscribers) while holding model architecture, LoRA adapter configuration, hour tokens, and per-group routing constant. Nested sampling ensures that larger cohorts strictly expand smaller cohorts without introducing population composition shifts. Across training sizes, training log counts increase from 369,451 to 1,538,379 events.
+The cohort scaling evaluation sweeps training population size across eight nested steps (400, 900, 1,400, 1,900, 5,000, 10,000, 15,000, and 21,000 subscribers) while holding model architecture, LoRA adapter configuration, hour tokens, and per-group routing constant. Nested sampling ensures that larger cohorts strictly expand smaller cohorts without introducing population composition shifts. Across training sizes, training log counts increase from 369,451 to 1,538,379 events.
 
 \input{figures/fig-scaling-ladder}
 
-\textbf{Figure~\ref{fig:scaling-ladder}} plots prediction accuracy delta relative to baseline across the eight training cohort sizes. The empirical curve exhibits two distinct regimes: rapid performance gains up to approximately 2,000 subscribers (+4.2 percentage points over baseline in \textbf{Figure~\ref{fig:scaling-ladder}}), followed by performance saturation across larger training cohorts up to 21,000 subscribers (+4.3 percentage points in \textbf{Figure~\ref{fig:scaling-ladder}}).
+\textbf{Figure~\ref{fig:scaling-ladder}} plots prediction accuracy delta relative to baseline against training cohort size on a logarithmic scale. The empirical curve exhibits three distinct regimes:
+\begin{enumerate}
+    \item \textbf{Imitation regime (400 subscribers):} At 400 training subscribers, the model achieves a marginal $+0.6\pt$ delta over baseline, failing to capture group-level transition dynamics.
+    \item \textbf{Generalization regime (400 to 1,900 subscribers):} Accuracy delta climbs rapidly through $+2.8\pt$ (900 subscribers) and $+3.5\pt$ (1,400 subscribers) to $+4.2\pt$ (1,900 subscribers), capturing essentially the entire benefit derived from dataset volume expansion.
+    \item \textbf{Saturation regime (1,900 to 21,000 subscribers):} A ten-fold expansion in subscriber scale from 1,900 to 21,000 subscribers yields negligible additional gains (+4.3\pt{} at 5,000, +4.4\pt{} at 10,000, +4.7\pt{} at 15,000, and +4.3\pt{} at 21,000 subscribers), demonstrating that performance growth halts rather than merely slowing down.
+\end{enumerate}
+
+Two important experimental caveats govern this scaling trend. First, because test subscriber pools vary across cohort sizes, measuring accuracy delta relative to each run's baseline represents the sole metric robust to test set composition changes. Second, all scaling steps were evaluated under a constant budget of 8,000 training gradient steps; consequently, while 5,000 subscribers correspond to 1.5 training epochs, 21,000 subscribers achieve only 36\% single-pass epoch coverage.
 
 \subsection{Statistical Validation of Performance Saturation}
 
-To establish whether performance plateauing above 2,000 subscribers reflects true saturation rather than random variance, paired bootstrap resampling \textbf{\cite{efron1993bootstrap}} was conducted across the 1,000 held-out subscribers.
+To establish whether performance plateauing above 2,000 subscribers reflects true saturation rather than random variance, paired bootstrap resampling \textbf{\cite{efron1993bootstrap}} was conducted across 2,000 resamples of the 1,000 held-out subscribers. In each bootstrap iteration, 1,000 subscribers were sampled with replacement and both candidate models were scored on the identical subscriber draw, canceling evaluation sample variance.
 
 \input{tables/tab-bootstrap}
 
@@ -27,7 +34,11 @@ To establish whether performance plateauing above 2,000 subscribers reflects tru
 
 \input{tables/tab-context-scale}
 
-\textbf{Table~\ref{tab:bootstrap}} presents bootstrap confidence intervals across cohort scale transitions. For all transitions above 5,000 subscribers in \textbf{Table~\ref{tab:bootstrap}}, 95\% confidence intervals contain zero (e.g., net delta between 5,000 and 21,000 subscribers is $+0.04$ percentage points, 95\% CI $[-0.45, +0.52]$). \textbf{Table~\ref{tab:all-metrics}} confirms saturation across six complementary evaluation metrics (top-1, top-3, top-5, weighted metrics). \textbf{Table~\ref{tab:context-scale}} demonstrates that saturation holds consistently across all prefix context fractions (30\% to 90\%).
+\textbf{Table~\ref{tab:bootstrap}} presents the resulting 95\% confidence intervals across cohort scale transitions. For all transitions above 5,000 subscribers, the 95\% confidence interval spans zero (e.g., net delta between 5,000 and 21,000 subscribers is $+0.04\pt$, 95\% CI $[-0.43, +0.51]$), confirming that no statistically significant accuracy gain was measured. Fitting a log-linear scaling law across all eight data points yields a minimal slope of $+0.18\pt$ per decade of subscribers, accounting for only 12\% of variance ($R^2 = 0.12$).
+
+\textbf{Table~\ref{tab:all-metrics}} confirms that performance saturation holds uniformly across six complementary evaluation metrics. Across four training sizes (5,000 to 21,000 subscribers), top-1 accuracy (54.5\% to 54.9\%, spread $0.4\pt$), top-3 accuracy (71.4\% to 72.2\%, spread $0.2\pt$), top-5 accuracy (78.6\% to 79.3\%, spread $0.4\pt$), cold-start accuracy (51.4\% to 52.6\%, spread $0.5\pt$), median subscriber accuracy (49.1\% to 50.3\%, spread $1.2\pt$), and worst-decile accuracy (13.1\% to 14.4\%, spread $1.3\pt$) show no systematic improvement. Crucially, under cold-start conditions (evaluating only the first 30\% of a subscriber's daily history), the model achieves its highest edge over baseline (+4.6\pt{} vs. +4.3\pt{} at 80\% context history), demonstrating that model capabilities are most effective when user history is sparse, and this advantage remains identical at 5,000 and 21,000 subscribers.
+
+Furthermore, \textbf{Table~\ref{tab:context-scale}} evaluates performance across context history fractions (30\% to 90\% of daily observations) comparing 900 and 1,900 subscriber models. Across all context fractions, expanding training cohort size from 900 to 1,900 subscribers yields a consistent gain between $+0.9\pt$ and $+1.7\pt$, establishing that dataset scale improvements operate independently of context history length.
 
 \FloatBarrier
 
@@ -41,9 +52,11 @@ Subscriber mobility typology exerts a $50\times$ stronger impact on prediction a
 
 \input{figures/fig-why-it-stops}
 
-\textbf{Figure~\ref{fig:why-it-stops}} illustrates the mechanics underlying performance saturation:
-- \textbf{\panelref{fig:why-it-stops}{a}} shows that at 2,000 subscribers, even the smallest behavioral subgroup ($G2$) achieves sufficient trajectory samples ($\approx 280$ subscribers) to robustly estimate subgroup transition matrices.
-- \textbf{\panelref{fig:why-it-stops}{b}} shows spatial cell vocabulary coverage. Beyond 2,000 subscribers, 100\% of test cell IDs are present in the training set vocabulary, meaning additional subscribers contribute redundant transition paths across previously observed cell graphs.
+\textbf{Figure~\ref{fig:why-it-stops}} details two physical mechanisms underlying performance scaling and saturation:
+\begin{enumerate}
+    \item \textbf{Subgroup Sample Threshold (\panelref{fig:why-it-stops}{a}):} In \textbf{\panelref{fig:why-it-stops}{a}}, tracking subscriber counts in the smallest behavioral cohort ($G2$ evening-mobile subscribers, 14\% population share) reveals 56 members at 400 subscribers (+0.6\pt{} gain), 126 members at 900 subscribers (+2.8\pt{} gain), 196 members at 1,400 subscribers (+3.5\pt{} gain), and 266 members at 1,900 subscribers (+4.2\pt{} gain). Crossing approximately 100 members in the smallest subgroup provides sufficient sample volume to robustly estimate subgroup-specific transition matrices, explaining the performance jump between 400 and 900 subscribers.
+    \item \textbf{Spatial Vocabulary Coverage Saturation (\panelref{fig:why-it-stops}{b}):} In \textbf{\panelref{fig:why-it-stops}{b}}, evaluating antenna coverage across 100 test cells shows that 99 cells are already observed at 400 subscribers, and 100\% coverage is reached by 5,000 subscribers. Because cell vocabulary coverage saturates and the underlying behavioral transition patterns (\textbf{Figure~\ref{fig:group-profiles}}) remain invariant, expanding cohorts beyond 5,000 subscribers introduces redundant trajectories across previously seen cell graphs rather than novel mobility structures.
+\end{enumerate}
 
 \FloatBarrier
 
@@ -54,11 +67,13 @@ Scaling experiments maintained constant compute step budgets (8,000 gradient upd
 
 \section{Evaluation of Trajectory Length Equalization}
 
-An alternative preprocessing approach was evaluated: equalizing subscriber trajectory lengths by oversampling short trajectories to a uniform 200 records per subscriber.
+An alternative preprocessing approach was evaluated: equalizing subscriber trajectory lengths by oversampling short trajectories to a uniform 200 records per subscriber, addressing data imbalances where the top 25\% longest trajectories comprise 44\% of training events.
 
 \input{figures/fig-resampling}
 
-\textbf{Figure~\ref{fig:resampling}} evaluates trajectory equalization: \textbf{\panelref{fig:resampling}{a}} shows apparent absolute accuracy gains (reaching 74.9\%), while \textbf{\panelref{fig:resampling}{b}} reveals underlying distortion. As detailed in \textbf{\panelref{fig:resampling}{b}}, oversampling short trajectories fills the evaluation set with 2,262 pure copy moments that inflate the baseline to 76.5\%, while performance on the 1,738 real decision moments falls 3.7 percentage points behind the baseline (42.2\% vs. 45.9\%). Artificially equalizing trajectory lengths distorts empirical transition distributions.
+\textbf{Figure~\ref{fig:resampling}} evaluates trajectory equalization. In \textbf{\panelref{fig:resampling}{a}}, trajectory stretching yields an apparent top-1 accuracy of 74.9\%, representing the highest absolute score recorded. However, evaluating the baseline rule on the same equalized trajectories yields 76.5\%, placing the fine-tuned model $-1.6\pt$ behind baseline. 
+
+\textbf{\panelref{fig:resampling}{b}} exposes the underlying breakdown: oversampling short trajectories inserts 2,262 pure copy moments (out of 4,000 total test points) where target cell IDs directly replicate preceding tokens. On these copy moments, both baseline and model achieve 100\% accuracy, artificially inflating baseline scores by $+33.4\pt$. On the remaining 1,738 true decision moments where movement occurs, baseline accuracy is 45.9\% while model accuracy drops to 42.2\% (a net $-3.7\pt$ degradation). Moreover, zero-movement copy step repetition compresses inter-subscriber accuracy variance by a factor of 2.3, destroying the behavioral variance critical for subgroup stratification. Equalizing trajectory lengths distorts empirical transition distributions and degrades true decision quality.
 
 \section{Conclusion}
 \label{sec:retro-scale}

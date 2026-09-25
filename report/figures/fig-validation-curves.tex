@@ -60,25 +60,6 @@
 \end{tikzpicture}}}
 \caption{The score on unseen people, pass by pass, on four sets of people}
 \label{fig:validation-curves}
-\figtext{%
-\figpara{Figures~\panelnum{fig:validation-curves}{a} to \panelnum{fig:validation-curves}{d}: validation loss and accuracy trajectories.}{Four separate training runs, one per panel, on four different sets of
-people. The horizontal axis counts the passes a run made over its training data;
-the vertical axis is the score on people it is \emph{not} training on. The solid
-line is the model, the star marks its best pass, and the dashed line is the
-one-line rule on that same set of people. In all four panels, from \panelref{fig:validation-curves}{a} to \panelnum{fig:validation-curves}{d}, the score climbs for four to
-nine passes, peaks, then declines, while the score on the run's own training data
-keeps improving: that divergence is the model switching from learning how the
-population moves to learning its examples by heart.}
-
-\figpara{Figures~\panelnum{fig:validation-curves}{a} to \panelnum{fig:validation-curves}{d}: overfitting dynamics and optimal checkpoint selection.}{In \panelref{fig:validation-curves}{a}, the best pass scores 65.0\,\% and the last one 48.1\,\%, so
-reading the end of a run instead of its best point throws away 16.9 correct
-answers per hundred plus forty passes of waiting time; measured on the held-out
-people rather than the validation ones the same choice costs 15.5. The dashed line
-moves between panels, from 69.2\,\% on the unfiltered day in \panelref{fig:validation-curves}{a} to 43.5\,\% once only
-mobile people are kept, because the people are different. The four panels \panelref{fig:validation-curves}{a} to \panelnum{fig:validation-curves}{d} are
-comparable only on the distance between solid and dashed, and in all four that
-distance is negative: none of these runs beats the rule.}}
-
 
 \figsource{\nbllm}{train\_cellid\_llm.ipynb}{the training loop these per-pass scores come from}
 \end{figure}

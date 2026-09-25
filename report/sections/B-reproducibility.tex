@@ -1,19 +1,21 @@
 \chapter{Reproducibility}
 \label{app:repro}
 
-Three tables record what would be needed to reproduce the results: the training
-settings of every family of runs, the run behind every number quoted in the body,
-and the configuration keys that encode a decision argued somewhere in the report
-rather than a preference. \textbf{Table~\ref{tab:hyperparams}} gives the settings,
-\textbf{Table~\ref{tab:provenance}} the origin of every number quoted in the body, and
-\textbf{Table~\ref{tab:config-keys}} the eleven keys that encode an argued decision. The
-sets of people themselves are described in \textbf{Table~\ref{tab:datasets}}.
+To ensure full experimental reproducibility, this appendix documents the hyperparameter configurations, data provenance mappings, and core decision-encoding parameters across all eleven experimental iterations. 
+
+\textbf{Table~\ref{tab:hyperparams}} records the exact hyperparameter settings across four chronological run families (Iter.\ 1, Iter.\ 2--6, Iter.\ 7--9, and Iter.\ 10--11). All unlisted hyperparameters were held strictly constant across runs, ensuring that performance variations stem exclusively from data preprocessing, sequence formatting, or adapter conditioning mechanisms rather than hyperparameter tuning artifacts. Key parameters include max pass caps (20 epochs) with early stopping (patience 4), implementing the validation checkpoint selection protocol established in \textbf{Chapter~\ref{ch:tools}}, and transition sampling emphasis shifting from global hours to subgroup-specific temporal profiles (\textbf{Chapters~\ref{ch:time}} and \textbf{\ref{ch:groups}}).
 
 \bigskip
 \input{tables/tab-hyperparams}
 
 \bigskip
+\textbf{Table~\ref{tab:provenance}} maps every headline result quoted throughout the report to its precise iteration number, underlying dataset split (\textbf{Table~\ref{tab:datasets}}), and notebook execution run. Because dataset filtering and test subscriber cohorts evolved across project stages, comparing absolute scores across rows using different datasets is invalid; meaningful comparisons rely strictly on baseline deltas computed relative to each dataset's dedicated persistence benchmark.
+
+\bigskip
 \input{tables/tab-provenance}
+
+\bigskip
+Rather than reproducing entire configuration files, \textbf{Table~\ref{tab:config-keys}} isolates eleven critical configuration keys that directly encode substantive methodological decisions argued in the text (such as context evaluation cuts, early stopping patience, transition oversampling ratios, and per-group shrinkage parameters) rather than arbitrary tuning preferences. Altering any of these eleven keys explicitly modifies an empirical claim or scope constraint established in this report.
 
 \bigskip
 \begin{minipage}{\textwidth}
@@ -37,11 +39,4 @@ sets of people themselves are described in \textbf{Table~\ref{tab:datasets}}.
 \texttt{val\_subsample} (scaling)        & 250 fixed people & the same stopping rule at every size \\
 \bottomrule
 \end{tabular}
-
-\figtext{%
-\figpara{Why these eleven and not the whole configuration file.}{None of these is
-a tuning knob. Each one encodes a decision argued somewhere in the body, so that
-a reader who changes one knows which claim of the report they are changing. The
-ordinary settings, learning rate and the rest, are in
-\textbf{Table~\ref{tab:hyperparams}}.}}
 \end{minipage}

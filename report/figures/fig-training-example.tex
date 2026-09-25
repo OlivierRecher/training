@@ -76,16 +76,5 @@ each event is preceded by its hour. Only the dark blue positions are graded.\par
 
 \caption{One person's day, as the model receives it}
 \label{fig:training-example}
-\figtext{%
-\figpara{Figures~\panelnum{fig:training-example}{a} and \panelnum{fig:training-example}{b}: JSON disk format and tokenized input sequence.}{Each
-person's day is written in \panelref{fig:training-example}{a} as a record with three slots, two of them boilerplate and
-the trajectory in the third, a layout chosen for compatibility with the TRL library. In \panelref{fig:training-example}{b}, the grey symbols set the scene and
-are excluded from the grade; then the day arrives as pairs, an orange symbol for
-the hour and a dark blue symbol for the antenna. Each antenna name is a single
-symbol rather than a spelling, so the model chooses among 369 known answers
-instead of spelling one letter by letter. The hour is handed over for free and
-never guessed, and it costs one symbol rather than five: writing ``07:31:22''
-would have cut the visible history by roughly two thirds.}}
-
 
 \end{figure}

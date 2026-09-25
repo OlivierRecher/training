@@ -61,21 +61,5 @@
 \end{tikzpicture}}
 \caption{Top-1, top-3 and top-5, and the way a score is obtained}
 \label{fig:topk}
-\figtext{%
-\figpara{\panelref{fig:topk}{a}: the model does not give an answer, it gives an order.}{Asked
-what comes next, it assigns a degree of confidence to all 369 antennas and sorts
-them, most likely first: here 52\,\% for \cid{UKVBER101}, 23\,\% for
-\cid{UKVTGM104}, and so on. \textbf{Top-1} asks whether the right answer is in
-first place, \textbf{top-3} whether it is anywhere in the first three,
-\textbf{top-5} in the first five. In the example the right answer sits third, so
-the same prediction fails at top-1 and succeeds at the other two. Reporting three
-depths is the convention of this literature rather than a choice of mine
-\cite{luca2021survey,qin2025mobllm}.}
-
-\figpara{\panelref{fig:topk}{b}: where a percentage comes from.}{The score is a plain count.
-Every graded moment is answered, marked right or wrong at the chosen depth, and
-the score is the number of right answers over the number of moments: ten moments,
-seven right, 70\,\%. The one-line rule answers the very same moments and gets its
-own count, and every result in this report is the difference between the two.}}
 
 \end{figure}

@@ -88,24 +88,5 @@
 \end{tikzpicture}}
 \caption{The model does read the hour}
 \label{fig:hour-ablation}
-\figtext{%
-\figpara{Figures~\panelnum{fig:hour-ablation}{a} and \panelnum{fig:hour-ablation}{b}: temporal weighting schedule and hour corruption strategies.}{Each event
-enters the sequence as an hour symbol followed by an antenna name, and mistakes in
-two chosen stretches of the day were made to count more in \panelref{fig:hour-ablation}{a}, twice as much at 04h and
-05h and four times as much at 18h and 19h. \panelref{fig:hour-ablation}{b} re-grades the same trained
-model on the same people three more times, never touching the list of antennas:
-the hours are shuffled, so they are real hours attached to the wrong events; or
-all replaced by one value, which deletes the information; or all moved forward by
-twelve, so the ordering survives but every label is wrong.}
-
-\figpara{Figures~\panelnum{fig:hour-ablation}{c} and \panelnum{fig:hour-ablation}{d}: performance impact of temporal corruptions and day/night shift inversion.}{In \panelref{fig:hour-ablation}{c}, deleting
-the hour costs 0.7 correct answers per hundred; merely shuffling it costs 3.0. If
-the hour symbol were just occupying a slot, destroying its \emph{ordering} could
-not cost more than deleting it altogether, so the model has genuinely learned
-which hour goes with which antenna. In \panelref{fig:hour-ablation}{d}, moving every hour forward by twelve changes
-the overall score by only $+0.5$, which is not indifference: inside the two
-upweighted stretches the score falls from 42.7 to 39.7 while outside them it rises
-from 45.3 to 47.1. The two halves of the day exchanged their difficulty along with
-their labels. \smob, 80\,\% of each day given as history, 1{,}747 graded moments.}}
 
 \end{figure}

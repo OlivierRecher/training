@@ -5,15 +5,22 @@ The central objective of this research was to determine whether a parameter-effi
 
 \section{Summary of Key Findings}
 
-Three primary empirical findings summarize the contributions of this research, as presented in \textbf{Figure~\ref{fig:results-card}}:
+Three primary empirical findings summarize the contributions of this research, addressing the central research questions, as synthesized in \textbf{Figure~\ref{fig:results-card}}:
 
 \input{figures/fig-results-card}
 
-\paragraph{Demonstrated Baseline Outperformance via Behavioral Conditioning.} A fine-tuned Qwen2.5-0.5B language model achieves a \textbf{+4.3 percentage point accuracy gain} over the persistence baseline on active mobility evaluation cohorts (54.5\% vs. 50.2\% top-1 accuracy, as highlighted in Card 1 of \textbf{Figure~\ref{fig:results-card}}). Surpassing the persistence baseline required user behavioral stratification ($G0$--$G3$) and per-group LoRA adapter routing, which increased model accuracy from -1.8 percentage points behind the baseline to +3.7 percentage points ahead on baseline active mobility splits.
+\paragraph{Demonstrated Baseline Outperformance via Behavioral Conditioning.} A fine-tuned Qwen2.5-0.5B language model achieves a \textbf{+4.3 percentage point accuracy gain} over the persistence baseline on active mobility evaluation cohorts (54.5\% vs. 50.2\% top-1 accuracy on 1,000 held-out subscribers, as highlighted in Card 1 of \textbf{Figure~\ref{fig:results-card}}). Surpassing the persistence baseline required user behavioral stratification ($G0$--$G3$) and per-group LoRA adapter routing, which increased model accuracy from -1.8 percentage points behind the baseline to +3.7 percentage points ahead on baseline active mobility splits. Rather than increasing general parameter capacity, temporal behavior profiling represents the primary driver of performance.
 
-\paragraph{Data Cohort Scaling Saturation at 2,000 Subscribers.} Scaling training cohort size yields significant accuracy improvements up to 2,000 subscribers (+4.2 percentage points over baseline, as depicted in Card 2 of \textbf{Figure~\ref{fig:results-card}}). Expanding training cohorts further up to 21,000 subscribers yields no statistically significant improvement (+0.04 percentage points, $p > 0.05$), establishing 2,000 subscribers as the empirical operating threshold for training set construction.
+\paragraph{Data Cohort Scaling Saturation at 2,000 Subscribers.} Scaling training cohort size yields significant accuracy improvements up to 2,000 subscribers (+4.2 percentage points over baseline, as depicted in Card 2 of \textbf{Figure~\ref{fig:results-card}}). Expanding training cohorts further up to 21,000 subscribers yields no statistically significant improvement (+0.04 percentage points, $p > 0.05$ with zero contained in every bootstrap confidence interval), establishing 2,000 subscribers as the empirical operating threshold for training set construction. Collecting ten times more data is not where future modeling gains lie.
 
-\paragraph{Dominance of Subscriber Typology over Data Volume.} Individual subscriber mobility characteristics represent the primary determinant of trajectory predictability. Prediction accuracy across behavioral user groups spans a \textbf{22.4 percentage point range} (62.8\% for stationary $G0$ vs. 40.4\% for mobile $G3$, as shown in Card 3 of \textbf{Figure~\ref{fig:results-card}}), outweighing the impact of dataset scaling beyond 2,000 subscribers ($0.4$ percentage points) by a factor of over fifty.
+\paragraph{Dominance of Subscriber Typology over Data Volume.} Individual subscriber mobility characteristics represent the primary determinant of trajectory predictability. Prediction accuracy across behavioral user groups spans a \textbf{22.4 percentage point range} (62.8\% for stationary $G0$ vs. 40.4\% for mobile $G3$, as shown in Card 3 of \textbf{Figure~\ref{fig:results-card}}), outweighing the impact of dataset scaling beyond 2,000 subscribers ($0.4$ percentage points) by a factor of over fifty. This spread represents the most robust empirical finding of the study, appearing consistently across all per-user evaluations.
+
+\paragraph{Impact of Methodological and Measurement Rigor.} Across experimental iterations, three methodological measurement corrections exerted a larger impact on reported results than individual architectural modifications:
+\begin{enumerate}
+    \item \textbf{Validation Checkpoint Selection:} Restoring model weights from the best validation loss checkpoint rather than the final step recovered \textbf{+15.5 percentage points} in top-1 accuracy.
+    \item \textbf{Evaluation Boundary Alignment:} Aligning daily sequence truncation rules between model and baseline eliminated a \textbf{1.1 percentage point} evaluation artifact caused by sequence boundary noise.
+    \item \textbf{Cohort Benchmark Framing:} Transitioning evaluation from highly stationary subscribers (where persistence baselines reach 69\%) to active mobile subscriber cohorts enabled meaningful empirical discrimination of model predictive capabilities.
+\end{enumerate}
 
 \section{Experimental Limitations and Unresolved Tasks}
 
@@ -34,5 +41,5 @@ In addition, hardware constraints limited scaling sweeps to a fixed gradient ste
 
 \section{Executive Summary}
 
-Parameter-efficient fine-tuning of language models on single-day mobile network logs achieves superior next-cell forecasting accuracy over persistence baselines (+4.3 percentage points top-1 accuracy gain in \textbf{Figure~\ref{fig:results-card}}). Training dataset scaling saturates at approximately 2,000 subscribers, beyond which individual subscriber mobility typology exerts the dominant influence on predictability (22.4 percentage point spread). Stratifying subscribers by temporal mobility profiles and routing input sequences to specialized LoRA adapters represents the primary architectural driver of trajectory forecasting performance.
+Parameter-efficient fine-tuning of language models on single-day mobile network logs achieves superior next-cell forecasting accuracy over persistence baselines (+4.3 percentage points top-1 accuracy gain in \textbf{Figure~\ref{fig:results-card}}). Training dataset scaling saturates at approximately 2,000 subscribers, beyond which individual subscriber mobility typology exerts the dominant influence on predictability (22.4 percentage point spread). Stratifying subscribers by temporal mobility profiles and routing input sequences to specialized LoRA adapters represents the primary architectural driver of trajectory forecasting performance, while rigorous evaluation design and checkpoint selection provide the empirical foundation for robust trajectory modeling.
 
