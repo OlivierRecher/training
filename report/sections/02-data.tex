@@ -23,38 +23,40 @@ Crucially, the accuracy of the persistence baseline is not fixed; it is a parame
 
 Cell identifiers such as \cid{BKVCHE1} represent logical network coverage sectors rather than physical site coordinates. In technical documentation, this string is designated as the \textbf{\cid{cell\_id}}.
 
-\input{figures/fig-base-station}
+\textbf{Figure~\ref{fig:base-station}} illustrates the spatial mapping of a single physical base station mast to its associated cell identifiers, viewed from above. The central crossed circle represents the physical installation, while each shaded lobe corresponds to the spatial coverage area of a directional antenna. A single physical site operates multiple directional antennas operating across different radio frequencies and sectors. \textbf{\panelref{fig:base-station}{a}} illustrates a 2G configuration operating four directional sector cells, while \textbf{\panelref{fig:base-station}{b}} adds four 3G directional cells with distinct frequency ranges and spatial orientations. Because all eight coverage lobes originate from a single physical mast location, a stationary device at the foot of the mast sits inside multiple overlapping coverage sectors simultaneously. Radio signal fluctuations can trigger network handovers between adjacent directional sectors or frequency bands, which register in raw network logs as cell transitions despite zero subscriber spatial movement. \textbf{Figure~\ref{fig:transition-composition}} measures how often this happens.
 
-\textbf{Figure~\ref{fig:base-station}} illustrates the spatial mapping of a single physical base station mast to its associated cell identifiers, viewed from above. The central crossed circle represents the physical installation, while each shaded lobe corresponds to the spatial coverage area of a directional antenna. A single physical site operates multiple directional antennas operating across different radio frequencies and sectors. \textbf{\panelref{fig:base-station}{a}} illustrates a 2G configuration operating four directional sector cells, while \textbf{\panelref{fig:base-station}{b}} adds four 3G directional cells with distinct frequency ranges and spatial orientations. Because all eight coverage lobes originate from a single physical mast location, a stationary device at the foot of the mast sits inside multiple overlapping coverage sectors simultaneously. Radio signal fluctuations can trigger network handovers between adjacent directional sectors or frequency bands, which register in raw network logs as cell transitions despite zero subscriber spatial movement. On the primary benchmark dataset, such intra-site sector handovers account for \textbf{12.4 out of every 100} consecutive records.
+\input{figures/fig-base-station}
 
 \input{figures/fig-transition-composition}
 
-\textbf{Figure~\ref{fig:transition-composition}} quantifies the distribution of consecutive record pairs across three distinct structural categories:
-1. \textbf{Same Cell ID} (dark blue): consecutive events log identical cell identifiers, indicating stationary temporal residence.
-2. \textbf{Same Mast, Different Cell ID} (teal): consecutive events log different cell identifiers mounted on the same physical base station mast, representing radio sector handovers without spatial displacement.
-3. \textbf{Different Mast} (orange): consecutive events log a transition to a different base station site, representing true physical subscriber mobility.
-
-As shown in \textbf{Figure~\ref{fig:transition-composition}}, on an unfiltered raw day file (\Draw{}), only 44.0\% of consecutive event pairs represent physical spatial displacement, while 12.4\% represent same-mast sector handovers. Filtering the corpus to active mobile subscribers (\Dmob{}) increases the proportion of true physical movement to 51.0\%, while intra-site sector handovers remain constant at 12.0\%. This constancy confirms that intra-site sector handovers are an intrinsic property of the radio cellular infrastructure rather than individual subscriber behavior. To accurately evaluate physical mobility, displacement analyses in this report assess movement at the base station mast level, while the model prediction target remains the full antenna \cid{cell\_id} string.
+\textbf{Figure~\ref{fig:transition-composition}} takes every pair of consecutive records in a file; each bar is 100\% of one file's pairs, split into three structural categories:
+\begin{enumerate}
+  \item \textbf{Same Cell ID} (dark blue): consecutive events log identical cell identifiers, indicating stationary temporal residence.
+  \item \textbf{Same Mast, Different Cell ID} (teal): consecutive events log different cell identifiers mounted on the same physical base station mast, representing radio sector handovers without spatial displacement.
+  \item \textbf{Different Mast} (orange): consecutive events log a transition to a different base station site, representing true physical subscriber mobility.
+\end{enumerate}
+On an unfiltered raw day file (\Draw{}), only 44.0\% of consecutive event pairs represent physical spatial displacement, while \textbf{12.4 out of every 100} are same-mast sector handovers that look like movement in the raw data and are not. Filtering the corpus to active mobile subscribers (\Dmob{}) increases the proportion of true physical movement to 51.0\%, while intra-site sector handovers remain constant at 12.0\%. This constancy confirms that intra-site sector handovers are an intrinsic property of the radio cellular infrastructure rather than individual subscriber behavior. To accurately evaluate physical mobility, displacement analyses in this report assess movement at the base station mast level, while the model prediction target remains the full antenna \cid{cell\_id} string; the cost of that choice is examined in Chapter~\ref{ch:user}.
 
 \section{Data Preprocessing and Dataset Construction}
 
+\textbf{Figure~\ref{fig:data-flow}} details the four-stage data preprocessing pipeline that transforms one raw daily record, as described above, into formatted training sequences:
+\begin{enumerate}
+  \item \textbf{Trajectory Extraction}: administrative header metadata columns are stripped, retaining only cell attachment sequences and event timestamps.
+  \item \textbf{Temporal Token Prepending}: event timestamps are converted into explicit hourly tokens (\cid{<H00>}--\cid{<H23>}) prepended to each cell identifier.
+  \item \textbf{Subscriber Sequence Assembly}: single-subscriber daily attachment records are formatted into ordered sequence strings.
+  \item \textbf{Stratified Population Split}: subscribers are partitioned into disjoint training and held-out test cohorts prior to model training.
+\end{enumerate}
+As depicted by the separate training and test circles, partitioning is performed strictly by subscriber ID, ensuring no individual appears in both splits and preventing memorization leakage. Trajectory volume stratification ensures both cohorts maintain identical distributions of short and long daily histories.
+
 \input{figures/fig-data-flow}
-
-\textbf{Figure~\ref{fig:data-flow}} details the four-stage data preprocessing pipeline used to transform raw network logs into formatted training sequences:
-1. \textbf{Trajectory Extraction}: administrative header metadata columns are stripped, retaining only cell attachment sequences and event timestamps.
-2. \textbf{Temporal Token Prepending}: event timestamps are converted into explicit hourly tokens (\cid{<H00>}--\cid{<H23>}) prepended to each cell identifier.
-3. \textbf{Subscriber Sequence Assembly}: single-subscriber daily attachment records are formatted into ordered sequence strings.
-4. \textbf{Stratified Population Split}: subscribers are partitioned into disjoint training and held-out test cohorts prior to model training.
-
-As depicted by the separate training and test circles in \textbf{Figure~\ref{fig:data-flow}}, partitioning is performed strictly by subscriber ID, ensuring no individual appears in both splits and preventing memorization leakage. Trajectory volume stratification ensures both cohorts maintain identical distributions of short and long daily histories.
 
 \subsection{Characteristics of Experimental Cohorts}
 
+\textbf{Table~\ref{tab:datasets}} summarizes the six experimental dataset cohorts created during this study: training and evaluation subscriber counts (always distinct subscribers), average daily record volume per subscriber, and the persistence baseline accuracy on the test subscribers, which is the reference every result of the corresponding chapter is compared against. The creation of distinct dataset cohorts resulted from evolving research requirements across experimental iterations: incorporating hourly features required regenerating token sequences with temporal tags; evaluating population scaling required larger single-day extractions; and multi-day scaling required concatenating eleven distinct daily logs.
+
 \input{tables/tab-datasets}
 
-\textbf{Table~\ref{tab:datasets}} summarizes the six experimental dataset cohorts created during this study, detailing training and evaluation subscriber counts, average daily record volume per subscriber, and corresponding persistence baseline accuracy scores. The creation of distinct dataset cohorts resulted from evolving research requirements across experimental iterations: incorporating hourly features required regenerating token sequences with temporal tags; evaluating population scaling required larger single-day extractions; and multi-day scaling required concatenating eleven distinct daily logs. 
-
-Crucially, the baseline score column in \textbf{Table~\ref{tab:datasets}} shifts due to changes in subscriber population mobility characteristics rather than modifications to the baseline definition itself. The single-line persistence rule remains identical across all cohorts; its accuracy varies because subscriber mobility distributions differ. Consequently, raw accuracy scores from different dataset cohorts must never be compared directly; all performance gains must be evaluated relative to the baseline of their respective cohort. For \Dmob{}, \textbf{Table~\ref{tab:datasets}} reports two baseline scores: 45.5\% evaluated on the final 20\% prefix context split, and 43.1\% evaluated sequentially across all trajectory positions (a harder benchmark introduced in the sixth iteration).
+The baseline column, ranging from 69.2\% to 43.1\%, illustrates the population dependency established above: the rule is identical in every row, only the subscribers change. Consequently, raw accuracy scores from different dataset cohorts must never be compared directly; all performance gains must be evaluated relative to the baseline of their respective cohort. For \Dmob{}, the table reports two baseline scores: 45.5\% evaluated on the final 20\% of each test day, and 43.1\% evaluated sequentially across all trajectory positions (a strictly harder benchmark introduced in the sixth iteration).
 
 \section{Scope and Methodological Limitations}
 

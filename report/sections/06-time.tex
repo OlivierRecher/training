@@ -13,9 +13,9 @@ The central research objective evaluated in this chapter is to investigate wheth
 
 Individual subscriber error analysis revealed specific trajectories where model accuracy degraded sharply as context length increased.
 
-\input{tables/tab-context-collapse}
+\textbf{Table~\ref{tab:context-collapse}} scores eight representative subscribers twice with the same trained model, once under a short history prefix (30\%--60\% of the day) and once under a long one (80\%--90\%); the \textbf{Change} column is the second score minus the first. More history should help or at worst do nothing, which is what rows 1--3 show, and across the whole population the two scores correlate strongly ($r = 0.77$), so predictability is an intrinsic subscriber trait rather than an artifact of the context split. The bottom four entries (rows 5--8), however, collapse to near 0\%. With an 80\%--90\% prefix, the moments left to predict fall in the late afternoon and evening; without explicit temporal tokens, the model keeps repeating the morning cell, with up to 78\% output probability, at the exact time these subscribers begin their evening commute. Sequence context alone, without temporal encoding, fails to distinguish late-day transition probability shifts from mid-day stationary patterns.
 
-\textbf{Table~\ref{tab:context-collapse}} details eight representative subscriber trajectories evaluated under short history prefixes (30\%--60\%) versus long history prefixes (80\%--90\%). Across the overall population, individual accuracy scores under short vs. long context fractions correlate strongly ($r = 0.77$), confirming that predictability is primarily an intrinsic subscriber trait rather than a context split artifact (Rows 1--3). However, the lower four entries (Rows 5--8) exhibit severe accuracy collapse, dropping to near 0\% when evaluated on complete evening prefixes compared to initial morning segments. When provided with an 80\%--90\% context prefix, the target evaluation moments fall in the late afternoon and evening; without explicit temporal tokens, the model continues to repeat morning cell attachments with up to 78\% output probability confidence at the exact time subscribers initiate evening commutes. This empirical degradation indicates that sequence context alone without temporal encoding fails to distinguish late-day transition probability shifts from mid-day stationary patterns.
+\input{tables/tab-context-collapse}
 
 \section{Temporal Feature Representation and Experimental Hypotheses}
 
@@ -32,24 +32,28 @@ Initial loss weighting experiments assigned heuristic transition windows based o
 
 To verify whether the model actively utilizes temporal tokens rather than ignoring them as sequence noise, an ablation experiment was performed.
 
+\textbf{\panelref{fig:hour-ablation}{a}} shows the input format and the weighting schedule: each event enters the sequence as an hour token followed by a cell token, and errors count twice at 04h--05h and four times at 18h--19h. \textbf{\panelref{fig:hour-ablation}{b}} shows the corruptions: the same trained model is re-evaluated on the same subscribers with the hour tokens altered and the cell tokens left untouched. \textbf{\panelref{fig:hour-ablation}{c}} and \textbf{\panelref{fig:hour-ablation}{d}} compare the resulting top-1 accuracies (\Dmob{}, 80\% context, 1,747 evaluated moments):
+\begin{enumerate}
+  \item \textbf{Uncorrupted reference} (44.7\%): correct hour tokens at every position.
+  \item \textbf{Constant dummy tokens} (44.0\%, $-0.7\%$): every hour token replaced by \cid{<H12>}, which deletes the temporal information.
+  \item \textbf{Shuffled temporal tokens} (41.7\%, $-3.0\%$): hour tokens shuffled across positions, so real hours are attached to the wrong events.
+  \item \textbf{+12-hour label shift} (45.2\%, $+0.5\%$): every hour moved forward by 12 (\cid{<H07>} $\rightarrow$ \cid{<H19>}), which preserves the ordering but swaps day and night labels.
+\end{enumerate}
+
 \input{figures/fig-hour-ablation}
 
-\textbf{Figure~\ref{fig:hour-ablation}} illustrates the temporal weighting schedule in \textbf{\panelref{fig:hour-ablation}{a}}, three experimental token corruption strategies in \textbf{\panelref{fig:hour-ablation}{b}}, and model performance comparisons in \textbf{\panelref{fig:hour-ablation}{c}} and \textbf{\panelref{fig:hour-ablation}{d}}:
-1. \textbf{Uncorrupted Reference} (44.7\% top-1 accuracy): correct hourly tokens assigned to event positions.
-2. \textbf{Constant Dummy Tokens} (44.0\% accuracy, $-0.7\%$): replacing all hour tokens with a uniform \cid{<H12>} token, stripping temporal information.
-3. \textbf{Shuffled Temporal Tokens} (41.7\% accuracy, $-3.0\%$): randomly shuffling hour tokens across trajectory positions, corrupting temporal ordering while preserving hour symbol frequency.
-4. \textbf{+12-Hour Label Shift} (45.2\% accuracy, $+0.5\%$): shifting all hour tokens forward by 12 hours (\cid{<H07>} $\rightarrow$ \cid{<H19>}), preserving temporal ordering while swapping day and night labels.
-
-As demonstrated in \textbf{\panelref{fig:hour-ablation}{c}}, corrupting temporal ordering via shuffling causes $4\times$ the performance drop of replacing hours with constant dummy tokens ($-3.0\%$ vs. $-0.7\%$). If the model were ignoring temporal tokens, corrupting sequence ordering could not incur a larger penalty than total symbol removal. Furthermore, as shown in \textbf{\panelref{fig:hour-ablation}{d}}, shifting hour labels by +12h inverts temporal difficulty: top-1 accuracy falls from 42.7\% to 39.7\% inside upweighted transition windows, while rising from 45.3\% to 47.1\% outside them, effectively swapping day and night performance. This extreme sensitivity confirms that the model actively conditions transition probability distributions on temporal token ordering, validating Hypothesis 1.
+Shuffling costs about $4\times$ as much as deleting the hours ($-3.0\%$ vs.\ $-0.7\%$, \textbf{\panelref{fig:hour-ablation}{c}}). If the model ignored the hour tokens, corrupting their ordering could not cost more than removing them altogether. The small overall effect of the +12h shift is not indifference either: inside the upweighted windows, top-1 accuracy falls from 42.7\% to 39.7\%, while outside them it rises from 45.3\% to 47.1\% (\textbf{\panelref{fig:hour-ablation}{d}}), so the two halves of the day exchanged their difficulty along with their labels. The model actively conditions its transition probabilities on the hour tokens, which validates Hypothesis 1.
 
 \subsection{Evaluation of Weighted Loss and Targeted Sampling}
 
 To test Hypothesis 2, three joint modifications were implemented:
-1. \textbf{Unequal Loss Weighting}: 18:00--20:00 transitions received a $4\times$ loss multiplier; 04:00--06:00 transitions received $2\times$.
-2. \textbf{Targeted Sequence Sampling}: Sequences containing transition window events were sampled $3\times$ more frequently during batch generation, increasing transition batch representation from 45.1\% to 71.2\%.
-3. \textbf{Full-Trajectory Evaluation Protocol}: Evaluation shifted from scoring exclusively the final 20\% prefix to scoring all trajectory event steps sequentially (reducing persistence baseline score from 45.5\% to 43.1\%).
+\begin{enumerate}
+  \item \textbf{Unequal loss weighting}: 18:00--20:00 transitions received a $4\times$ loss multiplier and 04:00--06:00 transitions $2\times$.
+  \item \textbf{Targeted sequence sampling}: training sequences containing a transition-window event were sampled $3\times$ more often, raising their share of the batches from 45.1\% to 71.2\%.
+  \item \textbf{Full-trajectory evaluation protocol}: evaluation moved from scoring only the final 20\% of each trajectory to scoring every event step, which lowers the persistence baseline from 45.5\% to 43.1\%.
+\end{enumerate}
 
-\textbf{Figure~\ref{fig:targeted-sampling}} and \textbf{Table~\ref{tab:after-sampling}} evaluate the performance impact of these targeted optimization adjustments.
+\textbf{Figure~\ref{fig:targeted-sampling}} and \textbf{Table~\ref{tab:after-sampling}} evaluate the effect of these adjustments on the 100 held-out subscribers.
 
 \input{figures/fig-targeted-sampling}
 
@@ -57,18 +61,16 @@ To test Hypothesis 2, three joint modifications were implemented:
 
 \subsection{Analysis of Empirical Window Misalignment}
 
-Comparing the four bar pairs in \textbf{Figure~\ref{fig:targeted-sampling}} demonstrates that applying loss weighting and targeted sampling yields a +2.6 percentage point accuracy gain within the 18:00--20:00 window (604 evaluation moments; 40.6\% model vs. 37.9\% baseline, second bar pair of \textbf{Figure~\ref{fig:targeted-sampling}}) and +2.3 percentage points across both windows combined (732 moments; 45.9\% vs. 43.6\%, third bar pair of \textbf{Figure~\ref{fig:targeted-sampling}}). (The 04:00--06:00 window contains only 128 moments and yields a minor +0.8\% delta; 71.1\% vs. 70.3\%).
+Each bar pair of \textbf{Figure~\ref{fig:targeted-sampling}} is one group of evaluated moments, with its size printed under the label; grey-blue is the persistence baseline and dark blue the model, on exactly the same moments. Within the 18:00--20:00 window (604 moments), the model gains +2.6\,\% (40.6\% vs.\ 37.9\%), and +2.3\,\% across both windows combined (732 moments; 45.9\% vs.\ 43.6\%): the first time in the project that a trained model beat the baseline on a segment chosen in advance. The 04:00--06:00 window rests on only 128 moments and its +0.8\,\% (71.1\% vs.\ 70.3\%) reads as ``not worse'' rather than as a win. The fourth pair, everything outside the windows, carries 7,893 moments, more than ten times the volume of the gain, and there the model loses $-2.6$\,\% (40.8\% vs.\ 43.4\%).
 
-However, across the non-weighted temporal intervals (the fourth bar pair of \textbf{Figure~\ref{fig:targeted-sampling}}), model accuracy declines by $-2.6$ percentage points (40.8\% model vs. 43.4\% baseline across 7,893 moments). \textbf{Table~\ref{tab:after-sampling}} confirms that this non-target performance degradation holds consistently across all seven context fraction cuts (with model performance trailing the baseline by $-1.1\%$ to $-2.8\%$ and top-3/top-5 accuracy falling by 2.6--4.8 percentage points), demonstrating that non-target cell predictions left the model's top candidates entirely.
+\textbf{Table~\ref{tab:after-sampling}} shows that this loss outside the windows is not an artifact of one cut. Each row is a context fraction (``30\%'' means the first 30\% of each day is given as history), and the distances before and after are model minus baseline on the non-target moments. At all seven cuts the model now trails the baseline, by $-1.1\%$ to $-2.8\%$, and top-3 and top-5 accuracy fall by 2.6\,\% to 4.8\,\%: the correct cell has not slipped from first to second place, it has left the model's top candidates entirely.
 
-Loss weighting effectively reallocates model optimization focus toward targeted temporal intervals. However, empirical evaluation revealed that the heuristic transition windows were not intrinsically harder than average: on full test trajectories, the persistence baseline scores 43.6\% \emph{inside} the guessed windows versus 43.4\% \emph{outside} them in \textbf{Figure~\ref{fig:targeted-sampling}}. Furthermore, early morning hours (04:00--06:00) represent high regularity periods across all user cohorts (baseline accuracy 49\%--64\%). As documented by Song et al.\ \textbf{\cite{song2010limits}}, nocturnal hours exhibit maximum trajectory regularity, whereas transition difficulty dips around midday and early evening. Upweighting globally fixed hours applied uniformly across all subscribers failed to account for individual temporal mobility variations.
-
-Because optimal transition windows vary across individual subscriber behaviors, global fixed temporal loss weighting is suboptimal. This insight motivates the user behavioral stratification approach presented in Chapter~\ref{ch:groups}.
+Loss weighting therefore reallocates the model's optimization focus toward the targeted intervals, a trade worth making only if those intervals are the hard ones. They were not: on full test trajectories, the persistence baseline scores 43.6\% \emph{inside} the guessed windows versus 43.4\% \emph{outside} them (\textbf{Figure~\ref{fig:targeted-sampling}}). Early morning hours (04:00--06:00) are in fact highly regular across all user cohorts (baseline accuracy 49\%--64\%). As documented by Song et al.\ \textbf{\cite{song2010limits}}, nocturnal hours exhibit maximum trajectory regularity, whereas transition difficulty dips around midday and early evening. Globally fixed hours, applied uniformly across all subscribers, fail to account for individual temporal mobility variations. This motivates the behavioral stratification approach presented in Chapter~\ref{ch:groups}.
 
 \section{Conclusion}
 \label{sec:retro-time}
 
-This chapter validated the integration of explicit temporal tokens (\cid{<H00>}--\cid{<H23>}). Ablation analysis demonstrated that shuffling temporal tokens causes a 3.0 percentage point accuracy drop (\textbf{\panelref{fig:hour-ablation}{c}} and \textbf{\panelref{fig:hour-ablation}{d}}), confirming that model predictions depend on temporal sequence ordering.
+This chapter validated the integration of explicit temporal tokens (\cid{<H00>}--\cid{<H23>}). Ablation analysis demonstrated that shuffling temporal tokens causes a 3.0\,\% accuracy drop (\textbf{\panelref{fig:hour-ablation}{c}} and \textbf{\panelref{fig:hour-ablation}{d}}), confirming that model predictions depend on temporal sequence ordering.
 
-Conversely, applying globally fixed hourly loss weighting (04:00--06:00 and 18:00--20:00) demonstrated that while loss weighting successfully forces local optimization (+2.6 percentage points at 18:00--20:00 in \textbf{Figure~\ref{fig:targeted-sampling}}), applying fixed hours across all subscribers penalizes non-targeted intervals. Because temporal mobility patterns differ significantly across subscribers, effective transition loss weighting requires individual user cohort stratification, as detailed in Chapter~\ref{ch:groups}.
+Conversely, applying globally fixed hourly loss weighting (04:00--06:00 and 18:00--20:00) demonstrated that while loss weighting successfully forces local optimization (+2.6\,\% at 18:00--20:00 in \textbf{Figure~\ref{fig:targeted-sampling}}), applying fixed hours across all subscribers penalizes non-targeted intervals. Because temporal mobility patterns differ significantly across subscribers, effective transition loss weighting requires individual user cohort stratification, as detailed in Chapter~\ref{ch:groups}.
 

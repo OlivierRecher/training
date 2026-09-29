@@ -23,25 +23,21 @@ Each candidate metric was correlated with individual model prediction accuracy u
 
 where $n$ represents subscriber count, $x_i$ denotes candidate feature value for subscriber $i$, $y_i$ represents top-1 prediction accuracy for subscriber $i$, and $\bar{x}, \bar{y}$ denote sample means.
 
+\textbf{Figure~\ref{fig:concentration}} ranks the candidate metrics by their Pearson coefficient $r$, measured on 1,173 subscribers of \Draw{} (dark blue) and on 100 held-out subscribers of \Dmob{} (teal); a bar pointing left means that more of the property goes with lower accuracy. The primary determinant of predictability is cell transition frequency, formalized as the \textbf{cell-switch rate}: the proportion of consecutive event records in a subscriber trajectory that register a change in cell identifier, near 0\% for stationary subscribers and approaching 100\% for highly mobile ones. It correlates inversely with prediction accuracy, at $r = -0.971$ on \Draw{} and $r = -0.773$ on \Dmob{}: \emph{higher cell transition frequency goes with lower prediction accuracy}. The first value is close to arithmetic, since a subscriber's cell-switch rate is the mirror image of persistence baseline accuracy on that subscriber, so any model imitating the baseline earns a strong negative coefficient before anything is learned. Primary cell concentration ($r = +0.696$) and transition temporal entropy ($r = -0.811$) reflect the same underlying repetitiveness from other angles. The remaining features stay below $|r| = 0.24$: unique cell count ($r = -0.232$), prediction instance count ($r = -0.101$) and total trajectory length ($r = +0.054$) exert negligible influence on individual predictability.
+
 \input{figures/fig-concentration}
-
-\textbf{Figure~\ref{fig:concentration}} ranks candidate subscriber-level metrics by Pearson correlation coefficient $r$ evaluated across 1,173 subscribers on \Draw{} (dark blue) and 100 held-out subscribers on \Dmob{} (teal). The primary determinant of predictability is cell transition frequency, formalized as the \textbf{cell-switch rate}. For a given subscriber trajectory, the cell-switch rate measures the proportion of consecutive event records registering a change in cell identifier. Stationary subscribers exhibit cell-switch rates near 0\%, whereas highly mobile subscribers approach 100\%. Cell-switch rate demonstrates a strong inverse correlation with prediction accuracy ($r = -0.971$ across raw log subscribers and $r = -0.773$ across held-out mobile subscribers): \emph{higher cell transition frequency strongly correlates with lower prediction accuracy}. Complementary measures of trajectory repetitiveness---such as primary cell concentration concentration ($r = +0.696$) and transition temporal entropy ($r = -0.811$)---reflect the same underlying property from alternative perspectives.
-
-\textbf{Figure~\ref{fig:concentration}} also demonstrates that alternative candidate features exhibit minimal correlation with model accuracy ($|r| < 0.24$): unique cell count ($r = -0.232$), prediction instance count ($r = -0.101$), and total trajectory length ($r = +0.054$) exert negligible influence on individual predictability. Because a subscriber's cell-switch rate is the arithmetic mirror image of persistence baseline accuracy, high baseline repetitiveness inherently yields a strong negative correlation coefficient.
 
 \subsection{Quintile Stratification Analysis}
 
+\textbf{Figure~\ref{fig:switch-rate}} tests this dependency without relying on a scalar coefficient: subscribers are sorted by cell-switch rate and cut into equal cohorts, quintiles of 500 subscribers on \Draw{} in \textbf{\panelref{fig:switch-rate}{a}} and quartiles of 100 held-out subscribers on \Dmob{} in \textbf{\panelref{fig:switch-rate}{b}}, with mobility increasing from left to right. In each pair of bars, grey-blue is the persistence baseline and dark blue the fine-tuned model, both scored on exactly the same moments, and the number above the pair is the difference between them.
+
 \input{figures/fig-switch-rate}
 
-\textbf{Figure~\ref{fig:switch-rate}} validates this dependency without relying exclusively on scalar correlation coefficients by stratifying subscribers into equal mobility cohorts based on cell-switch rate. \textbf{\panelref{fig:switch-rate}{a}} evaluates 500 subscribers on \Draw{} partitioned into quintiles, while \textbf{\panelref{fig:switch-rate}{b}} evaluates 100 held-out subscribers on \Dmob{} partitioned into quartiles.
-
-To verify that individual difficulty reflects intrinsic subscriber behavior rather than evaluation prefix length artifacts, cross-context stability was evaluated. The correlation between individual subscriber accuracy at 30\% context fraction versus 80\% context fraction reaches $r = 0.77$ (\textbf{Table~\ref{tab:context-collapse}} in Chapter~\ref{ch:time}), confirming that predictability is an intrinsic subscriber trajectory property.
+To verify that individual difficulty reflects intrinsic subscriber behavior rather than an artifact of the evaluation prefix length, cross-context stability was evaluated: individual accuracy at a 30\% context fraction and at an 80\% context fraction correlate at $r = 0.77$ (\textbf{Table~\ref{tab:context-collapse}} in Chapter~\ref{ch:time}), confirming that predictability is an intrinsic property of the subscriber trajectory.
 
 \subsection{Performance Breakdown across Restlessness Segments}
 
-\textbf{\panelref{fig:switch-rate}{a}} highlights model performance across cell-switch quintiles on \Draw{}. For the lowest cell-switch quintile (subscribers who never change cell ID), both the fine-tuned model and the persistence baseline achieve 100\% prediction accuracy. Across the three lowest cell-switch quintiles (low mobility), fine-tuned model accuracy and persistence baseline performance remain virtually identical. Model accuracy gains over the baseline manifest exclusively within the two highest cell-switch quintiles (high mobility), exceeding baseline performance by +3.7 percentage points (56.5\% vs. 52.8\%) and +7.8 percentage points (34.4\% vs. 26.6\%), respectively.
-
-However, high cell-switch subscribers account for only 18.5\% of total evaluated prediction instances in \textbf{\panelref{fig:switch-rate}{a}}, with the highest cell-switch quintile representing 5.6\% of total volume. Achieving a +7.8 percentage point improvement on 5.6\% of total evaluation volume yields a negligible shift in aggregate population accuracy. On the unconditioned mobile cohort in \textbf{\panelref{fig:switch-rate}{b}}, the model trails the baseline across the three lower mobility quartiles (-7.1\%, -5.3\%, and -3.4\%) and draws level (+0.6\%) only in the highest mobility quartile. This establishes a key reporting convention: \emph{aggregate population accuracy averages distinct mobility cohorts; reporting segment-specific accuracy relative to baseline benchmarks is required to capture true model contributions.}
+On \Draw{} (\textbf{\panelref{fig:switch-rate}{a}}), the lowest quintile, subscribers who never change cell ID, is predicted at 100\% by both the model and the baseline, while the highest quintile plateaus at 34.4\%: 65 correct answers per hundred separate the two ends of a single population under one trained model. Across the three lowest quintiles the two bars are virtually identical. The model pulls ahead only in the two highest quintiles, by +3.7\,\% (56.5\% vs.\ 52.8\%) and +7.8\,\% (34.4\% vs.\ 26.6\%), and these hold only 18.5\% of the evaluated prediction instances, the highest quintile alone 5.6\%. A +7.8\,\% improvement on 5.6\% of the evaluation volume barely shifts aggregate accuracy. On the independent held-out cohort of \textbf{\panelref{fig:switch-rate}{b}}, the ordering is the same but the result is negative: the model trails the baseline in the three lower mobility quartiles ($-7.1$\,\%, $-5.3$\,\% and $-3.4$\,\%) and draws level ($+0.6$\,\%) only in the highest. This establishes a key reporting convention: \emph{aggregate population accuracy averages distinct mobility cohorts; reporting segment-specific accuracy relative to baseline benchmarks is required to capture true model contributions.}
 
 \section{Impact of User Activity Volume on Aggregate Metrics}
 
@@ -53,21 +49,25 @@ However, event volume does not correlate strongly with prediction accuracy ($r =
 
 Analyzing error cases at individual subscriber resolution reveals that a portion of prediction errors stems from cell-level vs. base-station-level definitions.
 
-\input{tables/tab-worst-users}
+\textbf{Table~\ref{tab:worst-users}} lists the seven lowest-scoring subscribers of the whole test set on \Dfilt{}, every one at or below 12.5\% accuracy. \texttt{user\_id} is the anonymous number the operator assigned to the subscriber for that day, \textbf{Moments} the number of evaluated moments they contribute, and \textbf{Ceiling} the best score reachable given the cells present in their own history. These worst cases fall into three distinct failure modes:
+\begin{enumerate}
+  \item \textbf{Low record volume} (rows 1--4): subscribers contributing between 2 and 12 evaluation moments, where small samples produce high variance (3 moments can only yield 0\%, 33\%, 67\% or 100\%).
+  \item \textbf{Genuine trajectory change} (row 5): a learnable behavioral shift that both baseline and model miss (ceiling 89\%, baseline 67\%, model 11.1\%).
+  \item \textbf{Intra-site sector hand-offs} (rows 6--7): subscribers oscillating between adjacent sector antennas of the same physical mast (e.g.\ \cid{UKVCHE102} and \cid{UKVCHE104}). The ceiling is 100\% and the baseline reaches 50\%--67\% by repeating sector IDs, while the model, attempting to forecast the sector switches, scores 0\% despite zero physical displacement.
+\end{enumerate}
 
-\textbf{Table~\ref{tab:worst-users}} details the seven lowest-scoring subscriber trajectories ($\le 12.5\%$ accuracy) on \Dfilt{}. Analysis partitions these worst-case trajectories into three distinct failure modes:
-1. \textbf{Low Record Volume} (Rows 1--4): subscribers contributing between 2 and 12 evaluation moments, where small sample sizes introduce high variance (e.g. 3 moments yield discrete scores of 0\%, 33\%, 67\%, or 100\%).
-2. \textbf{Genuine Trajectory Change} (Row 5): a true subscriber behavioral shift where baseline and model both fail (ceiling 89\%, baseline 67\%, model 11.1\%).
-3. \textbf{Intra-Site Sector Hand-offs} (Rows 6--7): subscribers oscillating between adjacent directional sector antennas mounted on the same physical base station mast (e.g. \cid{UKVCHE102} and \cid{UKVCHE104}). For these trajectories, the theoretical ceiling is 100\% and the persistence baseline achieves 50\%--67\% accuracy by repeating sector IDs; the model attempts to forecast specific sector switching, scoring 0\% despite zero physical spatial displacement.
+\input{tables/tab-worst-users}
 
 Maintaining granular \cid{cell\_id} target prediction fulfills the cell-level forecasting mandate, even though a fraction of prediction errors represents intra-site sector handovers rather than geographical mobility.
 
 \section{Summary of Key Findings and Temporal Hypothesis}
 
 Three empirical findings summarize this chapter:
-1. Individual trajectory predictability is dictated primarily by cell-switch frequency (repetitiveness).
-2. Fine-tuned language model accuracy gains concentrate within high mobility cohorts representing a minor fraction of total evaluation events.
-3. Intra-site sector transitions account for a systematic fraction of cell-level prediction errors.
+\begin{enumerate}
+  \item Individual trajectory predictability is dictated primarily by cell-switch frequency (repetitiveness).
+  \item Fine-tuned language model accuracy gains concentrate within high mobility cohorts representing a minor fraction of total evaluation events.
+  \item Intra-site sector transitions account for a systematic fraction of cell-level prediction errors.
+\end{enumerate}
 
 Because scaling general capacity does not alter low-mobility baseline bounds, improving high-mobility transition forecasting requires temporal conditioning signals (hour of day) to anticipate transitions.
 
@@ -76,5 +76,5 @@ Because scaling general capacity does not alter low-mobility baseline bounds, im
 
 This chapter demonstrated that trajectory predictability is primarily governed by subscriber mobility characteristics rather than model parameter scale. Cell-switch rate represents the single strongest predictor of accuracy ($r = -0.773$), whereas trajectory length and unique cell counts exhibit minimal correlation ($|r| < 0.24$).
 
-Model accuracy gains over persistence baselines concentrate within high mobility cohorts (+7.8 percentage points in the highest cell-switch quintile of \textbf{\panelref{fig:switch-rate}{a}}). Because high mobility subscribers generate a minority of total event volume, aggregate population accuracy shifts marginally. These findings establish the necessity of reporting cohort-stratified accuracy deltas throughout mobility prediction research.
+Model accuracy gains over persistence baselines concentrate within high mobility cohorts (+7.8\,\% in the highest cell-switch quintile of \textbf{\panelref{fig:switch-rate}{a}}). Because high mobility subscribers generate a minority of total event volume, aggregate population accuracy shifts marginally. These findings establish the necessity of reporting cohort-stratified accuracy deltas throughout mobility prediction research.
 
