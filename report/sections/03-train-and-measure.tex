@@ -5,8 +5,8 @@
 
 Establishing a rigorous modeling and evaluation methodology required resolving two primary technical questions:
 \begin{enumerate}
-  \item \emph{Given constrained computational hardware (a single GPU instance), which model architecture and parameter-efficient fine-tuning method offer feasibility and training efficiency?}
-  \item \emph{What evaluation protocols are necessary to ensure that reported accuracy improvements represent genuine trajectory modeling rather than dataset artifacts?}
+  \item Given constrained computational hardware (a single GPU instance), which model architecture and parameter-efficient fine-tuning method offer feasibility and training efficiency?
+  \item What evaluation protocols are necessary to ensure that reported accuracy improvements represent genuine trajectory modeling rather than dataset artifacts?
 \end{enumerate}
 
 The selection of model architecture and fine-tuning mechanics remained fixed across experimental iterations, ensuring consistent cross-experiment comparisons. The second question led to three fundamental evaluation principles designed to prevent false positives and over-estimation of baseline performance gains.
@@ -32,6 +32,9 @@ However, full training of Mistral-7B required 5.5 hours per run on a single T4 G
 Because next-cell prediction across 369 discrete vocabulary items requires modeling localized spatial transition patterns rather than general world knowledge or natural language reasoning, the smaller model offers adequate capacity. The $14\times$ parameter reduction provided a $23\times$ speedup per run, enabling extensive experimental iteration within computational constraints.
 
 \textbf{Figure~\ref{fig:toolchain}} illustrates the software and hardware stack utilized throughout this study, read from the bottom up:
+
+\input{figures/fig-toolchain}
+
 \begin{itemize}
   \item \textbf{Hardware Execution Layer} (bottom): Google Colab single NVIDIA T4 GPU instances (16\,GB VRAM), establishing the primary computational memory constraint.
   \item \textbf{Model \& Quantization Layer}: Qwen2.5-0.5B base parameters quantized to 4-bit precision using \texttt{bitsandbytes}.
@@ -39,8 +42,6 @@ Because next-cell prediction across 369 discrete vocabulary items requires model
   \item \textbf{Custom Modeling Layer} (top): custom Python training and evaluation routines implementing weighted cross-entropy loss, dynamic sequence sampling, per-group LoRA adapter routing, and evaluation protocols. Reaching inside the training step to implement this loss weighting and parameter routing was the primary requirement governing the choice of the whole toolchain.
   \item \textbf{Analytical Tooling} (right): the standard scientific libraries \texttt{pandas}, \texttt{scikit-learn} and \texttt{scipy}, which handle offline data splitting, feature engineering, and statistical bootstrap resampling \textbf{\cite{efron1993bootstrap}} without touching neural network parameters.
 \end{itemize}
-
-\input{figures/fig-toolchain}
 
 \section{Data Representation and Tokenization Scheme}
 
@@ -92,13 +93,11 @@ Each test trajectory is split once into a historical prefix handed to the model 
 
 \section{Evaluation Methodology Principles}
 
-Three evaluation principles emerged from the early experiments; \textbf{Figure~\ref{fig:three-rules}} draws one per panel, and each subsection below explains one panel.
-
-\input{figures/fig-three-rules}
-
 \subsection{Principle 1: Early Stopping and Overfitting Mitigation}
 
-This principle corresponds to \textbf{\panelref{fig:three-rules}{a}}. Fine-tuning language models on small trajectory datasets leads to severe overfitting when trained for too many epochs. \textbf{Figure~\ref{fig:validation-curves}} shows four training runs on four datasets: the horizontal axis counts training passes, the vertical axis is accuracy on unseen held-out subscribers, the solid line is the model with a star at its best pass, and the dashed line is the persistence baseline on the same subscribers. In all four panels, validation accuracy peaks within 4 to 9 passes and then declines, while training loss keeps decreasing: the model has moved from learning how the population moves to memorizing its training examples.
+This principle corresponds to \textbf{Figure~\ref{fig:rule-peak}}. Fine-tuning language models on small trajectory datasets leads to severe overfitting when trained for too many epochs. \textbf{Figure~\ref{fig:validation-curves}} shows four training runs on four datasets: the horizontal axis counts training passes, the vertical axis is accuracy on unseen held-out subscribers, the solid line is the model with a star at its best pass, and the dashed line is the persistence baseline on the same subscribers. In all four panels, validation accuracy peaks within 4 to 9 passes and then declines, while training loss keeps decreasing: the model has moved from learning how the population moves to memorizing its training examples.
+
+\input{figures/fig-rule-peak}
 
 \input{figures/fig-validation-curves}
 
@@ -108,7 +107,9 @@ In the extended 49-epoch run of \textbf{\panelref{fig:validation-curves}{a}}, va
 
 \subsection{Principle 2: Context Fraction and Evaluation Split Sensitivity}
 
-This principle corresponds to \textbf{\panelref{fig:three-rules}{b}}. The prefix context fraction (share of the trajectory provided to the model before prediction) directly affects task difficulty and baseline performance. \textbf{Table~\ref{tab:context-sweep}} presents model performance across context fractions from 30\% to 90\% on \Dfilt{} and \Dmob{}: \textbf{Rule} is the persistence baseline on the same steps, and \textbf{Distance}, model minus baseline, is the only column that compares like with like. Moving the cut alters the baseline score itself, because it shifts which event counts as ``the most recent cell.'' On \Dfilt{}, evaluating at an 80\% context fraction yields 80.1\% model accuracy against a 79.0\% persistence baseline (+1.1\%), whereas evaluating at a 70\% context fraction trails the baseline by 0.3\%. On \Dmob{}, absolute model accuracy increases from 41.5\% to 47.6\% as the context fraction expands from 30\% to 90\%; however, baseline accuracy increases at an identical rate (42.9\% to 50.9\%), leaving the performance delta negative across all cuts (these \Dmob{} rows are one model read at seven cuts, hence their identical \textbf{Valid.} column, whereas each \Dfilt{} row is a separate run). Consequently, apparent accuracy gains resulting strictly from expanding historical context represent measurement ruler artifacts rather than model improvements, requiring context fractions to be held constant during comparative evaluations.
+This principle corresponds to \textbf{Figure~\ref{fig:rule-cut}}. The prefix context fraction (share of the trajectory provided to the model before prediction) directly affects task difficulty and baseline performance. \textbf{Table~\ref{tab:context-sweep}} presents model performance across context fractions from 30\% to 90\% on \Dfilt{} and \Dmob{}: \textbf{Rule} is the persistence baseline on the same steps, and \textbf{Distance}, model minus baseline, is the only column that compares like with like. Moving the cut alters the baseline score itself, because it shifts which event counts as ``the most recent cell.'' On \Dfilt{}, evaluating at an 80\% context fraction yields 80.1\% model accuracy against a 79.0\% persistence baseline (+1.1\%), whereas evaluating at a 70\% context fraction trails the baseline by 0.3\%. On \Dmob{}, absolute model accuracy increases from 41.5\% to 47.6\% as the context fraction expands from 30\% to 90\%; however, baseline accuracy increases at an identical rate (42.9\% to 50.9\%), leaving the performance delta negative across all cuts (these \Dmob{} rows are one model read at seven cuts, hence their identical \textbf{Valid.} column, whereas each \Dfilt{} row is a separate run). Consequently, apparent accuracy gains resulting strictly from expanding historical context represent measurement ruler artifacts rather than model improvements, requiring context fractions to be held constant during comparative evaluations.
+
+\input{figures/fig-rule-cut}
 
 \input{tables/tab-context-sweep}
 
@@ -116,13 +117,15 @@ This principle corresponds to \textbf{\panelref{fig:three-rules}{b}}. The prefix
 
 \subsection{Principle 3: Baseline Upper Bounds and Task Room Constraints}
 
-This principle corresponds to \textbf{\panelref{fig:three-rules}{c}}. On unfiltered daily logs, the persistence baseline achieves 69.2\% accuracy due to high stationary periods. A model achieving 64.4\% accuracy on such raw data has not failed in learning mobility patterns; rather, it has been evaluated on a benchmark dominated by stationary trivial predictions. Restricting benchmarks to active mobile trajectories (reducing baseline score to 45.5\%) creates a viable dynamic evaluation range.
+This principle corresponds to \textbf{Figure~\ref{fig:rule-room}}. On unfiltered daily logs, the persistence baseline achieves 69.2\% accuracy due to high stationary periods. A model achieving 64.4\% accuracy on such raw data has not failed in learning mobility patterns; rather, it has been evaluated on a benchmark dominated by stationary trivial predictions. Restricting benchmarks to active mobile trajectories (reducing baseline score to 45.5\%) creates a viable dynamic evaluation range.
+
+\input{figures/fig-rule-room}
 
 \FloatBarrier
 
 \subsection{Methodological Implications for Hyperparameter Optimization}
 
-Applying these three evaluation principles summarized in \textbf{Figure~\ref{fig:three-rules}} revealed that hyperparameter tuning alone yields limited performance improvements on uniform cohorts. Individual predictions revealed stark disparities: stationary trajectories were predicted with near 100\% confidence, whereas active transition trajectories resulted in incorrect baseline-like predictions. This variance across individual subscriber profiles motivated the individual user analysis presented in Chapter~\ref{ch:user}.
+Applying these three evaluation principles summarized in \textbf{Figures~\ref{fig:rule-peak}, \ref{fig:rule-cut} and~\ref{fig:rule-room}} revealed that hyperparameter tuning alone yields limited performance improvements on uniform cohorts. Individual predictions revealed stark disparities: stationary trajectories were predicted with near 100\% confidence, whereas active transition trajectories resulted in incorrect baseline-like predictions. This variance across individual subscriber profiles motivated the individual user analysis presented in Chapter~\ref{ch:user}.
 
 \section{Conclusion}
 \label{sec:retro-tools}
@@ -130,5 +133,7 @@ Applying these three evaluation principles summarized in \textbf{Figure~\ref{fig
 This chapter established a standardized model fine-tuning architecture (Qwen2.5-0.5B fine-tuned via QLoRA with explicit cell and hour tokenization) and a rigorous evaluation protocol. Model capacity and PEFT mechanics remained fixed, allowing subsequent experimental gains to be attributed strictly to data representation and user conditioning mechanisms.
 
 Establishing early stopping (\textbf{Figure~\ref{fig:validation-curves}}), standardized context fraction splits (\textbf{Table~\ref{tab:context-sweep}}), and active mobility cohort benchmarking eliminated false positive findings and provided a reliable foundation for subsequent research chapters.
+
+In hindsight, these three principles weigh more than any setting tuned in this chapter. Reading the best saved copy instead of the last pass is worth 15.5 correct answers per hundred on its own (\textbf{Figure~\ref{fig:rule-peak}}), far more than any later gain of the project (at most +4.3\,\%). Moving the cut of the day raised the model from 41.5\% to 47.6\% while the baseline rose from 42.9\% to 50.9\% (\textbf{Table~\ref{tab:context-sweep}}), so a rising score was never evidence on its own. Measuring on people who move nearly doubled the room left to a model, from 30.8 to 54.5 correct answers per hundred (\textbf{Figure~\ref{fig:rule-room}}). Every result in the following chapters is read under these three rules.
 
 

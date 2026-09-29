@@ -1,0 +1,20 @@
+% F -- Top-1 score of the same model under each corruption of the hours.
+% Split out of fig-hour-ablation.tex (one figure per former panel).
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  repbar, width=0.55\linewidth, height=5.1cm,
+  ylabel={correct answers per 100}, xtick=data,
+  every node near coord/.append style={font=\scriptsize},
+  symbolic x coords={ha,hb,hc,hd},
+  xticklabels={{left\\alone},{shuffled\\\textcolor{clloss}{$-3.0$}},
+               {all 12h\\\textcolor{clloss}{$-0.7$}},{$+12$h\\\textcolor{clgain}{$+0.5$}}},
+  x tick label style={font=\scriptsize,align=center},
+  ymin=37, ymax=49.5, ytick={38,40,...,48}, /pgf/bar width=11pt]
+\addplot[fill=clmodel,draw=none] coordinates {(ha,44.7)(hb,41.7)(hc,44.0)(hd,45.2)};
+\end{axis}
+\end{tikzpicture}
+\caption{The cost of each corruption of the hours}
+\label{fig:hour-cost}
+\end{figure}

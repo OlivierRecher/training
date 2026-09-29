@@ -1,0 +1,38 @@
+% F -- The room left to a model on a raw day file and on people who move. A schematic: the numbers are the ones quoted in the text.
+% One of the three rules about measuring; split out of fig-three-rules.tex.
+\begin{figure}[H]
+\centering
+\scalebox{1.4}{%
+\begin{tikzpicture}[font=\small,
+  ttl/.style={anchor=north west,align=left,text width=4.5cm,
+              font=\footnotesize\bfseries,text=clmodel},
+  take/.style={anchor=north west,align=left,text width=4.34cm,inner sep=5pt,
+               font=\scriptsize,fill=clsoft,draw=clrule,rounded corners=2pt},
+  axl/.style={font=\tiny,text=clrule},
+]
+\begin{scope}
+\draw[clrule] (0.35,-3.55) -- (4.45,-3.55);
+\node[axl,rotate=90,anchor=south] at (0.15,-2.30) {correct answers per 100};
+% bar A : a raw day
+\fill[clsoft,draw=clrule] (0.85,-3.55) rectangle (1.95,-1.05);
+\fill[clbase] (0.85,-3.55) rectangle (1.95,-1.82);
+\node[font=\scriptsize\bfseries,text=white] at (1.40,-2.68) {69.2};
+\node[font=\scriptsize,text=clgain] at (1.40,-1.44) {30.8};
+\node[anchor=north,align=center,font=\scriptsize,text=clrule] at (1.40,-3.62)
+  {raw day file};
+% bar B : people who move
+\fill[clsoft,draw=clrule] (2.85,-3.55) rectangle (3.95,-1.05);
+\fill[clbase] (2.85,-3.55) rectangle (3.95,-2.41);
+\node[font=\scriptsize\bfseries,text=white] at (3.40,-2.98) {45.5};
+\node[font=\scriptsize,text=clgain] at (3.40,-1.73) {54.5};
+\node[anchor=north,align=center,font=\scriptsize,text=clrule] at (3.40,-3.62)
+  {people who move};
+\node[take] at (0.08,-4.28)
+  {Blue is what one line of code already takes; the pale part above it is what
+   a model could still win. Choosing whom to measure on nearly doubled that
+   room, from 30.8 to 54.5.};
+\end{scope}
+\end{tikzpicture}}
+\caption{A test the one-line rule already passes}
+\label{fig:rule-room}
+\end{figure}

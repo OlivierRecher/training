@@ -1,0 +1,22 @@
+% F -- Where the +12h shift lands: inside and outside the upweighted hours.
+% Split out of fig-hour-ablation.tex (one figure per former panel).
+\begin{figure}[H]
+\centering
+\replegend{\swatch{clmodel}~hours as they really are \qquad
+           \swatch{clnonsig}~hours moved by $+12$h}
+\begin{tikzpicture}
+\begin{axis}[
+  repbar, width=0.55\linewidth, height=5.1cm,
+  ylabel={correct answers per 100}, xtick=data,
+  every node near coord/.append style={font=\scriptsize},
+  symbolic x coords={win,out},
+  xticklabels={{inside the\\upweighted hours},{outside them}},
+  x tick label style={font=\scriptsize,align=center},
+  ymin=36, ymax=51.5, ytick={36,38,...,50}, /pgf/bar width=13pt]
+\addplot[fill=clmodel,draw=none] coordinates {(win,42.7)(out,45.3)};
+\addplot[fill=clnonsig,draw=none] coordinates {(win,39.7)(out,47.1)};
+\end{axis}
+\end{tikzpicture}
+\caption{The $+12$h shift swaps the difficulty of the two halves of the day}
+\label{fig:hour-shift}
+\end{figure}

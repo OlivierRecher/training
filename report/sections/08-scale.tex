@@ -5,7 +5,7 @@
 
 Stratifying 400 training subscribers across four behavioral user groups leaves smaller clusters (such as $G2$, comprising 14\% of the cohort) with approximately 56 training trajectories. Estimating robust subgroup transition probabilities from limited samples presents empirical bounds.
 
-This observation leads to the central research question evaluated in this chapter: \emph{how does increasing subscriber cohort size impact next-cell prediction accuracy, and at what scale does performance saturate?}
+This observation leads to the central research question evaluated in this chapter: how does increasing subscriber cohort size impact next-cell prediction accuracy, and at what scale does performance saturate?
 
 \paragraph{Data Provenance.} Evaluation spans three dataset cohorts from \textbf{Table~\ref{tab:datasets}}: 400 subscribers (\Dmob{}, 100 held-out subscribers, baseline 43.1\%), 900 to 1,900 subscribers (\Dtwok{}, 100 held-out subscribers, baseline 48.2\%), and 5,000 to 21,000 subscribers (\Deleven{}, \textbf{1,000 held-out subscribers}, baseline 50.2\%). Because baseline scores vary across evaluation cohorts, performance is evaluated strictly using accuracy deltas relative to each cohort's one-line baseline (``repeat the last antenna'') rather than absolute accuracy percentages, ensuring robust comparisons across varying test subscriber pools.
 
@@ -13,14 +13,14 @@ This observation leads to the central research question evaluated in this chapte
 
 The cohort scaling evaluation sweeps training population size across eight nested steps (400, 900, 1,400, 1,900, 5,000, 10,000, 15,000, and 21,000 subscribers) while holding model architecture, LoRA adapter configuration, hour tokens, and per-group routing constant. Nested sampling ensures that larger cohorts strictly expand smaller cohorts without introducing population composition shifts. Across training sizes, training log counts increase from 369,451 to 1,538,379 events.
 
+\input{figures/fig-scaling-ladder}
+
 \textbf{Figure~\ref{fig:scaling-ladder}} plots prediction accuracy delta relative to baseline against training cohort size on a logarithmic scale, so that equal distances are equal multiples. The vertical axis is not a score but the distance to the baseline on each run's own test subscribers, and the dashed line at zero marks a model indistinguishable from repeating the last antenna. The empirical curve exhibits three distinct regimes:
 \begin{enumerate}
     \item \textbf{Imitation regime (400 subscribers):} At 400 training subscribers, the model achieves a marginal $+0.6\pt$ delta over baseline, failing to capture group-level transition dynamics.
     \item \textbf{Generalization regime (400 to 1,900 subscribers):} Accuracy delta climbs rapidly through $+2.8\pt$ (900 subscribers) and $+3.5\pt$ (1,400 subscribers) to $+4.2\pt$ (1,900 subscribers), capturing essentially the entire benefit derived from dataset volume expansion.
     \item \textbf{Saturation regime (1,900 to 21,000 subscribers):} A ten-fold expansion in subscriber scale from 1,900 to 21,000 subscribers yields negligible additional gains (+4.3\pt{} at 5,000, +4.4\pt{} at 10,000, +4.7\pt{} at 15,000, and +4.3\pt{} at 21,000 subscribers), and the best size (15,000) is followed by the worst (21,000): performance growth halts rather than merely slowing down.
 \end{enumerate}
-
-\input{figures/fig-scaling-ladder}
 
 Two important experimental caveats govern this scaling trend. First, because test subscriber pools vary across cohort sizes, the small step across the boundary between two test pools is not a measurement. Second, all scaling steps were evaluated under a constant compute budget (Section~\ref{sec:scale-limits}), so the defensible claim is that 1,900 subscribers suffice \emph{at this budget}.
 
@@ -71,12 +71,17 @@ Scaling experiments maintained constant compute step budgets (8,000 gradient upd
 
 An alternative preprocessing approach was evaluated: equalizing subscriber trajectory lengths by oversampling short trajectories to a uniform 200 records per subscriber, addressing data imbalances where the top 25\% longest trajectories comprise 44\% of training events.
 
-\textbf{Figure~\ref{fig:resampling}} evaluates trajectory equalization, each run shown against its own baseline. In \textbf{\panelref{fig:resampling}{a}}, trajectory stretching yields an apparent top-1 accuracy of 74.9\%, representing the highest absolute score recorded. However, evaluating the baseline rule on the same equalized trajectories yields 76.5\%, placing the fine-tuned model $-1.6\pt$ behind baseline. \textbf{\panelref{fig:resampling}{b}} exposes the underlying breakdown: oversampling short trajectories inserts 2,262 pure copy moments (out of 4,000 total test points) where target cell IDs directly replicate preceding tokens. On these copy moments, both baseline and model achieve 100\% accuracy, artificially inflating baseline scores by $+33.4\pt$. On the remaining 1,738 true decision moments where movement occurs, baseline accuracy is 45.9\% while model accuracy drops to 42.2\% (a net $-3.7\pt$ degradation; the model bar is derived from the reported 74.9\% assuming it never misses a copy, and stays below the baseline at either end of that assumption). Moreover, zero-movement copy step repetition compresses inter-subscriber accuracy variance by a factor of 2.3, destroying the behavioral variance critical for subgroup stratification. Equalizing trajectory lengths distorts empirical transition distributions and degrades true decision quality.
+\textbf{Figure~\ref{fig:resampling}} evaluates trajectory equalization, each run shown against its own baseline: trajectory stretching yields an apparent top-1 accuracy of 74.9\%, representing the highest absolute score recorded. However, evaluating the baseline rule on the same equalized trajectories yields 76.5\%, placing the fine-tuned model $-1.6\pt$ behind baseline.
 
 \input{figures/fig-resampling}
+
+\textbf{Figure~\ref{fig:resampling-split}} exposes the underlying breakdown: oversampling short trajectories inserts 2,262 pure copy moments (out of 4,000 total test points) where target cell IDs directly replicate preceding tokens. On these copy moments, both baseline and model achieve 100\% accuracy, artificially inflating baseline scores by $+33.4\pt$. On the remaining 1,738 true decision moments where movement occurs, baseline accuracy is 45.9\% while model accuracy drops to 42.2\% (a net $-3.7\pt$ degradation; the model bar is derived from the reported 74.9\% assuming it never misses a copy, and stays below the baseline at either end of that assumption). Moreover, zero-movement copy step repetition compresses inter-subscriber accuracy variance by a factor of 2.3, destroying the behavioral variance critical for subgroup stratification. Equalizing trajectory lengths distorts empirical transition distributions and degrades true decision quality.
+
+\input{figures/fig-resampling-split}
 
 \section{Conclusion}
 \label{sec:retro-scale}
 
 Cohort scaling analysis demonstrates that next-cell prediction accuracy saturates at approximately 2,000 subscribers under parameter-efficient fine-tuning (+4.2\,\% over baseline in \textbf{Figure~\ref{fig:scaling-ladder}}). Expanding training cohorts from 2,000 to 21,000 subscribers yields negligible accuracy gains (+0.04\,\%, $p > 0.05$ in \textbf{Table~\ref{tab:bootstrap}}). Furthermore, individual subscriber mobility typology accounts for a 22.4\,\% accuracy spread, demonstrating that individual user characterization exerts a far stronger influence on predictability than raw data scale.
 
+Two mechanisms account for the shape of the curve: the gain rises while the smallest kind of user, $G2$, grows past about 100 members (56 at 400 subscribers, 126 at 900), and it stops once the antennas used by the test subscribers are all known, 99 of 100 of them already at 400 subscribers. The saturation was measured under a fixed budget of 8,000 steps, so at 21,000 subscribers the model sees only 36\% of its data once; it is a statement about this budget, not about every budget. Finally, stretching every day to 200 records produced the highest absolute score of the project (74.9\%) and a worse result, 1.6\,\% behind the baseline, a reminder that only the distance to the baseline counts.

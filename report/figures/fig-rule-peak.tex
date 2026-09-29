@@ -1,0 +1,38 @@
+% F -- The peak of a run against its last pass. A schematic: the one number printed is the 15.5 quoted in the text.
+% One of the three rules about measuring; split out of fig-three-rules.tex.
+\begin{figure}[H]
+\centering
+\scalebox{1.4}{%
+\begin{tikzpicture}[font=\small,
+  ttl/.style={anchor=north west,align=left,text width=4.5cm,
+              font=\footnotesize\bfseries,text=clmodel},
+  take/.style={anchor=north west,align=left,text width=4.34cm,inner sep=5pt,
+               font=\scriptsize,fill=clsoft,draw=clrule,rounded corners=2pt},
+  axl/.style={font=\tiny,text=clrule},
+]
+\begin{scope}[shift={(0,0)}]
+\draw[clrule] (0.25,-1.05) -- (0.25,-3.55) -- (4.45,-3.55);
+\node[axl,rotate=90,anchor=south] at (0.05,-2.30) {score on new people};
+\node[axl,anchor=north] at (2.35,-3.70) {passes over the training data};
+\draw[clmodel,very thick]
+  plot[smooth,tension=0.7] coordinates
+  {(0.45,-3.25) (0.90,-1.90) (1.30,-1.35) (1.55,-1.25)
+   (2.10,-1.60) (2.85,-1.95) (3.60,-2.20) (4.30,-2.35)};
+\draw[clrule,dashed] (0.25,-1.25) -- (4.30,-1.25);
+\draw[clrule,dashed] (0.25,-2.35) -- (4.30,-2.35);
+\node[star,star points=5,star point ratio=2.2,fill=clgain,draw=none,
+      inner sep=1.6pt] at (1.55,-1.25) {};
+\node[text=clloss,font=\footnotesize\bfseries] at (4.30,-2.35) {$\times$};
+\draw[{Stealth[length=4pt]}-{Stealth[length=4pt]},clgain,thick]
+  (3.15,-2.35) -- (3.15,-1.25);
+\node[anchor=west,font=\scriptsize\bfseries,text=clgain] at (3.22,-1.80) {15.5};
+\node[take] at (0.08,-4.28)
+  {The score on unseen people peaks early, then decays for tens of passes.
+   Reading the \textcolor{clloss}{end} of the run instead of its
+   \textcolor{clgain}{best point} throws away 15.5 correct answers per
+   hundred.};
+\end{scope}
+\end{tikzpicture}}
+\caption{Never read the last pass of a run}
+\label{fig:rule-peak}
+\end{figure}

@@ -23,6 +23,8 @@ Each candidate metric was correlated with individual model prediction accuracy u
 
 where $n$ represents subscriber count, $x_i$ denotes candidate feature value for subscriber $i$, $y_i$ represents top-1 prediction accuracy for subscriber $i$, and $\bar{x}, \bar{y}$ denote sample means.
 
+\bigskip
+
 \textbf{Figure~\ref{fig:concentration}} ranks the candidate metrics by their Pearson coefficient $r$, measured on 1,173 subscribers of \Draw{} (dark blue) and on 100 held-out subscribers of \Dmob{} (teal); a bar pointing left means that more of the property goes with lower accuracy. The primary determinant of predictability is cell transition frequency, formalized as the \textbf{cell-switch rate}: the proportion of consecutive event records in a subscriber trajectory that register a change in cell identifier, near 0\% for stationary subscribers and approaching 100\% for highly mobile ones. It correlates inversely with prediction accuracy, at $r = -0.971$ on \Draw{} and $r = -0.773$ on \Dmob{}: \emph{higher cell transition frequency goes with lower prediction accuracy}. The first value is close to arithmetic, since a subscriber's cell-switch rate is the mirror image of persistence baseline accuracy on that subscriber, so any model imitating the baseline earns a strong negative coefficient before anything is learned. Primary cell concentration ($r = +0.696$) and transition temporal entropy ($r = -0.811$) reflect the same underlying repetitiveness from other angles. The remaining features stay below $|r| = 0.24$: unique cell count ($r = -0.232$), prediction instance count ($r = -0.101$) and total trajectory length ($r = +0.054$) exert negligible influence on individual predictability.
 
 \input{figures/fig-concentration}
@@ -60,7 +62,8 @@ Analyzing error cases at individual subscriber resolution reveals that a portion
 
 Maintaining granular \cid{cell\_id} target prediction fulfills the cell-level forecasting mandate, even though a fraction of prediction errors represents intra-site sector handovers rather than geographical mobility.
 
-\section{Summary of Key Findings and Temporal Hypothesis}
+\section{Conclusion}
+\label{sec:retro-user}
 
 Three empirical findings summarize this chapter:
 \begin{enumerate}
@@ -70,9 +73,6 @@ Three empirical findings summarize this chapter:
 \end{enumerate}
 
 Because scaling general capacity does not alter low-mobility baseline bounds, improving high-mobility transition forecasting requires temporal conditioning signals (hour of day) to anticipate transitions.
-
-\section{Conclusion}
-\label{sec:retro-user}
 
 This chapter demonstrated that trajectory predictability is primarily governed by subscriber mobility characteristics rather than model parameter scale. Cell-switch rate represents the single strongest predictor of accuracy ($r = -0.773$), whereas trajectory length and unique cell counts exhibit minimal correlation ($|r| < 0.24$).
 

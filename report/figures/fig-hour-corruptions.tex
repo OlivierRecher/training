@@ -1,0 +1,33 @@
+% F -- The three corruptions applied to the hour symbols.
+% Split out of fig-hour-ablation.tex (one figure per former panel).
+\begin{figure}[H]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[font=\scriptsize,
+  hok/.style={draw=clmove,fill=clmove!20,minimum width=1.0cm,minimum height=0.45cm,
+            inner sep=0pt,font=\scriptsize\ttfamily},
+  hbad/.style={hok,fill=clnonsig!45,draw=clrule},
+  lb/.style={font=\scriptsize,anchor=east},
+  cmt/.style={font=\scriptsize,text=clrule,anchor=west,text width=5.0cm},
+]
+\node[cmt,text width=11cm,font=\scriptsize] at (-3.5,0.75)
+  {\textcolor{clrule}{The same trained model, the same test people, the same
+   sequence of antennas. Only the hour symbols change.}};
+
+\foreach \ri/\sty/\lab/\aa/\bb/\cc/\dd/\note in {%
+  0/hok/{\textbf{hours left alone}}/{<H07>}/{<H09>}/{<H12>}/{<H18>}/{the reference},
+  1/hbad/{hours shuffled}/{<H12>}/{<H18>}/{<H07>}/{<H09>}/{real hours, wrong order},
+  2/hbad/{all hours set to 12h}/{<H12>}/{<H12>}/{<H12>}/{<H12>}/{no information at all},
+  3/hbad/{every hour moved by +12h}/{<H19>}/{<H21>}/{<H00>}/{<H06>}/{order kept, labels wrong}}
+{
+  \node[lb] at (-0.25,-\ri*0.68) {\lab};
+  \node[\sty] at (0.6,-\ri*0.68)  {\aa};
+  \node[\sty] at (1.75,-\ri*0.68) {\bb};
+  \node[\sty] at (2.90,-\ri*0.68) {\cc};
+  \node[\sty] at (4.05,-\ri*0.68) {\dd};
+  \node[cmt] at (4.75,-\ri*0.68) {\note};
+}
+\end{tikzpicture}}
+\caption{The corruptions applied to the hours, and only to the hours}
+\label{fig:hour-corruptions}
+\end{figure}

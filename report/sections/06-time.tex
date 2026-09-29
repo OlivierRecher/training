@@ -11,7 +11,7 @@ The central research objective evaluated in this chapter is to investigate wheth
 
 \subsection{Identification of Temporal Performance Degradation Patterns}
 
-Individual subscriber error analysis revealed specific trajectories where model accuracy degraded sharply as context length increased.
+The starting point of this chapter is not a new experiment but a closer reading of the previous training. The model of Chapter~\ref{ch:tools}, trained on \Dmob{} without any hour token and read at seven context fractions in \textbf{Table~\ref{tab:context-sweep}}, was scored again subscriber by subscriber instead of on the whole population. This individual error analysis revealed specific trajectories where model accuracy degraded sharply as context length increased, and it is this observation that leads to the finding below.
 
 \textbf{Table~\ref{tab:context-collapse}} scores eight representative subscribers twice with the same trained model, once under a short history prefix (30\%--60\% of the day) and once under a long one (80\%--90\%); the \textbf{Change} column is the second score minus the first. More history should help or at worst do nothing, which is what rows 1--3 show, and across the whole population the two scores correlate strongly ($r = 0.77$), so predictability is an intrinsic subscriber trait rather than an artifact of the context split. The bottom four entries (rows 5--8), however, collapse to near 0\%. With an 80\%--90\% prefix, the moments left to predict fall in the late afternoon and evening; without explicit temporal tokens, the model keeps repeating the morning cell, with up to 78\% output probability, at the exact time these subscribers begin their evening commute. Sequence context alone, without temporal encoding, fails to distinguish late-day transition probability shifts from mid-day stationary patterns.
 
@@ -32,7 +32,15 @@ Initial loss weighting experiments assigned heuristic transition windows based o
 
 To verify whether the model actively utilizes temporal tokens rather than ignoring them as sequence noise, an ablation experiment was performed.
 
-\textbf{\panelref{fig:hour-ablation}{a}} shows the input format and the weighting schedule: each event enters the sequence as an hour token followed by a cell token, and errors count twice at 04h--05h and four times at 18h--19h. \textbf{\panelref{fig:hour-ablation}{b}} shows the corruptions: the same trained model is re-evaluated on the same subscribers with the hour tokens altered and the cell tokens left untouched. \textbf{\panelref{fig:hour-ablation}{c}} and \textbf{\panelref{fig:hour-ablation}{d}} compare the resulting top-1 accuracies (\Dmob{}, 80\% context, 1,747 evaluated moments):
+The experiment starts from the input format drawn in \textbf{Figure~\ref{fig:hour-weights}}: each event enters the sequence as an hour token followed by a cell token, and errors count twice at 04h--05h and four times at 18h--19h.
+
+\input{figures/fig-hour-weights}
+
+The trained model is then left untouched and only its inputs are altered. \textbf{Figure~\ref{fig:hour-corruptions}} shows the three corruptions: the same model is re-evaluated on the same subscribers with the hour tokens altered and the cell tokens left untouched.
+
+\input{figures/fig-hour-corruptions}
+
+Each corruption yields one bar of \textbf{Figure~\ref{fig:hour-cost}}, which compares the resulting top-1 accuracies (\Dmob{}, 80\% context, 1,747 evaluated moments):
 \begin{enumerate}
   \item \textbf{Uncorrupted reference} (44.7\%): correct hour tokens at every position.
   \item \textbf{Constant dummy tokens} (44.0\%, $-0.7\%$): every hour token replaced by \cid{<H12>}, which deletes the temporal information.
@@ -40,9 +48,13 @@ To verify whether the model actively utilizes temporal tokens rather than ignori
   \item \textbf{+12-hour label shift} (45.2\%, $+0.5\%$): every hour moved forward by 12 (\cid{<H07>} $\rightarrow$ \cid{<H19>}), which preserves the ordering but swaps day and night labels.
 \end{enumerate}
 
-\input{figures/fig-hour-ablation}
+\input{figures/fig-hour-cost}
 
-Shuffling costs about $4\times$ as much as deleting the hours ($-3.0\%$ vs.\ $-0.7\%$, \textbf{\panelref{fig:hour-ablation}{c}}). If the model ignored the hour tokens, corrupting their ordering could not cost more than removing them altogether. The small overall effect of the +12h shift is not indifference either: inside the upweighted windows, top-1 accuracy falls from 42.7\% to 39.7\%, while outside them it rises from 45.3\% to 47.1\% (\textbf{\panelref{fig:hour-ablation}{d}}), so the two halves of the day exchanged their difficulty along with their labels. The model actively conditions its transition probabilities on the hour tokens, which validates Hypothesis 1.
+Shuffling costs about $4\times$ as much as deleting the hours ($-3.0\%$ vs.\ $-0.7\%$ in \textbf{Figure~\ref{fig:hour-cost}}). If the model ignored the hour tokens, corrupting their ordering could not cost more than removing them altogether.
+
+The small overall effect of the +12h shift is not indifference either, as \textbf{Figure~\ref{fig:hour-shift}} shows by separating the upweighted hours from the rest: inside the upweighted windows, top-1 accuracy falls from 42.7\% to 39.7\%, while outside them it rises from 45.3\% to 47.1\%, so the two halves of the day exchanged their difficulty along with their labels. The model actively conditions its transition probabilities on the hour tokens, which validates Hypothesis 1.
+
+\input{figures/fig-hour-shift}
 
 \subsection{Evaluation of Weighted Loss and Targeted Sampling}
 
@@ -70,7 +82,8 @@ Loss weighting therefore reallocates the model's optimization focus toward the t
 \section{Conclusion}
 \label{sec:retro-time}
 
-This chapter validated the integration of explicit temporal tokens (\cid{<H00>}--\cid{<H23>}). Ablation analysis demonstrated that shuffling temporal tokens causes a 3.0\,\% accuracy drop (\textbf{\panelref{fig:hour-ablation}{c}} and \textbf{\panelref{fig:hour-ablation}{d}}), confirming that model predictions depend on temporal sequence ordering.
+This chapter validated the integration of explicit temporal tokens (\cid{<H00>}--\cid{<H23>}). Ablation analysis demonstrated that shuffling temporal tokens causes a 3.0\,\% accuracy drop (\textbf{Figures~\ref{fig:hour-cost} and~\ref{fig:hour-shift}}), confirming that model predictions depend on temporal sequence ordering.
 
 Conversely, applying globally fixed hourly loss weighting (04:00--06:00 and 18:00--20:00) demonstrated that while loss weighting successfully forces local optimization (+2.6\,\% at 18:00--20:00 in \textbf{Figure~\ref{fig:targeted-sampling}}), applying fixed hours across all subscribers penalizes non-targeted intervals. Because temporal mobility patterns differ significantly across subscribers, effective transition loss weighting requires individual user cohort stratification, as detailed in Chapter~\ref{ch:groups}.
 
+In hindsight, the two experiments of this chapter answer two different questions. The ablation shows that the model reads the hour, since corrupting its order costs more than deleting it. The sampling experiment shows that reading the hour is not enough when the emphasised hours are the wrong ones: the model beat the baseline on a segment chosen in advance (+2.6\,\% at 18:00--20:00), but trailed it at every one of the seven cuts outside the windows ($-1.1\%$ to $-2.8\%$), and the guessed windows were no harder than the rest of the day (43.6\% against 43.4\% for the baseline). The mechanism was right; the hours it was pointed at were not.

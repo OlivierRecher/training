@@ -7,8 +7,8 @@ Chapter~\textbf{\ref{ch:time}} established that applying a globally fixed hourly
 
 To resolve these temporal variations, two research questions were investigated:
 \begin{enumerate}
-  \item \emph{Can subscribers be classified into distinct behavioral cohorts based on temporal transition profiles, using only historical prefix data available at inference time?}
-  \item \emph{Does conditioning model parameter optimization on identified user cohorts improve next-cell prediction accuracy over persistence baselines?}
+  \item Can subscribers be classified into distinct behavioral cohorts based on temporal transition profiles, using only historical prefix data available at inference time?
+  \item Does conditioning model parameter optimization on identified user cohorts improve next-cell prediction accuracy over persistence baselines?
 \end{enumerate}
 
 \paragraph{Data Provenance.} Analysis evaluates dataset cohort \Dmob{} (\textbf{Table~\ref{tab:datasets}}), fitting behavioral profiles on \textbf{400 training subscribers} and evaluating performance on \textbf{100 held-out subscribers} across full-trajectory evaluation (persistence baseline score: 43.1\%).
@@ -86,3 +86,4 @@ Evaluating per-group LoRA adapter routing on active mobility test cohort \Dmob{}
 
 Integrating user stratification with per-group LoRA adapter routing produced the first experimental model to surpass the persistence baseline across complete held-out evaluation trajectories (+3.7\,\% in \textbf{Figure~\ref{fig:group-gain}}). Diagnostic analysis confirmed that routing trajectories to specialized subgroup parameters resolves text token dilution (\textbf{\panelref{fig:adapter-routing}{b}}) while enabling collaborative parameter sharing among subscriber cohorts.
 
+This result rests on two conditions established in this chapter. The kind of user must be readable from the past alone, which holds for 92 of 100 test subscribers with an 80\% prefix but degrades quickly below a 60\% prefix; and it must reach the model through its parameters rather than through a prefix token, which the model ignored (41.3\%, 41.2\% and 41.1\% with the correct, a wrong or no token). The gain is also uneven: +6.4\,\% for $G3$ and +5.4\,\% for $G2$, but only +0.8\,\% for $G0$. Finally, four adapters carry four times the trainable capacity of one, and the control that would separate capacity from stratification was not run, so part of the gain may come from capacity alone.

@@ -1,9 +1,10 @@
 % T14 -- Every iteration of the internship on one axis, gap by gap.
-% Used by the executive summary. Plain wording only: no term that the body
+% Used by the executive summary. An [H] table, so the caption can never be
+% separated from the tabular by a page break. Plain wording only: no term that the body
 % has not yet introduced.
-\par\vspace{6pt}
-{\centering\small
-\captionof{table}{The eleven iterations, on one axis}
+\begin{table}[H]
+\centering\small
+\caption{The eleven iterations, on one axis}
 \label{tab:recap}
 \begin{tabular}{@{}c@{\hspace{7pt}}l@{\hspace{7pt}}l@{\hspace{7pt}}l@{\hspace{7pt}}r@{\hspace{7pt}}r@{\hspace{8pt}}r@{}}
 \toprule
@@ -22,5 +23,5 @@
 10 & \seleven  & 21{,}000 training people        & last fifth & 50.2\,\% & 54.5\,\% & $\mathbf{+4.3}$ \\
 11 & \seleven  & \multicolumn{5}{@{}l@{}}{\textit{no new training: why the curve climbs, then stops}} \\
 \bottomrule
-\end{tabular}\par}
-\normalsize\par\vspace{4pt}
+\end{tabular}
+\end{table}
