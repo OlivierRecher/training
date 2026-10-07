@@ -24,7 +24,7 @@
   \node[nm,text=clbase] at (135:1.05) {BKVCHE2};
   \node[nm,text=clbase] at (225:1.05) {BKVCHE3};
   \node[nm,text=clbase] at (315:1.05) {BKVCHE4};
-  \node[ttl] at (0,2.95) {\panelnum{fig:base-station}{a} One mast carries four 2G cells};
+  \node[ttl] at (0,2.95) {\panelnum{fig:base-station}{a} One base station carries four 2G cells};
   \node[scap,text width=5.0cm] at (0,-2.95)
     {one installation, four names in the data};
 \end{scope}
@@ -48,7 +48,7 @@
   \draw[clmove] (1.24,1.44) -- (0.82,0.82);
   \node[anchor=west,font=\scriptsize,text=clmove,align=left,text width=1.95cm]
         at (1.24,1.72) {a new name,\\ nobody moved};
-  \node[ttl] at (0,2.95) {\panelnum{fig:base-station}{b} The same mast also carries 3G: eight cells};
+  \node[ttl] at (0,2.95) {\panelnum{fig:base-station}{b} The same base station also carries 3G: eight cells};
   \node[scap,text width=5.4cm] at (0,-2.95)
     {the smaller lobes are the 2G cells of \panelnum{fig:base-station}{a}};
 \end{scope}
@@ -56,12 +56,12 @@
 % ================= the reading ===========================================
 \node[draw=clrule,fill=clsoft,rounded corners=3pt,align=left,inner sep=7pt,
       text width=13.6cm,font=\footnotesize,anchor=north] at (7.0,-3.55)
-  {\textbf{Eight names, one place.} A phone lying still at the foot of the mast
+  {\textbf{Eight names, one place.} A phone lying still at the foot of the base station
    sits inside several lobes at once, and the network can hand it from one to the
    next for reasons of signal alone. Every such handover is written into the data
-   as a change of antenna, and looks exactly like a movement.};
+   as a change of cell, and looks exactly like a movement.};
 \end{tikzpicture}}
-\caption{One mast, and all the names it answers to}
+\caption{One base station, and all the names it answers to}
 \label{fig:base-station}
 
 \end{figure}

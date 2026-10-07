@@ -2,7 +2,7 @@
 \begin{figure}[H]
 \centering
 
-{\textbf{\panelnum{fig:training-example}{a} One person's day, as it is stored on disk.} One line of the
+{\textbf{\panelnum{fig:training-example}{a} One user's day, as it is stored on disk.} One line of the
 training file, spread over several lines here so that it can be read. Nothing is
 a conversation in any real sense: the three labels are simply the slots the
 training library expects to find.\par}
@@ -24,7 +24,7 @@ training library expects to find.\par}
 \texttt{system} & What the task is. The same words on every line of the file. \\
 \texttt{user}   & The request. Also the same everywhere: a placeholder, not a
                   question. \\
-\texttt{assistant} & The person's actual day. This is what the model has to
+\texttt{assistant} & The user's actual day. This is what the model has to
                   learn to produce, and the only part its mistakes are counted
                   on. \\
 \end{tabular}\par}
@@ -34,7 +34,7 @@ training library expects to find.\par}
 \vspace{0.45cm}
 
 {\textbf{\panelnum{fig:training-example}{b} The same line, once it has been cut into symbols.} This is what
-the model actually reads. Each antenna name is \emph{one} symbol, not a spelling;
+the model actually reads. Each \texttt{cell\_id} is \emph{one} symbol, not a spelling;
 each event is preceded by its hour. Only the dark blue positions are graded.\par}
 \vspace{5pt}
 
@@ -72,9 +72,9 @@ each event is preceded by its hour. Only the dark blue positions are graded.\par
 \vspace{-0.15cm}
 \replegend{\swatch{clsoft}~opening: excluded from the grade \qquad
            \swatch{clmove!20}~hour: \emph{given}, never guessed \qquad
-           \swatch{clmodel!18}~antenna name: the only positions graded}
+           \swatch{clmodel!18}~\texttt{cell\_id}: the only positions graded}
 
-\caption{One person's day, as the model receives it}
+\caption{One user's day, as the model receives it}
 \label{fig:training-example}
 
 \end{figure}

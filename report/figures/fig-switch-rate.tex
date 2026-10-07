@@ -1,7 +1,7 @@
 % F7 -- Accuracy is dictated by how often the user changes cell.
 \begin{figure}[H]
 \centering
-\replegend{\swatch{clbase}~the one-line rule \qquad \swatch{clmodel}~my model}
+\replegend{\swatch{clbase}~the persistence baseline \qquad \swatch{clmodel}~my model}
 \fitwidth{%
 \begin{tikzpicture}
 \begin{groupplot}[
@@ -14,7 +14,7 @@
   title style={font=\footnotesize,yshift=1pt},
   xlabel style={at={(0.5,-0.22)},anchor=north,font=\scriptsize},
 ]
-\nextgroupplot[title={\panelnum{fig:switch-rate}{a} a raw day, 500 people},
+\nextgroupplot[title={\panelnum{fig:switch-rate}{a} a raw day, 500 users},
   symbolic x coords={qa,qb,qc,qd,qe},
   xticklabels={{never\\changes},{0--21\%},{21--38\%},{38--60\%},{60--100\%}},
   xlabel={the five groups, moving least on the left}]
@@ -23,7 +23,7 @@
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qd,74) {$+3.7\pt$};
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:qe,52) {$+7.8\pt$};
 %
-\nextgroupplot[title={\panelnum{fig:switch-rate}{b} \smob, 100 held-out people},
+\nextgroupplot[title={\panelnum{fig:switch-rate}{b} \smob, 100 held-out users},
   symbolic x coords={pa,pb,pc,pd},
   xticklabels={{moves\\least 25\%},{next\\25\%},{next\\25\%},{moves\\most 25\%}},
   x tick label style={font=\scriptsize,align=center,anchor=north},
@@ -36,7 +36,7 @@
 \node[font=\scriptsize,text=clgain,anchor=west,rotate=90,yshift=7pt] at (axis cs:pd,61) {$+0.6\pt$};
 \end{groupplot}
 \end{tikzpicture}}
-\caption{The score follows the rate at which a person changes antenna}
+\caption{The score follows the rate at which a user changes cell}
 \label{fig:switch-rate}
 
 \end{figure}

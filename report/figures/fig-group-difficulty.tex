@@ -2,7 +2,7 @@
 \begin{figure}[H]
 \centering
 \replegend{\swatch{clmove}~how often that kind changes location \qquad
-           \swatch{clbase}~score of the one-line rule on that kind \qquad
+           \swatch{clbase}~score of the persistence baseline on that kind \qquad
            \swatch{clmodel}~how often the kind is correctly identified}
 \plotlink{\nbllm}{\fitwidth{%
 \begin{tikzpicture}
@@ -12,7 +12,7 @@
   title style={font=\footnotesize,yshift=1pt},
 ]
 % ---- (a) mobility vs predictability ----
-\nextgroupplot[title={\panelnum{fig:group-difficulty}{a} the more they move, the worse the rule does},
+\nextgroupplot[title={\panelnum{fig:group-difficulty}{a} the more they move, the worse the persistence baseline does},
   symbolic x coords={G0,G1,G2,G3},
   xticklabels={G0 stay-at-home,G1 steady,G2 evening,G3 morning},
   x tick label style={font=\scriptsize,rotate=35,anchor=east},

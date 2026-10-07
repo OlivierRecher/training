@@ -50,19 +50,19 @@
 \end{scope}
 
 % ---- the four labels ------------------------------------------------------
-\node[ttl] at (1.65,-1.15)  {One day of\\ one person};
-\node[sub] at (1.65,-1.88)  {which antenna,\\ at what time};
+\node[ttl] at (1.65,-1.15)  {One day of\\ one user};
+\node[sub] at (1.65,-1.88)  {which cell,\\ at what time};
 \node[ttl] at (5.55,-1.15)  {Rewritten\\ as a list};
-\node[sub] at (5.55,-1.88)  {antenna, hour,\\ antenna, hour};
+\node[sub] at (5.55,-1.88)  {cell, hour,\\ cell, hour};
 \node[ttl] at (9.45,-1.15)  {A language model\\ reads it};
 \node[sub] at (9.45,-1.88)  {retrained on days,\\ not on text};
-\node[ttl] at (13.35,-1.15) {It names the\\ next antenna};
-\node[sub] at (13.35,-1.88) {the likeliest\\ of 369 antennas};
+\node[ttl] at (13.35,-1.15) {It names the\\ next cell};
+\node[sub] at (13.35,-1.88) {the likeliest\\ of 369 cells};
 
 % ---- the competitor, underneath -------------------------------------------
 \node[draw=clbase,dashed,fill=clbase!8,rounded corners=3pt,align=center,
       inner sep=6pt,text width=13.9cm,font=\small,anchor=north] (rule) at (8.25,-3.35)
-  {\textbf{The competitor:} answer \emph{``the same antenna as a moment ago''},
+  {\textbf{The competitor:} answer \emph{``the same cell as a moment ago''},
    every time. No model, no training. Right \textbf{69 times out of 100}.};
 \draw[ar,clbase] (13.35,-2.70) -- (13.35,-3.35);
 \end{tikzpicture}}

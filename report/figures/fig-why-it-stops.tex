@@ -13,7 +13,7 @@
   {\panelnum{fig:why-it-stops}{a} Why it climbs: the smallest kind of user crosses a hundred members};
 \draw[clrule] (0.60,-0.45) -- (0.60,-3.30) -- (8.30,-3.30);
 \node[axl,rotate=90,anchor=south] at (0.36,-1.90)
-  {people in the evening-moving user};
+  {users in the evening-moving user};
 \draw[clloss,dashed,thick] (0.60,-2.34) -- (8.20,-2.34);
 \foreach \xx/\hh/\lbl in {1.55/0.54/56, 3.45/1.21/126, 5.35/1.88/196, 7.25/2.55/266}{
   \fill[clGtwo] (\xx-0.42,-3.30) rectangle (\xx+0.42,{-3.30+\hh});
@@ -29,16 +29,16 @@
   \node[gv] at (\xx,-3.78) {\gg};
 }
 \node[axl,anchor=north] at (4.45,-4.22)
-  {top row: people trained on \ \ \ bottom row: what the model gains over the rule};
+  {top row: users trained on \ \ \ bottom row: what the model gains over the persistence baseline};
 \end{scope}
 
 % ================= panel (b) : every antenna is already known =============
 \begin{scope}[shift={(8.95,0)}]
 \node[ttl,text width=6.35cm] at (0,0.40)
-  {\panelnum{fig:why-it-stops}{b} Why it stops: every antenna is already known};
+  {\panelnum{fig:why-it-stops}{b} Why it stops: every cell is already known};
 \node[anchor=north west,align=left,text width=4.30cm,font=\scriptsize,
       text=clrule] at (0,-0.52)
-  {100 antennas the test people use};
+  {100 cells the test users use};
 % 100 squares, 99 of them already seen during training
 \foreach \ri in {0,...,9}{ \foreach \cc in {0,...,9}{
   \fill[clbase] (0.05+\cc*0.27,{-1.20-\ri*0.27}) rectangle
@@ -51,9 +51,9 @@
   {the 1 that was new};
 \draw[-{Stealth[length=3.5pt]},clloss] (3.20,-2.15) -- (2.80,-2.15);
 \node[anchor=west,font=\scriptsize,align=left,text width=3.10cm] at (3.25,-3.05)
-  {\textbf{400 people:} 99 of 100\\ \textbf{5{,}000 and up:} 100 of 100};
+  {\textbf{400 users:} 99 of 100\\ \textbf{5{,}000 and up:} 100 of 100};
 \node[anchor=north west,align=left,text width=6.10cm,font=\scriptsize] at (0,-4.02)
-  {The sixteen thousand people added after 5{,}000 bring nothing new:
+  {The sixteen thousand users added after 5{,}000 bring nothing new:
    \textcolor{clgain}{\textbf{+0.1}}.};
 \end{scope}
 \end{tikzpicture}}

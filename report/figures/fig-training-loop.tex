@@ -18,15 +18,15 @@
 }
 \foreach \i in {0,1,2}{ \draw[ar] (\i*3.50+2.95,-1.36) -- (\i*3.50+3.50,-1.36); }
 
-% ---- icon 1: a slice cut out of a day ------------------------------------
+% ---- icon 1: the day cut, everything from the start kept ------------------------------------
 \begin{scope}[shift={(1.475,-0.70)}]
-  \foreach \i in {1,2,3}{
+  \foreach \i in {0,1,2,3}{
     \fill[clmodel!30,rounded corners=1pt]
           (\i*0.24-0.78,-0.14) rectangle (\i*0.24-0.78+0.18,0.14);}
   \foreach \i in {0,...,5}{
     \draw[clrule,rounded corners=1pt]
           (\i*0.24-0.78,-0.14) rectangle (\i*0.24-0.78+0.18,0.14);}
-  \draw[clmodel,line width=0.7pt] (-0.56,-0.22) -- (-0.56,-0.32) -- (0.06,-0.32) -- (0.06,-0.22);
+  \draw[clmodel,line width=0.7pt] (-0.78,-0.22) -- (-0.78,-0.32) -- (0.12,-0.32) -- (0.12,-0.22);
 \end{scope}
 % ---- icon 2: the next one hidden, and answered ---------------------------
 \begin{scope}[shift={(4.975,-0.70)}]
@@ -53,27 +53,27 @@
 \end{scope}
 
 % ---- the four labels ------------------------------------------------------
-\node[ttl] at (1.475,-1.15)  {Take a slice\\ of a day};
-\node[sub] at (1.475,-1.92)  {hour, antenna,\\ hour, antenna};
-\node[ttl] at (4.975,-1.15)  {Let the model\\ answer};
-\node[sub] at (4.975,-1.92)  {the next antenna\\ is hidden};
-\node[ttl] at (8.475,-1.15)  {Measure the\\ surprise};
+\node[ttl] at (1.475,-1.15)  {Sequence\\ slicing};
+\node[sub] at (1.475,-1.92)  {hour, \texttt{cell\_id},\\ hour, \texttt{cell\_id}};
+\node[ttl] at (4.975,-1.15)  {Target masking\\ and forward pass};
+\node[sub] at (4.975,-1.92)  {the next \texttt{cell\_id}\\ is hidden};
+\node[ttl] at (8.475,-1.15)  {Loss\\ computation};
 \node[sub] at (8.475,-1.92)  {a confident wrong\\ answer costs more};
-\node[ttl] at (11.975,-1.15) {Nudge the\\ small part};
+\node[ttl] at (11.975,-1.15) {Gradient\\ update};
 \node[sub] at (11.975,-1.92) {about 2 numbers\\ in every 100};
 
 % ---- the loop back --------------------------------------------------------
 \draw[ar] (11.975,-2.72) -- (11.975,-3.28) -- (1.475,-3.28) -- (1.475,-2.72);
 \node[fill=white,inner sep=2.5pt,font=\scriptsize,text=clrule] at (6.72,-3.28)
-  {slice after slice, until every training person has been read once: \textbf{one pass}};
+  {sequence after sequence, until every training user has been read once: \textbf{one epoch}};
 
 % ---- the checkpoint rule --------------------------------------------------
 \node[draw=clgain,fill=clgain!10,rounded corners=3pt,align=center,inner sep=6pt,
       text width=12.9cm,font=\small,anchor=north] at (6.72,-3.72)
-  {{\footnotesize\bfseries\color{clgain} 5. After every pass: grade the model on
-    people it is not training on, save a copy, keep only the best copy of the
+  {{\footnotesize\bfseries\color{clgain} 5. Validation and early stopping: after every epoch, grade the model on
+    users it is not training on, save a copy, keep only the best copy of the
     run}\\[2pt]\footnotesize
-   The best copy arrives between the fourth and the ninth pass. Keeping the last
+   The best copy arrives between the fourth and the ninth epoch. Keeping the last
    one instead costs 15.5 correct answers per hundred
    (Chapter~\ref{ch:tools}).};
 \end{tikzpicture}}

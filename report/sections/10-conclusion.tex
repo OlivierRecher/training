@@ -1,7 +1,7 @@
 \chapter{Conclusion}
 \label{ch:conclusion}
 
-The central objective of this research was to determine whether a parameter-efficient fine-tuned language model trained on anonymized mobile network logs can accurately forecast a subscriber's next cell attachment. Over nine weeks of experimental investigation across eleven iterative configurations, the empirical results confirm that fine-tuned language models achieve superior prediction accuracy compared to strong persistence baselines, with optimal performance governed by specific structural user conditioning mechanisms.
+The central objective of this research was to determine whether a parameter-efficient fine-tuned language model trained on anonymized mobile network logs can accurately forecast a user's next cell attachment. Over nine weeks of experimental investigation across eleven iterative configurations, the empirical results confirm that fine-tuned language models achieve superior prediction accuracy compared to strong persistence baselines, with optimal performance governed by specific structural user conditioning mechanisms.
 
 \section{Summary of Key Findings}
 
@@ -9,39 +9,40 @@ Three primary empirical findings summarize the contributions of this research, a
 
 \input{figures/fig-results-card}
 
-\paragraph{Demonstrated Baseline Outperformance via Behavioral Conditioning.} A fine-tuned Qwen2.5-0.5B language model achieves a \textbf{+4.3\,\% accuracy gain} over the persistence baseline on active mobility evaluation cohorts (54.5\% vs. 50.2\% top-1 accuracy on 1,000 held-out subscribers, Card 1 of \textbf{Figure~\ref{fig:results-card}}). Surpassing the persistence baseline required user behavioral stratification ($G0$--$G3$) and per-group LoRA adapter routing, which increased model accuracy from -1.8\,\% behind the baseline to +3.7\,\% ahead on baseline active mobility splits. Rather than increasing general parameter capacity, temporal behavior profiling represents the primary driver of performance.
+\paragraph{Demonstrated Baseline Outperformance via Behavioral Conditioning.} A fine-tuned Qwen2.5-0.5B language model achieves a \textbf{+4.3\,\% accuracy gain} over the persistence baseline on active mobility evaluation cohorts (54.5\% vs. 50.2\% top-1 accuracy on 1,000 held-out users, Card 1 of \textbf{Figure~\ref{fig:results-card}}). Surpassing the persistence baseline required user behavioral stratification ($G0$--$G3$) and per-group LoRA adapter routing, which increased model accuracy from -1.8\,\% behind the baseline to +3.7\,\% ahead on baseline active mobility splits. Rather than increasing general parameter capacity, temporal behavior profiling represents the primary driver of performance.
 
-\paragraph{Data Cohort Scaling Saturation at 2,000 Subscribers.} Scaling training cohort size yields significant accuracy improvements up to 2,000 subscribers (+4.2\,\% over baseline, Card 2 of \textbf{Figure~\ref{fig:results-card}}). Expanding training cohorts further up to 21,000 subscribers yields no statistically significant improvement (+0.04\,\%, $p > 0.05$ with zero contained in every bootstrap confidence interval), establishing 2,000 subscribers as the empirical operating threshold for training set construction. Collecting ten times more data is not where future modeling gains lie.
+\paragraph{Data Cohort Scaling Saturation at 2,000 Users.} Scaling training cohort size yields significant accuracy improvements up to 2,000 users (+4.2\,\% over baseline, Card 2 of \textbf{Figure~\ref{fig:results-card}}). Expanding training cohorts further up to 21,000 users yields no statistically significant improvement (+0.04\,\%, $p > 0.05$ with zero contained in every bootstrap confidence interval), establishing 2,000 users as the empirical operating threshold for training set construction. Collecting ten times more data is not where future modeling gains lie.
 
-\paragraph{Dominance of Subscriber Typology over Data Volume.} Individual subscriber mobility characteristics represent the primary determinant of trajectory predictability. Prediction accuracy across behavioral user groups spans a \textbf{22.4\,\% range} (62.8\% for stationary $G0$ vs. 40.4\% for mobile $G3$, Card 3 of \textbf{Figure~\ref{fig:results-card}}), outweighing the impact of dataset scaling beyond 2,000 subscribers ($0.4$\,\%) by a factor of over fifty.
+\paragraph{Dominance of User Typology over Data Volume.} Individual user mobility characteristics represent the primary determinant of trajectory predictability. Prediction accuracy across behavioral user groups spans a \textbf{22.4\,\% range} (62.8\% for stationary $G0$ vs. 40.4\% for mobile $G3$, Card 3 of \textbf{Figure~\ref{fig:results-card}}), outweighing the impact of dataset scaling beyond 2,000 users ($0.4$\,\%) by a factor of over fifty.
 
 \paragraph{Impact of Methodological and Measurement Rigor.} Across experimental iterations, three methodological measurement corrections exerted a larger impact on reported results than individual architectural modifications:
 \begin{enumerate}
     \item \textbf{Validation Checkpoint Selection:} Restoring model weights from the best validation loss checkpoint rather than the final step recovered \textbf{+15.5\,\%} in top-1 accuracy.
     \item \textbf{Evaluation Boundary Alignment:} Aligning daily sequence truncation rules between model and baseline eliminated a \textbf{1.1\,\%} evaluation artifact caused by sequence boundary noise.
-    \item \textbf{Cohort Benchmark Framing:} Transitioning evaluation from highly stationary subscribers (where persistence baselines reach 69\%) to active mobile subscriber cohorts enabled meaningful empirical discrimination of model predictive capabilities.
+    \item \textbf{Cohort Benchmark Framing:} Transitioning evaluation from highly stationary users (where persistence baselines reach 69\%) to active mobile user cohorts enabled meaningful empirical discrimination of model predictive capabilities.
 \end{enumerate}
 
 \section{Experimental Limitations and Unresolved Tasks}
 
-Three unresolved technical validation steps are identified for future verification:
+Four unresolved technical validation steps are identified for future verification:
 \begin{enumerate}
     \item \textbf{Cross-Cohort Model Rescoring}: Rescoring earlier experimental checkpoints across the unified 1,000 held-out evaluation cohort to place all iteration metrics on a single standardized baseline axis.
     \item \textbf{Multi-Seed Parameter Variance Estimation}: Evaluating multi-seed training runs to quantify variance across stochastic optimization initializations.
+    \item \textbf{Test-Set Evaluation of Group Routing}: The per-group routing results of Chapter~\ref{ch:groups} were measured on the training users; for lack of time they were not recomputed on the held-out test users, which remains to be done.
     \item \textbf{LoRA Adapter Capacity Control}: Training a single LoRA adapter with equivalent overall parameter capacity to isolate the contribution of adapter capacity expansion versus group routing.
 \end{enumerate}
 
-In addition, hardware constraints limited scaling sweeps to a fixed gradient step budget (8,000 steps), leaving full multi-epoch training on 21,000 subscribers for future evaluation.
+In addition, hardware constraints limited scaling sweeps to a fixed gradient step budget (8,000 steps), leaving full multi-epoch training on 21,000 users for future evaluation.
 
 \section{Perspectives and Future Work}
 
-\paragraph{Short-Prefix User Stratification.} While per-group adapter routing yields significant accuracy gains, identifying user group assignment ($G0$--$G3$) currently relies on observing extended historical trajectory prefixes. Developing short-prefix classification algorithms would allow early-stage trajectory routing for incoming subscribers.
+\paragraph{Short-Prefix User Stratification.} While per-group adapter routing yields significant accuracy gains, identifying user group assignment ($G0$--$G3$) currently relies on observing extended historical trajectory prefixes. Developing short-prefix classification algorithms would allow early-stage trajectory routing for incoming users.
 
-\paragraph{Multi-Day Trajectory Personalization.} Expanding trajectory sequence windows beyond single 24-hour periods to multi-day trajectories would enable capturing weekly subscriber routine patterns and individual personalization.
+\paragraph{Multi-Day Trajectory Personalization.} Expanding trajectory sequence windows beyond single 24-hour periods to multi-day trajectories would enable capturing weekly user routine patterns and individual personalization.
 
 \paragraph{Cross-City Generalization.} Evaluating model transferability across denser urban wireless networks with higher base station densities represents a key direction to test spatial generalization.
 
 \section{Executive Summary}
 
-Parameter-efficient fine-tuning of language models on single-day mobile network logs achieves superior next-cell forecasting accuracy over persistence baselines (+4.3\,\% top-1 accuracy gain in \textbf{Figure~\ref{fig:results-card}}). Training dataset scaling saturates at approximately 2,000 subscribers, beyond which individual subscriber mobility typology exerts the dominant influence on predictability (22.4\,\% spread). Stratifying subscribers by temporal mobility profiles and routing input sequences to specialized LoRA adapters represents the primary architectural driver of trajectory forecasting performance, while rigorous evaluation design and checkpoint selection provide the empirical foundation for robust trajectory modeling.
+Parameter-efficient fine-tuning of language models on single-day mobile network logs achieves superior next-cell forecasting accuracy over persistence baselines (+4.3\,\% top-1 accuracy gain in \textbf{Figure~\ref{fig:results-card}}). Training dataset scaling saturates at approximately 2,000 users, beyond which individual user mobility typology exerts the dominant influence on predictability (22.4\,\% spread). Stratifying users by temporal mobility profiles and routing input sequences to specialized LoRA adapters represents the primary architectural driver of trajectory forecasting performance, while rigorous evaluation design and checkpoint selection provide the empirical foundation for robust trajectory modeling.
 

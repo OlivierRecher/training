@@ -9,17 +9,17 @@
 \midrule
 16.87\,\% first signal              & \sraw & 1  & single-notebook Mistral-7B QLoRA run, 100 steps \\
 48.7\,\% $\rightarrow$ 64.4\,\%     & \sraw & 2  & same notebook, keeping the best saved copy \\
-$r=-0.971$ on the switch rate       & \textsc{raw day}, 500 people & 2 & per-person analysis of the 1{,}173-person grading \\
+$r=-0.971$ on the switch rate       & \textsc{raw day}, 500 users & 2 & per-user analysis of the 1{,}173-user grading \\
 $+1.1$ at the 80/20 cut             & \sfilt & 4  & training run on the filtered day \\
-No cut beats the rule               & \smob & 5  & one trained model, seven grading passes \\
+No cut beats the persistence baseline               & \smob & 5  & one trained model, seven grading passes \\
 $-3.0$ from shuffling the hours     & \smob & 6  & re-grading the same trained copy \\
 $+2.6$ at 18--20h                   & \smob & 6  & the targeted-sampling run, whole day graded \\
 $27.4$ separation of the derived hours & \smob & 7 & analysis of the kinds of user on the training file \\
-$+3.7$, first run above the rule    & \smob & 8  & routing each kind of user to its own numbers \\
-$+4.2$ at 1{,}900 training people   & \stwok & 9  & scaling run on the 2{,}000-person day \\
+$+3.7$, first run above the persistence baseline    & \smob & 8  & routing each kind of user to its own numbers \\
+$+4.2$ at 1{,}900 training users   & \stwok & 9  & scaling run on the 2{,}000-user day \\
 $-1.6$ on stretched days            & \slev & 9  & the 200-record levelling run \\
 $+4.3$, flat from 5{,}000 to 21{,}000 & \seleven & 10 & four-size scaling notebook, constant training time \\
-The resampling intervals            & \seleven & 10 & 2{,}000 paired resamples over the test people \\
+The resampling intervals            & \seleven & 10 & 2{,}000 paired resamples over the test users \\
 0 of 7 weekday trainings finished   & \seleven & 11 & seven-day notebook; the session crashed after 5\,h \\
 \bottomrule
 \end{tabular}

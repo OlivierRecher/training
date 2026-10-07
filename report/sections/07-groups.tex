@@ -3,54 +3,55 @@
 
 \section{User Behavioral Clustering Objectives}
 
-Chapter~\textbf{\ref{ch:time}} established that applying a globally fixed hourly loss weighting across all subscribers is suboptimal because temporal mobility distributions vary significantly between individuals. While certain subscribers commute during early morning hours, others move during late evening periods, and stationary subscribers exhibit minimal transition activity.
+Chapter~\textbf{\ref{ch:time}} established that applying a globally fixed hourly loss weighting across all users is suboptimal because temporal mobility distributions vary significantly between individuals. While certain users commute during early morning hours, others move during late evening periods, and stationary users exhibit minimal transition activity.
 
 To resolve these temporal variations, two research questions were investigated:
 \begin{enumerate}
-  \item Can subscribers be classified into distinct behavioral cohorts based on temporal transition profiles, using only historical prefix data available at inference time?
+  \item Can users be classified into distinct behavioral cohorts based on temporal transition profiles, using only historical prefix data available at inference time?
   \item Does conditioning model parameter optimization on identified user cohorts improve next-cell prediction accuracy over persistence baselines?
 \end{enumerate}
 
-\paragraph{Data Provenance.} Analysis evaluates dataset cohort \Dmob{} (\textbf{Table~\ref{tab:datasets}}), fitting behavioral profiles on \textbf{400 training subscribers} and evaluating performance on \textbf{100 held-out subscribers} across full-trajectory evaluation (persistence baseline score: 43.1\%).
+\paragraph{Data Provenance.} Analysis evaluates dataset cohort \Dmob{} (\textbf{Table~\ref{tab:datasets}}), fitting behavioral profiles on \textbf{400 training users} and evaluating performance on \textbf{100 held-out users} across full-trajectory evaluation (persistence baseline score: 43.1\%).
 
 \section{Feature Engineering for Temporal Mobility Profiles}
 
-User stratification is established by constructing a four-dimensional temporal mobility vector for each subscriber. Physical base station mast transitions are computed across four daily intervals: night (22:00--07:00), morning (07:00--12:00), afternoon (12:00--18:00) and evening (18:00--22:00).
+User stratification is established by constructing a four-dimensional temporal mobility vector for each user. Physical base station transitions are computed across four daily intervals: night (22:00--07:00), morning (07:00--12:00), afternoon (12:00--18:00) and evening (18:00--22:00).
 
 Two key design constraints govern vector construction:
 \begin{itemize}
-  \item \textbf{Mast-Level Transition Resolution}: Mobility is evaluated strictly at physical base station mast resolution, excluding intra-site sector handovers (as established in Chapter~\textbf{\ref{ch:data}}).
+  \item \textbf{Base-Station-Level Transition Resolution}: Mobility is evaluated strictly at physical base station resolution, excluding intra-site sector handovers (as established in Chapter~\textbf{\ref{ch:data}}).
   \item \textbf{Inference-Time Causal Integrity}: Temporal mobility profiles are computed strictly from historical prefix segments available up to the prediction moment. Computing profiles on complete daily traces would introduce future information leakage.
 \end{itemize}
 
 \section{Taxonomy of Behavioral Groups and Per-Group Temporal Hardness}
 
-Subscriber trajectories were partitioned into four behavioral clusters using $k$-means clustering evaluated on historical mobility vectors ($k=4$). No cluster was labelled in advance: the procedure returns four average shapes, and the group names below are descriptive labels assigned afterwards.
+User trajectories were partitioned into four behavioral clusters using $k$-means clustering evaluated on historical mobility vectors ($k=4$). No cluster was labelled in advance: the procedure returns four average shapes, and the group names below are descriptive labels assigned afterwards.
 
-\textbf{Figure~\ref{fig:group-profiles}} details, for each of the four identified behavioral groups ($G0$ to $G3$), the hourly base station transition rate: out of every 100 consecutive records written during a given hour, how many land on a different mast from the previous one. The percentage attached to each group is its share of subscribers, not of records:
+\textbf{Figure~\ref{fig:group-profiles}} details, for each of the four identified behavioral groups ($G0$ to $G3$), the hourly base station transition rate: out of every 100 consecutive records written during a given hour, how many land on a different base station from the previous one. The percentage attached to each group is its share of users, not of records:
 
 \input{figures/fig-group-profiles}
 
+{\sloppy
 \begin{description}
-  \item[G0 (Stationary Subscribers, 28\% of population).] Low, uniform transition activity throughout the day ($\approx 30$ transitions per 100 records, peaking at 35\% at 17:00).
-  \item[G1 (Regular Mobile Subscribers, 35\% of population).] Moderate, uniform transition activity across daylight hours ($\approx 45$ transitions per 100 records, rising to 58\% at 20:00).
-  \item[G2 (Evening-Mobile Subscribers, 14\% of population).] Low morning activity transitioning to peak mobility during late afternoon and evening hours ($\approx 84$ transitions per 100 records at 19:00).
-  \item[G3 (Morning-Mobile Subscribers, 23\% of population).] Peak mobility during early morning hours ($\approx 79$ transitions per 100 records before 12:00), declining to 29.5\% during evening hours.
-\end{description}
+  \item[G0 (Stationary Users, 28\% of population).] Low, uniform transition activity throughout the day ($\approx 30$ transitions per 100 records, peaking at 35\% at 17:00).
+  \item[G1 (Regular Mobile Users, 35\% of population).] Moderate, uniform transition activity across daylight hours ($\approx 45$ transitions per 100 records, rising to 58\% at 20:00).
+  \item[G2 (Evening-Mobile Users, 14\% of population).] Low morning activity transitioning to peak mobility during late afternoon and evening hours ($\approx 84$ transitions per 100 records at 19:00).
+  \item[G3 (Morning-Mobile Users, 23\% of population).] Peak mobility during early morning hours ($\approx 79$ transitions per 100 records before 12:00), declining to 29.5\% during evening hours.
+\end{description}\par}
 
 The inverse temporal trends of $G2$ and $G3$ explain why globally fixed temporal loss weighting was ineffective: the two groups are near mirror images comprising 37\% of the total population, so any globally fixed temporal window that is hard for $G2$ is easy for $G3$.
 
-\textbf{Figure~\ref{fig:group-difficulty}} validates the efficacy of behavioral stratification. \textbf{\panelref{fig:group-difficulty}{a}} demonstrates an exact inverse relationship between physical group mobility (orange bars) and persistence baseline predictability (grey-blue bars): stationary $G0$ subscribers change location 33\% of the time and yield a 56.3\% baseline accuracy, whereas morning-mobile $G3$ subscribers change location 52\% of the time and yield a baseline accuracy of only 17.8\%. The two bars use different scales, so each colour is read against its own neighbours; the two rankings are nonetheless exact opposites. Overall, cluster assignments account for 72\% of predictability variance across held-out test subscribers.
+\textbf{Figure~\ref{fig:group-difficulty}} validates the efficacy of behavioral stratification. \textbf{\panelref{fig:group-difficulty}{a}} demonstrates an exact inverse relationship between physical group mobility (orange bars) and persistence baseline predictability (grey-blue bars): stationary $G0$ users change location 33\% of the time and yield a 56.3\% baseline accuracy, whereas morning-mobile $G3$ users change location 52\% of the time and yield a baseline accuracy of only 17.8\%. The two bars use different scales, so each colour is read against its own neighbours; the two rankings are nonetheless exact opposites. Overall, cluster assignments account for 72\% of predictability variance across held-out test users.
 
 \input{figures/fig-group-difficulty}
 
-\textbf{\panelref{fig:group-difficulty}{b}} evaluates inference-time causal integrity by measuring how accurately user group assignments can be derived strictly from historical prefix segments. Given an 80\% prefix context, historical assignment matches full-day assignment for 92 out of 100 test subscribers (92\% accuracy). Below a 60\% context fraction, detection accuracy degrades rapidly (61\% at 50\% context, 44\% at 30\% context): the assignment is unreliable precisely for subscribers who have only just appeared, and early-stage trajectory routing would require alternative short-prefix classification methods.
+\textbf{\panelref{fig:group-difficulty}{b}} evaluates inference-time causal integrity by measuring how accurately user group assignments can be derived strictly from historical prefix segments. Given an 80\% prefix context, historical assignment matches full-day assignment for 92 out of 100 test users (92\% accuracy). Below a 60\% context fraction, detection accuracy degrades rapidly (61\% at 50\% context, 44\% at 30\% context): the assignment is unreliable precisely for users who have only just appeared, and early-stage trajectory routing would require alternative short-prefix classification methods.
 
 \subsection{Data-Driven Derivation of Critical Mobility Windows}
 
 Utilizing group-specific temporal profiles from \textbf{Figure~\ref{fig:group-profiles}}, critical transition windows were derived per group by identifying hourly intervals where the group's persistence baseline accuracy falls furthest below its daily average.
 
-\textbf{Table~\ref{tab:group-windows}} lists the derived temporal transition windows and the loss cost multiplier applied to a mistake inside each of them. For stationary $G0$ subscribers, no transition windows are upweighted since mobility remains uniformly low; for $G2$ and $G3$, the derived windows are mutually disjoint, reflecting their opposing diurnal routines. These windows successfully isolate high-difficulty moments: baseline accuracy inside them drops to \textbf{19.0\%} compared to \textbf{46.4\%} outside, a \textbf{27.4\,\% separation}. The globally fixed heuristic windows (04:00--06:00 and 18:00--20:00) separated baseline difficulty by only 0.2\,\% (43.6\% vs. 43.4\%), and were misplaced rather than merely imprecise: 04:00--06:00 is easier than average for all four groups. Data-driven group stratification is therefore necessary to identify true transition windows.
+\textbf{Table~\ref{tab:group-windows}} lists the derived temporal transition windows and the loss cost multiplier applied to a mistake inside each of them. For stationary $G0$ users, no transition windows are upweighted since mobility remains uniformly low; for $G2$ and $G3$, the derived windows are mutually disjoint, reflecting their opposing diurnal routines. These windows successfully isolate high-difficulty moments: baseline accuracy inside them drops to \textbf{19.0\%} compared to \textbf{46.4\%} outside, a \textbf{27.4\,\% separation}. The globally fixed heuristic windows (04:00--06:00 and 18:00--20:00) separated baseline difficulty by only 0.2\,\% (43.6\% vs. 43.4\%), and were misplaced rather than merely imprecise: 04:00--06:00 is easier than average for all four groups. Data-driven group stratification is therefore necessary to identify true transition windows.
 
 \input{tables/tab-group-windows}
 
@@ -60,7 +61,7 @@ Utilizing group-specific temporal profiles from \textbf{Figure~\ref{fig:group-pr
 
 Initial conditioning experiments inserted explicit text tokens (\cid{<G0>} through \cid{<G3>}) at the beginning of input sequence prefixes. However, this textual conditioning model achieved 41.3\% accuracy against a 43.1\% persistence baseline (-1.8\,\%).
 
-Diagnostic ablation revealed the root cause: evaluating the model with correct group tokens (41.3\%), incorrect group tokens (41.2\%), or omitted group tokens (41.1\%) yielded virtually identical accuracies across a narrow 0.2\,\% range. \textbf{Figure~\ref{fig:adapter-routing}} compares this input prefix token conditioning (\textbf{\panelref{fig:adapter-routing}{a}}) against physical parameter routing via separate LoRA adapters (\textbf{\panelref{fig:adapter-routing}{b}}), with the same subscribers, protocol and weighted hours in both. As \textbf{\panelref{fig:adapter-routing}{a}} illustrates, self-attention layers diluted the single prefix group token across extended 500-token trajectory sequences, allowing the model to ignore the conditioning signal.
+Diagnostic ablation revealed the root cause: evaluating the model with correct group tokens (41.3\%), incorrect group tokens (41.2\%), or omitted group tokens (41.1\%) yielded virtually identical accuracies across a narrow 0.2\,\% range. \textbf{Figure~\ref{fig:adapter-routing}} compares this input prefix token conditioning (\textbf{\panelref{fig:adapter-routing}{a}}) against physical parameter routing via separate LoRA adapters (\textbf{\panelref{fig:adapter-routing}{b}}), with the same users, protocol and weighted hours in both. As \textbf{\panelref{fig:adapter-routing}{a}} illustrates, self-attention layers diluted the single prefix group token across extended 500-token trajectory sequences, allowing the model to ignore the conditioning signal.
 
 \input{figures/fig-adapter-routing}
 
@@ -70,20 +71,23 @@ To enforce group conditioning, per-group LoRA adapter routing was implemented (\
 \begin{enumerate}
   \item Base language model parameters remain frozen.
   \item Four independent LoRA adapter modules are instantiated, corresponding to $G0$--$G3$.
-  \item Input trajectories are dynamically routed to the LoRA adapter corresponding to the subscriber's historical cluster assignment.
+  \item Input trajectories are dynamically routed to the LoRA adapter corresponding to the user's historical cluster assignment.
 \end{enumerate}
 
-Physical parameter routing eliminates text token dilution by directing input trajectories to specialized subgroup weights, enabling collaborative parameter sharing among subscribers with identical mobility profiles. Four adapters also carry four times the trainable capacity of one, and the control that would separate capacity from stratification was not run.
+Physical parameter routing eliminates text token dilution by directing input trajectories to specialized subgroup weights, enabling collaborative parameter sharing among users with identical mobility profiles. Four adapters also carry four times the trainable capacity of one, and the control that would separate capacity from stratification was not run.
 
 \subsection{Performance Evaluation of Adapter Routing}
+\label{sec:groups-results}
 
-Evaluating per-group LoRA adapter routing on active mobility test cohort \Dmob{} yields an overall top-1 accuracy of \textbf{46.8\%} against a persistence baseline of \textbf{43.1\%}, a statistically significant \textbf{+3.7\,\% gain}. \textbf{Figure~\ref{fig:group-gain}} breaks it down with one bar pair per user cohort ($G0$--$G3$), baseline and model scored on exactly the same moments, and their plain average on the far right. Accuracy improvements rank in the exact reverse order of baseline group predictability: the largest gains manifest in high-mobility groups ($G3$ with +6.4\,\%, 24.2\% vs. 17.8\%; $G2$ with +5.4\,\%, 25.1\% vs. 19.7\%; $G1$ with +2.3\,\%, 44.3\% vs. 42.0\%), whereas the low-mobility group $G0$ performs close to its baseline (+0.8\,\%, 56.8\% vs. 56.0\%). The +3.7\,\% counts each group once; weighted by group size it is +3.3\,\%, the figure an operator would experience, because 28\% of subscribers sit in $G0$.
+Evaluating per-group LoRA adapter routing on \Dmob{} yields an overall top-1 accuracy of \textbf{46.8\%} against a persistence baseline of \textbf{43.1\%}, a statistically significant \textbf{+3.7\,\% gain}. \textbf{Figure~\ref{fig:group-gain}} breaks it down with one bar pair per user cohort ($G0$--$G3$), baseline and model scored on exactly the same moments, and their plain average on the far right. Accuracy improvements rank in the exact reverse order of baseline group predictability: the largest gains manifest in high-mobility groups ($G3$ with +6.4\,\%, 24.2\% vs. 17.8\%; $G2$ with +5.4\,\%, 25.1\% vs. 19.7\%; $G1$ with +2.3\,\%, 44.3\% vs. 42.0\%), whereas the low-mobility group $G0$ performs close to its baseline (+0.8\,\%, 56.8\% vs. 56.0\%). The +3.7\,\% counts each group once; weighted by group size it is +3.3\,\%, the figure an operator would experience, because 28\% of users sit in $G0$.
 
 \input{figures/fig-group-gain}
+
+One limit applies to every result of this section: the scores of the per-group routing, in the text and in \textbf{Figure~\ref{fig:group-gain}}, \textbf{come from the data of the training users}. For lack of time, the evaluation was not run again on the held-out test users. Repeating it on the test set is the first task of any continuation of this work (Chapter~\ref{ch:conclusion}).
 
 \section{Conclusion}
 \label{sec:retro-groups}
 
-Integrating user stratification with per-group LoRA adapter routing produced the first experimental model to surpass the persistence baseline across complete held-out evaluation trajectories (+3.7\,\% in \textbf{Figure~\ref{fig:group-gain}}). Diagnostic analysis confirmed that routing trajectories to specialized subgroup parameters resolves text token dilution (\textbf{\panelref{fig:adapter-routing}{b}}) while enabling collaborative parameter sharing among subscriber cohorts.
+Integrating user stratification with per-group LoRA adapter routing produced the first experimental model to surpass the persistence baseline across complete evaluation trajectories (+3.7\,\% in \textbf{Figure~\ref{fig:group-gain}}), a result measured on the training users and still to be confirmed on the test set (Section~\ref{sec:groups-results}). Diagnostic analysis confirmed that routing trajectories to specialized subgroup parameters resolves text token dilution (\textbf{\panelref{fig:adapter-routing}{b}}) while enabling collaborative parameter sharing among user cohorts.
 
-This result rests on two conditions established in this chapter. The kind of user must be readable from the past alone, which holds for 92 of 100 test subscribers with an 80\% prefix but degrades quickly below a 60\% prefix; and it must reach the model through its parameters rather than through a prefix token, which the model ignored (41.3\%, 41.2\% and 41.1\% with the correct, a wrong or no token). The gain is also uneven: +6.4\,\% for $G3$ and +5.4\,\% for $G2$, but only +0.8\,\% for $G0$. Finally, four adapters carry four times the trainable capacity of one, and the control that would separate capacity from stratification was not run, so part of the gain may come from capacity alone.
+This result rests on two conditions established in this chapter. The kind of user must be readable from the past alone, which holds for 92 of 100 test users with an 80\% prefix but degrades quickly below a 60\% prefix; and it must reach the model through its parameters rather than through a prefix token, which the model ignored (41.3\%, 41.2\% and 41.1\% with the correct, a wrong or no token). The gain is also uneven: +6.4\,\% for $G3$ and +5.4\,\% for $G2$, but only +0.8\,\% for $G0$. Finally, four adapters carry four times the trainable capacity of one, and the control that would separate capacity from stratification was not run, so part of the gain may come from capacity alone.

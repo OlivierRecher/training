@@ -1,0 +1,60 @@
+% F -- One day as the records see it: records are not movements, and not a clock.
+\begin{figure}[H]
+\centering
+\fitwidth{%
+\begin{tikzpicture}[x=0.58cm,y=1cm,font=\small,
+  rec/.style={circle,inner sep=0pt,minimum size=6pt,draw=white,line width=0.4pt},
+  note/.style={font=\footnotesize,align=center,text=clmodel},
+  lead/.style={clrule,line width=0.5pt},
+]
+% ---- where the person is --------------------------------------------------
+\fill[clsoft]  (0,0.55) rectangle (7.8,1.25);
+\fill[clink!12] (8.6,0.55) rectangle (17.2,1.25);
+\fill[clsoft]  (17.8,0.55) rectangle (24,1.25);
+\node[font=\footnotesize\bfseries,text=clmodel] at (3.9,0.90)  {at home};
+\node[font=\footnotesize\bfseries,text=clink]   at (12.9,0.90) {at work};
+\node[font=\footnotesize\bfseries,text=clmodel] at (20.9,0.90) {at home};
+\draw[-{Stealth[length=4pt]},clmove,thick] (7.8,0.90) -- (8.6,0.90);
+\draw[-{Stealth[length=4pt]},clmove,thick] (17.2,0.90) -- (17.8,0.90);
+
+% ---- the clock ------------------------------------------------------------
+\draw[clrule] (0,0) -- (24,0);
+\foreach \hh in {0,4,8,12,16,20,24}{
+  \draw[clrule] (\hh,0) -- (\hh,-0.10);
+  \node[anchor=north,font=\scriptsize,text=clrule] at (\hh,-0.12) {\hh h};}
+
+% ---- the records ----------------------------------------------------------
+\foreach \t in {1.0,3.0,5.0,7.0}       { \node[rec,fill=clmodel] at (\t,0) {}; }
+\foreach \t in {8.1,8.35}              { \node[rec,fill=clmove]  at (\t,0) {}; }
+\foreach \t in {9.0,11.9,12.15,12.4}   { \node[rec,fill=clink]   at (\t,0) {}; }
+\node[rec,fill=clink] at (17.0,0) {};
+\node[rec,fill=clmove] at (17.5,0) {};
+\foreach \t in {18.2,20.2,22.2}        { \node[rec,fill=clmodel] at (\t,0) {}; }
+
+% ---- three short readings --------------------------------------------------
+\draw[lead] (1.0,-0.62) -- (7.0,-0.62);
+\node[note,anchor=north] at (4.0,-0.70)
+  {same cell every 2 hours:\\ \textbf{nobody moved}};
+\draw[lead] (11.9,-0.62) -- (12.4,-0.62);
+\node[note,anchor=north] at (12.15,-0.70)
+  {one call:\\ \textbf{3 records in minutes}};
+\draw[lead,dashed] (12.6,0.14) -- (16.8,0.14);
+\node[note,anchor=south,fill=white,inner sep=1pt] at (14.7,0.19)
+  {\textbf{4 hours, no record}};
+\draw[lead] (17.2,-0.62) -- (17.8,-0.62);
+\node[note,anchor=north] at (17.5,-0.70)
+  {new cells:\\ \textbf{a real move}};
+
+% ---- legend ---------------------------------------------------------------
+\node[anchor=west,font=\scriptsize,text=clrule] at (0,-1.95)
+  {each dot is one record, coloured by its cell:};
+\node[rec,fill=clmodel] at (10.4,-1.95) {};
+\node[anchor=west,font=\scriptsize] at (10.6,-1.95) {home cell};
+\node[rec,fill=clink] at (13.7,-1.95) {};
+\node[anchor=west,font=\scriptsize] at (13.9,-1.95) {work cell};
+\node[rec,fill=clmove] at (16.9,-1.95) {};
+\node[anchor=west,font=\scriptsize] at (17.1,-1.95) {cells on the way};
+\end{tikzpicture}}
+\caption{One day as the records see it: a record is not a movement, and not a clock}
+\label{fig:record-day}
+\end{figure}

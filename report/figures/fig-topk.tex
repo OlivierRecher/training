@@ -14,9 +14,9 @@
 ]
 % ================= (a) one prediction, ranked =================
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (-0.35,3.55)
-  {\panelnum{fig:topk}{a} The model never answers once. It ranks all 369 antennas.};
+  {\panelnum{fig:topk}{a} The model never answers once. It ranks all 369 cells.};
 \node[anchor=west,font=\scriptsize,text=clrule] at (-0.35,3.18)
-  {Here are its first five, for one moment of one person's day, with how sure it
+  {Here are its first five, for one moment of one user's day, with how sure it
    is of each.};
 
 % the three depth markers, stacked above the row
@@ -36,7 +36,7 @@
   {\dots\ 364 more};
 
 \node[font=\scriptsize,text=clgain,anchor=north,align=center] at (6.25,0.28)
-  {$\uparrow$ this is the antenna the person really visited};
+  {$\uparrow$ this is the cell the user really visited};
 
 \node[font=\scriptsize,anchor=west] at (-0.35,-0.55)
   {\textcolor{clloss}{\textbf{top-1: wrong}}, it is not first. \qquad
@@ -47,7 +47,7 @@
 \draw[clrule,dotted] (-0.45,-1.05) -- (14.4,-1.05);
 \node[anchor=west,font=\footnotesize\bfseries,text=clmodel] at (-0.35,-1.45)
   {\panelnum{fig:topk}{b} The score is then just a count, over every graded moment of every test
-   person.};
+   user.};
 
 \foreach \i/\st in {0/ok,1/ko,2/ok,3/ok,4/ko,5/ok,6/ok,7/ok,8/ko,9/ok}{
   \node[\st] at (0.1+\i*0.92,-2.25) {};
@@ -56,7 +56,7 @@
   {shaded = right, empty = wrong\\[2pt]
    7 right out of 10 graded moments\\ $\Rightarrow$ a score of \textbf{70\,\%}};
 \node[font=\scriptsize,text=clrule,anchor=west] at (-0.35,-2.95)
-  {The one-line rule is graded on the very same moments, and its own count is
+  {The persistence baseline is graded on the very same moments, and its own count is
    what my score is compared against.};
 \end{tikzpicture}}
 \caption{Top-1, top-3 and top-5, and the way a score is obtained}

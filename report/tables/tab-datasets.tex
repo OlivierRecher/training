@@ -1,22 +1,24 @@
 % T1 -- Every set of people used, measured on the files themselves.
 \begin{table}[H]
 \centering\footnotesize
-\caption{The six sets of people, and the score of the one-line rule on each}
+\caption{The six sets of users, and the score of the persistence baseline on each}
 \label{tab:datasets}
-\begin{tabular}{@{}l@{\hspace{5pt}}>{\raggedright\arraybackslash}p{4.6cm}@{\hspace{5pt}}r@{\hspace{6pt}}r@{\hspace{6pt}}l@{\hspace{5pt}}l@{}}
+\begin{tabular}{@{}l@{\hspace{6pt}}>{\raggedright\arraybackslash}p{5.4cm}@{\hspace{5pt}}r@{\hspace{6pt}}r@{\hspace{6pt}}l@{\hspace{5pt}}l@{}}
 \toprule
-& \textbf{Who is in it} & \textbf{Train} & \textbf{Test} & \textbf{Records/person} & \textbf{Rule} \\
+& \textbf{Why a new set} {\color{clrule}(\emph{and what is in it})} & \textbf{Train} & \textbf{Test} & \textbf{Records/user} & \begin{tabular}[b]{@{}l@{}}\textbf{Persistence}\\\textbf{baseline}\end{tabular} \\
 \midrule
-\sraw  & one day file taken as it comes (12 March 2014) & 400 & 100 & mean $\approx$62 & 69.2\,\% \\
-\sfilt  & the same day, filtered: more than 10 records and no 4-hour hole & 400 & 100 & $>$10 by design & 79.0\,\% \\
-\smob  & people who move, and who stay in the area, on one day & 400 & 100 & 19--200, mean 86.0 & 45.5 / 43.1\,\% \\
-\slev & the same people, every day stretched to exactly 200 records & 400 & 100 & 200 exactly & 76.5\,\% \\
-\stwok  & a day file sampled down to 2{,}000 people & 900 / 1{,}900 & 100 & 12--200, mean 77.1 & 48.2\,\% \\
-\seleven  & 11 day files of 2{,}000 people, stacked end to end & 21{,}000 & 1{,}000 & 10--200 & 50.2\,\% \\
+\sraw & \textbf{Start from one raw day of records.}\newline{\color{clrule}\emph{the first day file, 12 March 2014, taken as it comes}} & 400 & 100 & mean $\approx$62 & 69.2\,\% \\
+\addlinespace[3pt]
+\sfilt & \textbf{Some users' records are too sparse to train on: filter those users out.}\newline{\color{clrule}\emph{same first day; users with more than 10 records and no 4-hour hole}} & 400 & 100 & $>$10 by design & 79.0\,\% \\
+\addlinespace[3pt]
+\smob & \textbf{Most users barely move: keep those who do, to leave the model room (Section~\ref{sec:sota-ceiling}).}\newline{\color{clrule}\emph{users who move and stay in the area, one day}} & 400 & 100 & 19--200, mean 86.0 & 45.5\,\% \\
+\addlinespace[3pt]
+\slev & \textbf{Some users leave far more records: give everyone the same weight in training (Chapter~\ref{ch:scale}).}\newline{\color{clrule}\emph{same users, every day stretched to exactly 200 records}} & 400 & 100 & 200 exactly & 76.5\,\% \\
+\addlinespace[3pt]
+\stwok & \textbf{Does more data help? Grow to 2{,}000 users.}\newline{\color{clrule}\emph{a day file sampled down to 2{,}000 users}} & 900 / 1{,}900 & 100 & 12--200, mean 77.1 & 48.2\,\% \\
+\addlinespace[3pt]
+\seleven & \textbf{Finally, use every record available.}\newline{\color{clrule}\emph{11 day files of 2{,}000 users, stacked end to end}} & 21{,}000 & 1{,}000 & 10--200 & 50.2\,\% \\
 \bottomrule
 \end{tabular}
 
-\vspace{4pt}
-\vspace{4pt}
-\vspace{4pt}
 \end{table}

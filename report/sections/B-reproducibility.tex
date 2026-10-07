@@ -9,7 +9,7 @@ To ensure full experimental reproducibility, this appendix documents the hyperpa
 \input{tables/tab-hyperparams}
 
 \bigskip
-\textbf{Table~\ref{tab:provenance}} maps every headline result quoted throughout the report to its precise iteration number, underlying dataset split (\textbf{Table~\ref{tab:datasets}}), and notebook execution run. Because dataset filtering and test subscriber cohorts evolved across project stages, comparing absolute scores across rows using different datasets is invalid; meaningful comparisons rely strictly on baseline deltas computed relative to each dataset's dedicated persistence benchmark.
+\textbf{Table~\ref{tab:provenance}} maps every headline result quoted throughout the report to its precise iteration number, underlying dataset split (\textbf{Table~\ref{tab:datasets}}), and notebook execution run. Because dataset filtering and test user cohorts evolved across project stages, comparing absolute scores across rows using different datasets is invalid; meaningful comparisons rely strictly on baseline deltas computed relative to each dataset's dedicated persistence benchmark.
 
 \bigskip
 \input{tables/tab-provenance}
@@ -28,7 +28,7 @@ Rather than reproducing entire configuration files, \textbf{Table~\ref{tab:confi
 \midrule
 \texttt{context\_fraction}              & 0.8            & where each day is cut; part of the ruler (Ch.~\textbf{\ref{ch:tools}}) \\
 \texttt{max\_epochs}                    & 20             & also the decay horizon: lowering it changes the regime \\
-\texttt{early\_stop\_patience}           & 4              & the best pass arrives early on this task (Ch.~\textbf{\ref{ch:tools}}) \\
+\texttt{early\_stop\_patience}           & 4              & the best epoch arrives early on this task (Ch.~\textbf{\ref{ch:tools}}) \\
 \texttt{transition\_windows}             & (4,6,$\times2$), (18,20,$\times4$) & the \emph{guessed} hours of Ch.~\textbf{\ref{ch:time}}; fallback only \\
 \texttt{group\_windows}                  & \texttt{None}  & derive the hours from the data, per kind of user (Ch.~\textbf{\ref{ch:groups}}) \\
 \texttt{transition\_chunk\_oversample}   & 3.0            & show slices containing a move three times more often \\
@@ -36,7 +36,7 @@ Rather than reproducing entire configuration files, \textbf{Table~\ref{tab:confi
 \texttt{group\_shrinkage}                & 8.0            & a thin stretch must not dominate a profile \\
 \texttt{group\_detect\_fraction}         & past only      & no leakage: the kind of user is read from the past \\
 \texttt{max\_steps} (scaling)            & 1{,}000        & the same training time at every size (Ch.~\textbf{\ref{ch:scale}}) \\
-\texttt{val\_subsample} (scaling)        & 250 fixed people & the same stopping rule at every size \\
+\texttt{val\_subsample} (scaling)        & 250 fixed users & the same stopping rule at every size \\
 \bottomrule
 \end{tabular}
 \end{minipage}

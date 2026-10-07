@@ -12,8 +12,8 @@
 ]
 \begin{scope}[shift={(0,0)}]
 \draw[clrule] (0.25,-1.05) -- (0.25,-3.55) -- (4.45,-3.55);
-\node[axl,rotate=90,anchor=south] at (0.05,-2.30) {score on new people};
-\node[axl,anchor=north] at (2.35,-3.70) {passes over the training data};
+\node[axl,rotate=90,anchor=south] at (0.05,-2.30) {score on new users};
+\node[axl,anchor=north] at (2.35,-3.70) {epochs (passes over the training data)};
 \draw[clmodel,very thick]
   plot[smooth,tension=0.7] coordinates
   {(0.45,-3.25) (0.90,-1.90) (1.30,-1.35) (1.55,-1.25)
@@ -27,12 +27,12 @@
   (3.15,-2.35) -- (3.15,-1.25);
 \node[anchor=west,font=\scriptsize\bfseries,text=clgain] at (3.22,-1.80) {15.5};
 \node[take] at (0.08,-4.28)
-  {The score on unseen people peaks early, then decays for tens of passes.
+  {The score on unseen users peaks early, then decays for tens of epochs.
    Reading the \textcolor{clloss}{end} of the run instead of its
    \textcolor{clgain}{best point} throws away 15.5 correct answers per
    hundred.};
 \end{scope}
 \end{tikzpicture}}
-\caption{Never read the last pass of a run}
+\caption{Never read the last epoch of a run}
 \label{fig:rule-peak}
 \end{figure}

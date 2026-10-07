@@ -17,14 +17,14 @@
 % ---- one raw line, as it arrives ----------------------------------------
 \draw[clrule,fill=white,rounded corners=2pt] (0,2.36) rectangle (14.40,2.98);
 \node[anchor=west,font=\scriptsize\ttfamily,inner sep=0pt] (adm) at (0.18,2.67)
-  {892739;22;M;36452;CETR;;;136;};
+  {892739;};
 \node[anchor=west,font=\scriptsize\ttfamily,inner sep=0pt] (prs) at (adm.east)
   {BKVDOU3;23822;BKVVIV2;24105;BKVSTN4;24154;\dots};
 \draw[brc] ($(adm.south west)+(0,-0.10)$) -- ($(adm.south east)+(0,-0.10)$);
-\node[brl] at ($(adm.south)+(0,-0.24)$) {8 administrative columns};
+\node[brl] at ($(adm.south)+(0,-0.24)$) {\texttt{user\_id}};
 \draw[brc] ($(prs.south west)+(0,-0.10)$) -- ($(prs.south east)+(0,-0.10)$);
 \node[brl] at ($(prs.south)+(0,-0.24)$)
-  {an antenna, then its time in seconds, over and over};
+  {a \texttt{cell\_id}, then its time in seconds, over and over};
 
 % ---- the four steps ------------------------------------------------------
 \foreach \i in {0,1,2,3}{
@@ -32,12 +32,12 @@
         (\i*3.70,0) rectangle (\i*3.70+3.30,-1.45);}
 \foreach \i in {0,1,2}{ \draw[ar] (\i*3.70+3.30,-0.72) -- (\i*3.70+3.70,-0.72); }
 \node[ttl] at (1.65,-0.10)  {1. Keep the\\ trajectory};
-\node[sub] at (1.65,-0.95)  {drop the 8 columns};
+\node[sub] at (1.65,-0.95)  {keep only the \texttt{user\_id}};
 \node[ttl] at (5.35,-0.10)  {2. Time\\ $\rightarrow$ hour of day};
 \node[sub] at (5.35,-0.95)  {one symbol per event};
-\node[ttl] at (9.05,-0.10)  {3. One line\\ per person};
+\node[ttl] at (9.05,-0.10)  {3. One line\\ per user};
 \node[sub] at (9.05,-0.95)  {the day, in order};
-\node[ttl] at (12.75,-0.10) {4. Split\\ the people};
+\node[ttl] at (12.75,-0.10) {4. Split\\ the users};
 \node[sub] at (12.75,-0.95) {\emph{before} any training};
 \draw[ar] (1.65,1.74) -- (1.65,0);
 
@@ -45,10 +45,10 @@
 \draw[clrule,thick] (12.75,-1.45) -- (12.75,-2.05) -- (5.35,-2.05);
 \draw[ar] (5.35,-2.05) -- (5.35,-2.42);
 \draw[ar] (12.75,-2.05) -- (12.75,-2.42);
-\node[disk]     at (5.35,-3.42)  {\textbf{TRAIN}\\[2pt]{\large 400}\\[1pt]people the\\model studies};
-\node[disktest] at (12.75,-3.42) {\textbf{TEST}\\[2pt]{\large 100}\\[1pt]people it is\\graded on};
+\node[disk]     at (5.35,-3.42)  {\textbf{TRAIN}\\[2pt]{\large 400}\\[1pt]users the\\model studies};
+\node[disktest] at (12.75,-3.42) {\textbf{TEST}\\[2pt]{\large 100}\\[1pt]users it is\\graded on};
 \node[font=\footnotesize,text=clloss,align=center] at (9.05,-3.42)
-  {$\neq$\\[1pt]\textbf{no person}\\ in both};
+  {$\neq$\\[1pt]\textbf{no user}\\ in both};
 \end{tikzpicture}}
 \caption{From a raw file to training material, in four steps}
 \label{fig:data-flow}

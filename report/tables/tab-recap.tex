@@ -6,22 +6,22 @@
 \centering\small
 \caption{The eleven iterations, on one axis}
 \label{tab:recap}
-\begin{tabular}{@{}c@{\hspace{7pt}}l@{\hspace{7pt}}l@{\hspace{7pt}}l@{\hspace{7pt}}r@{\hspace{7pt}}r@{\hspace{8pt}}r@{}}
+\begin{tabular}{@{}c@{\hspace{7pt}}l@{\hspace{7pt}}l@{\hspace{7pt}}r@{\hspace{7pt}}r@{\hspace{8pt}}r@{}}
 \toprule
-\textbf{It.} & \textbf{People} & \textbf{What I changed that week} & \textbf{Graded on} & \textbf{Rule} & \textbf{Model} & \textbf{Gap} \\
+\textbf{It.} & \textbf{Users} & \textbf{What I changed that week} & \begin{tabular}[b]{@{}c@{}}\textbf{Persistence}\\\textbf{baseline}\end{tabular} & \textbf{Model} & \textbf{Gap} \\
 \midrule
-1  & \sraw     & built the pipeline end to end   & last fifth & 69.2\,\% & 16.9\,\% & $-52.3$ \\
-2  & \sraw     & read the best saved copy        & last fifth & 69.2\,\% & 64.4\,\% & $-4.8$  \\
-3  & \srawbig  & ten times more people           & last fifth & 81.6\,\% & 76.0\,\% & $-5.6$  \\
-4  & \sfilt    & dropped near-silent people      & last fifth & 79.0\,\% & 80.1\,\% & $\mathbf{+1.1}$ \\
-5  & \smob     & kept only people who move       & last fifth & 45.5\,\% & 44.6\,\% & $-0.9$  \\
-6  & \smob     & gave the model the hour of day  & last fifth & 45.5\,\% & 44.2\,\% & $-1.3$  \\
-7  & \smob     & named the kind of user in the text & whole day & 43.1\,\% & 41.3\,\% & $-1.8$  \\
-8  & \smob     & one set of numbers per kind of user & whole day & 43.1\,\% & 46.8\,\% & $\mathbf{+3.7}$ \\
-9  & \stwok    & 1{,}900 training people         & last fifth & 48.2\,\% & 52.4\,\% & $\mathbf{+4.2}$ \\
-9  & \slev     & stretched every day to 200 records & last fifth & 76.5\,\% & 74.9\,\% & $-1.6$  \\
-10 & \seleven  & 21{,}000 training people        & last fifth & 50.2\,\% & 54.5\,\% & $\mathbf{+4.3}$ \\
-11 & \seleven  & \multicolumn{5}{@{}l@{}}{\textit{no new training: why the curve climbs, then stops}} \\
+1  & \sraw     & built the pipeline end to end   & 69.2\,\% & 16.9\,\% & $-52.3$ \\
+2  & \sraw     & read the best saved copy        & 69.2\,\% & 64.4\,\% & $-4.8$  \\
+3  & \srawbig  & ten times more users           & 81.6\,\% & 76.0\,\% & $-5.6$  \\
+4  & \sfilt    & dropped near-silent users      & 79.0\,\% & 80.1\,\% & $\mathbf{+1.1}$ \\
+5  & \smob     & kept only users who move       & 45.5\,\% & 44.6\,\% & $-0.9$  \\
+6  & \smob     & gave the model the hour of day  & 45.5\,\% & 44.2\,\% & $-1.3$  \\
+7  & \smob     & named the kind of user in the text & 43.1\,\% & 41.3\,\% & $-1.8$  \\
+8  & \smob     & one set of numbers per kind of user & 43.1\,\% & 46.8\,\% & $\mathbf{+3.7}$ \\
+9  & \stwok    & 1{,}900 training users         & 48.2\,\% & 52.4\,\% & $\mathbf{+4.2}$ \\
+9  & \slev     & stretched every day to 200 records & 76.5\,\% & 74.9\,\% & $-1.6$  \\
+10 & \seleven  & 21{,}000 training users        & 50.2\,\% & 54.5\,\% & $\mathbf{+4.3}$ \\
+11 & \seleven  & \multicolumn{4}{@{}l@{}}{\textit{no new training: why the curve climbs, then stops}} \\
 \bottomrule
 \end{tabular}
 \end{table}

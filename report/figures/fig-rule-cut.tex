@@ -1,4 +1,4 @@
-% F -- Moving the cut of the day moves the one-line rule as much as the model. A schematic.
+% F -- Moving the cut of the day moves the persistence baseline as much as the model. A schematic.
 % One of the three rules about measuring; split out of fig-three-rules.tex.
 \begin{figure}[H]
 \centering
@@ -19,12 +19,12 @@
 \draw[clbase,very thick]  (0.55,-2.75) -- (4.25,-1.20);
 \draw[clmodel,very thick] (0.55,-3.05) -- (4.25,-1.50);
 \node[anchor=south,rotate=22.7,font=\scriptsize,text=clbase]
-      at (2.40,-1.93) {the one-line rule};
+      at (2.40,-1.93) {the persistence baseline};
 \node[anchor=north,rotate=22.7,font=\scriptsize,text=clmodel]
       at (2.40,-2.32) {my model};
 \node[take] at (0.08,-4.28)
-  {Giving the model more history raises its score, and raises the rule by the
-   same amount, because it also moves what counts as ``the last antenna
+  {Giving the model more history raises its score, and raises the persistence baseline by the
+   same amount, because it also moves what counts as ``the last cell
    seen''. A rising score across cuts says nothing about the model.};
 \end{scope}
 \end{tikzpicture}}

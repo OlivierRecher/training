@@ -5,20 +5,20 @@
 \fitwidth{%
 \begin{tikzpicture}
 \begin{axis}[rephbar, width=0.80\linewidth, height=5.4cm,
-  title={How strongly each property of a person predicts that person's own score},
+  title={How strongly each property of a user predicts that user's own score},
   title style={font=\footnotesize,yshift=1pt},
   xmin=-1.2, xmax=1.2, xtick={-1,-0.5,0,0.5,1},
   xlabel={Pearson correlation $r$ \ \ ($-1$ = perfect opposition, $0$ = no link, $+1$ = perfect agreement)},
   x label style={font=\scriptsize}, /pgf/bar width=5.5pt,
   symbolic y coords={len,vol,uniq,irr,dom,ent,switch},
   ytick={len,vol,uniq,irr,dom,ent,switch},
-  yticklabels={how many records the person has,
+  yticklabels={how many records the user has,
                how many predictions they contribute,
-               how many different antennas they visit,
+               how many different cells they visit,
                how irregular their changes are,
-               how much time on their main antenna,
+               how much time on their main cell,
                how spread out their time is (entropy),
-               \textbf{how often they change antenna}},
+               \textbf{how often they change cell}},
   y tick label style={font=\scriptsize,align=right},
   nodes near coords,
   /pgf/number format/.cd, fixed, fixed zerofill, precision=3, /pgfplots/.cd,
@@ -27,7 +27,7 @@
 \addplot[fill=clink,draw=none]   coordinates {(-0.101,vol)(-0.232,uniq)(-0.140,irr)(0.285,dom)(-0.773,switch)};
 \end{axis}
 \end{tikzpicture}}
-\caption{The one property that predicts a person's score}
+\caption{The one property that predicts a user's score}
 \label{fig:concentration}
 
 \end{figure}

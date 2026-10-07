@@ -11,8 +11,8 @@
   x tick label style={font=\scriptsize,rotate=40,anchor=east},
   ymin=-0.5, ymax=7.6, ytick={0,1,...,5},
   yticklabels={0,$+1$,$+2$,$+3$,$+4$,$+5$},
-  xlabel={number of training people (logarithmic scale)},
-  ylabel={correct answers per 100 gained over that run's own rule},
+  xlabel={number of training users (logarithmic scale)},
+  ylabel={correct answers per 100 gained over that run's own persistence baseline},
   y label style={font=\scriptsize},
   xmajorgrids, ymajorgrids,
 ]
@@ -23,7 +23,7 @@
 \node[font=\scriptsize,text=clrule,anchor=north,align=center] at (axis cs:900,7.45)
   {\textbf{GENERALISATION}\\ the four kinds of user become\\ large enough to read\\ \textcolor{clgain}{$+3.6$}};
 \node[font=\scriptsize,text=clrule,anchor=north,align=center] at (axis cs:8000,7.45)
-  {\textbf{SATURATION}\\ every new person is a\\ behavioural duplicate\\ \textcolor{clbase}{$+0.1$}};
+  {\textbf{SATURATION}\\ every new user is a\\ behavioural duplicate\\ \textcolor{clbase}{$+0.1$}};
 \node[font=\scriptsize,text=clrule,anchor=south,align=center,rotate=90] at (axis cs:414,1.2)
   {\textbf{IMITATION}};
 %
@@ -39,7 +39,7 @@
 \node[font=\scriptsize,anchor=south] at (axis cs:10000,4.45) {$+4.4$};
 \node[font=\scriptsize,anchor=south] at (axis cs:15000,4.75) {$+4.7$};
 \node[font=\scriptsize,anchor=south] at (axis cs:21000,4.35) {$+4.3$};
-\node[font=\scriptsize,text=clbase,anchor=east] at (axis cs:28000,0.24) {the one-line rule of each run};
+\node[font=\scriptsize,text=clbase,anchor=east] at (axis cs:28000,0.24) {the persistence baseline of each run};
 \end{axis}
 \end{tikzpicture}}}
 \caption{Eight training sizes: the gain climbs, then stops}
